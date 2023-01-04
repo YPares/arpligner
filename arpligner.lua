@@ -51,7 +51,7 @@ function transformEvent(curChord, ev0)
         finalNote = curChord[wantedDegree] + 12*wantedOctaveShift
         local oct = wantedOctaveShift>0
                 and "+"..wantedOctaveShift
-                or (wantedOctaveShift == 0 and "-" or wantedOctaveShift)
+                or (wantedOctaveShift == 0 and "--" or wantedOctaveShift)
         print("cur:"..table.concat(curChord, ","), "chan:"..chan, "deg:"..wantedDegree, "oct:"..oct, "final:"..finalNote)
         ev:setNote(finalNote)
     elseif ev:isNoteOff() then
@@ -83,6 +83,7 @@ function plugin.processBlock(samples, smax, midiBuf)
     end
     
     local curChord = getCurChord()
+    --print(table.concat(curChord,","))
     
     midiBuf:clear()
     for _,ev in pairs(otherEvs) do

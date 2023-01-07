@@ -1,7 +1,9 @@
 require "include/protoplug"
 
+local firstDegreeCode = 60
+
+
 local counters = {}
-local middleC = 60
 local chordChan = 16
 local curMappings = {}
 
@@ -43,8 +45,8 @@ function transformEvent(curChord, ev0)
     local chan = ev:getChannel()
     local noteCodeIn = ev:getNote()
     if ev:isNoteOn() and #curChord > 0 then
-        local wantedDegree = (noteCodeIn - middleC) % #curChord + 1
-        local wantedOctaveShift = math.floor((noteCodeIn - middleC) / #curChord)
+        local wantedDegree = (noteCodeIn - firstDegreeCode) % #curChord + 1
+        local wantedOctaveShift = math.floor((noteCodeIn - firstDegreeCode) / #curChord)
         finalNote = curChord[wantedDegree] + 12*wantedOctaveShift
         local oct = wantedOctaveShift>0
                 and "+"..wantedOctaveShift
@@ -61,6 +63,7 @@ function transformEvent(curChord, ev0)
   end
   return ev
 end
+
 
 function plugin.processBlock(samples, smax, midiBuf)
     local otherEvs = {}
@@ -85,3 +88,20 @@ function plugin.processBlock(samples, smax, midiBuf)
         midiBuf:addEvent(transformEvent(curChord, ev))
     end
 end
+
+plugin.manageParams {
+    { name = "Chord channel";
+      type = "int";
+      min = 1;
+      max = 16;
+      default = 16;
+      changed = function(x) chordChan = x end
+    };
+    { name = "First degree MIDI code";
+      type = "int";
+      min = 0;
+      max = 127;
+      default = 60;
+      changed = function(x) firstDegreeCode = x end
+    }
+}

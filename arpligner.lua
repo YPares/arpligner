@@ -5,7 +5,7 @@ local middleC = 60
 local chordChan = 16
 local curMappings = {}
 
-for chan = 1,chordChan-1 do
+for chan = 1,16 do
     curMappings[chan] = {}
 end
 
@@ -17,14 +17,11 @@ function addCurNote(note)
 end
 
 function rmCurNote(note)
-    counters[note] = (counters[note] or 1) - 1
-    if counters[note] <= 0 then
-        counters[note] = nil
+    x = (counters[note] or 1) - 1
+    if x <= 0 then
+        x = nil
     end
-end
-
-function isInCurNotes(note)
-    return (counters[note] or 0) > 0
+    counters[note] = x
 end
 
 function getCurChord()
@@ -46,7 +43,7 @@ function transformEvent(curChord, ev0)
     local chan = ev:getChannel()
     local noteCodeIn = ev:getNote()
     if ev:isNoteOn() and #curChord > 0 then
-        local wantedDegree = (noteCodeIn - middleC)%#curChord + 1
+        local wantedDegree = (noteCodeIn - middleC) % #curChord + 1
         local wantedOctaveShift = math.floor((noteCodeIn - middleC) / #curChord)
         finalNote = curChord[wantedDegree] + 12*wantedOctaveShift
         local oct = wantedOctaveShift>0
@@ -70,7 +67,6 @@ function plugin.processBlock(samples, smax, midiBuf)
     for ev in midiBuf:eachEvent() do
         if ev:getChannel() == chordChan then
             if ev:isNoteOn() then
-                -- TODO: sort new notes in the same buffer per pitch
                 addCurNote(ev:getNote())
             elseif ev:isNoteOff() then
                 rmCurNote(ev:getNote())
@@ -83,7 +79,6 @@ function plugin.processBlock(samples, smax, midiBuf)
     end
     
     local curChord = getCurChord()
-    --print(table.concat(curChord,","))
     
     midiBuf:clear()
     for _,ev in pairs(otherEvs) do

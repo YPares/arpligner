@@ -27,4 +27,14 @@ Non-note events incoming on the chord channel (CCs, etc) will just pass through 
 
 For now, when no note is playing on the chord channel, notes on pattern channels will stay as they are (if you like some chromatic experiments that can be fun...)
 
+### Installing
+
+You first need to [download Protoplug](https://github.com/pac-dev/protoplug/releases) and install it.
+
+Then if you are using Bitwig, just click and drag Arpligner.bwpreset in Bitwig. If not, load Protoplug as any VST plugin in your DAW. Once opened, the GUI shows a code page.
+Empty it and copy/paste the contents of arpligner.lua into it. Then click on "Compile" in the bottom right-hand corner. Then Protoplug's status (loaded script and everything) should be saved along with your DAW project.
+
+After that, you'll need some way to feed MIDI into Protoplug. If you are using the Bitwig preset, place it on the track(s) where the **pattern** MIDI clips play.
+The preset comes with a Note Receiver device on which you can set where it should get the chords from (the preset automatically moves each incoming chord note to Channel 16).
+
 Video demo/tutorials to come...

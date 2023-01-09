@@ -47,9 +47,13 @@ But what happens if you go below C3? Or if you go "above" the last degree of you
 - Arpligner should give more controllable results if you write/play your chords in their most canonical form: block chords, no inversions, without any octaving of notes. It will really use your chord note data as they come, it won't do anything fancy to try and detect which chord you are actually playing, what is its root, etc.
 - In pattern channels, only note pitches are affected. So your "pattern" notes will stay on the same channel, keep their velocity, etc. That means your patterns may contain velocity variations, pitch bends, CCs or that kind of things :)
 - Non-note events incoming on the chord channel (CCs, etc) will just pass through (and stay on channel 16).
-- When **no note** is playing on the chord channel, notes on pattern channels will stay as they are (this results in... interesting chromaticisms). I plan on making this behaviour configurable, via a parameter exposed by the script to the host.
 - As it is working with potentially live MIDI data, Arpligner cannot do things like "resetting the pattern when the chord changes", so it's up to you to keep your chord and pattern clips in sync (or interestingly out-of-sync). E.g. for a regular arp "emulation", just make your chord clip have a length that is a multiple of that of your pattern clip, so you'll repeat the same pattern several times over different chords.
 - Besides pre-writing chord progressions or playing them live, you can use plugins like [Scaler 2](https://www.pluginboutique.com/products/6439) which speed up the process of writing chord progressions, and which can output their chords as MIDI and sync with the host's tempo & transport.
+
+### Current limitations
+
+- When **no note** is playing on the chord channel, notes on pattern channels will stay as they are (this results in... interesting chromaticisms). I plan on making this behaviour configurable, via a parameter exposed by the script to the host.
+- Note-off events are tricky to handle right, and the plugin's internal state will be fully refreshed every time it's reloaded, so if that happens it may lose track of some notes. If you ever get stuck notes, stop all MIDI data coming to Arpligner, open Protoplug's GUI and re-click on "Compile" to reset the script (or just disabling/re-enabling the Protoplug plugin might work, depending on your DAW).
 
 Video demo/tutorials to come...
 

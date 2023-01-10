@@ -1,15 +1,26 @@
 require "include/protoplug"
 
-local firstDegreeCode = 60
+-- When no notes are playing
 
+local defaultChord = {60,64,67,70} -- a C7 chord (at octave 3). You can edit that
+
+-- Params exposed to the host:
+
+local firstDegreeCode = 60
+local chordChan = 16
+
+local noChordBehVals = {"Use default chord (see script)"; "Silence"; "Passthrough"}
+local noChordBeh = noChordBehVals[1];
+
+-- Private global vars:
 
 local counters = {}
-local chordChan = 16
 local curMappings = {}
 
 for chan = 1,16 do
     curMappings[chan] = {}
 end
+
 
 -- We need to keep a counter for each current chord note, because for a given note,
 -- note offs can happen after the next note on (we don't want one single note off
@@ -41,25 +52,34 @@ end
 function transformEvent(curChord, ev0)
   local ev = midi.Event(ev0)
   if ev:getNote() then
-    local finalNote = nil
     local chan = ev:getChannel()
     local noteCodeIn = ev:getNote()
-    if ev:isNoteOn() and #curChord > 0 then
-        local wantedDegree = (noteCodeIn - firstDegreeCode) % #curChord + 1
-        local wantedOctaveShift = math.floor((noteCodeIn - firstDegreeCode) / #curChord)
-        finalNote = curChord[wantedDegree] + 12*wantedOctaveShift
-        local oct = wantedOctaveShift>0
-                and "+"..wantedOctaveShift
-                or (wantedOctaveShift == 0 and "--" or wantedOctaveShift)
-        print("cur:"..table.concat(curChord, ","), "chan:"..chan, "deg:"..wantedDegree, "oct:"..oct, "final:"..finalNote)
-        ev:setNote(finalNote)
+    if ev:isNoteOn() then
+      if #curChord == 0 then
+        if noChordBeh == noChordBehVals[2] then -- Silence
+          return nil
+        elseif noChordBeh == noChordBehVals[3] then -- Passthrough
+          return ev
+        else -- Use default chord
+          curChord = defaultChord
+        end
+      end
+      local wantedDegree = (noteCodeIn - firstDegreeCode) % #curChord + 1
+      local wantedOctaveShift = math.floor((noteCodeIn - firstDegreeCode) / #curChord)
+      local finalNote = curChord[wantedDegree] + 12*wantedOctaveShift
+      local oct = wantedOctaveShift>0
+              and "+"..wantedOctaveShift
+              or (wantedOctaveShift == 0 and "--" or wantedOctaveShift)
+      print("cur:"..table.concat(curChord, ","), "chan:"..chan, "deg:"..wantedDegree,
+            "oct:"..oct, "final:"..finalNote)
+      curMappings[chan][noteCodeIn] = finalNote
+      ev:setNote(finalNote)
     elseif ev:isNoteOff() then
-        local m = curMappings[chan][noteCodeIn]
-        if m then
-            ev:setNote(m)
-        end 
+      local m = curMappings[chan][noteCodeIn]
+      if m then
+          ev:setNote(m)
+      end 
     end
-    curMappings[chan][noteCodeIn] = finalNote
   end
   return ev
 end
@@ -85,7 +105,10 @@ function plugin.processBlock(samples, smax, midiBuf)
     
     midiBuf:clear()
     for _,ev in pairs(otherEvs) do
-        midiBuf:addEvent(transformEvent(curChord, ev))
+        ev2 = transformEvent(curChord, ev)
+        if ev2 then
+            midiBuf:addEvent(ev2)
+        end
     end
 end
 
@@ -103,5 +126,11 @@ plugin.manageParams {
       max = 127;
       default = 60;
       changed = function(x) firstDegreeCode = x end
-    }
+    };
+    { name = "When no chord note";
+      type = "list";
+      values = noChordBehVals;
+      default = noChordBehVals[1];
+      changed = function(x) noChordBeh = x end
+    };
 }

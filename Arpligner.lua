@@ -12,6 +12,8 @@ local chordChan = 16
 local noChordBehVals = {"Use default chord (see script)"; "Silence"; "Passthrough"}
 local noChordBeh = noChordBehVals[1];
 
+local chordNotesPassthrough = false;
+
 -- Private global vars:
 
 local counters = {}
@@ -49,8 +51,7 @@ function getCurChord()
 end
 
 
-function transformEvent(curChord, ev0)
-  local ev = midi.Event(ev0)
+function transformEvent(curChord, ev)
   if ev:getNote() then
     local chan = ev:getChannel()
     local noteCodeIn = ev:getNote()
@@ -78,7 +79,7 @@ function transformEvent(curChord, ev0)
       local m = curMappings[chan][noteCodeIn]
       if m then
           ev:setNote(m)
-      end 
+      end
     end
   end
   return ev
@@ -86,29 +87,34 @@ end
 
 
 function plugin.processBlock(samples, smax, midiBuf)
-    local otherEvs = {}
+    local eventsToProcess = {}
+    local otherEvents = {}
     for ev in midiBuf:eachEvent() do
         if ev:getChannel() == chordChan then
-            if ev:isNoteOn() then
-                addCurNote(ev:getNote())
-            elseif ev:isNoteOff() then
-                rmCurNote(ev:getNote())
-            else
-                table.insert(otherEvs, ev)
-            end
+          if ev:isNoteOn() then
+            addCurNote(ev:getNote())
+          elseif ev:isNoteOff() then
+            rmCurNote(ev:getNote())
+          end
+          if chordNotesPassthrough or (not ev:getNote()) then
+            table.insert(otherEvents, midi.Event(ev))
+          end
         else
-            table.insert(otherEvs, ev)
+            table.insert(eventsToProcess, midi.Event(ev))
         end
     end
+    midiBuf:clear()
     
     local curChord = getCurChord()
     
-    midiBuf:clear()
-    for _,ev in pairs(otherEvs) do
+    for _,ev in pairs(eventsToProcess) do
         ev2 = transformEvent(curChord, ev)
         if ev2 then
             midiBuf:addEvent(ev2)
         end
+    end
+    for _,ev in pairs(otherEvents) do
+        midiBuf:addEvent(midi.Event(ev))
     end
 end
 
@@ -132,5 +138,11 @@ plugin.manageParams {
       values = noChordBehVals;
       default = noChordBehVals[1];
       changed = function(x) noChordBeh = x end
+    };
+    { name = "Chord notes passthrough";
+      type = "list";
+      values = {false; true};
+      default = false;
+      changed = function(x) chordNotesPassthrough = x end
     };
 }

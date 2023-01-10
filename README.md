@@ -18,7 +18,7 @@ Or both can be live data! That would be having two keyboard players: one in char
 
 ### Installation
 
-You first need to [download Protoplug](https://github.com/pac-dev/protoplug/releases) and install it.
+You first need to [download Protoplug](https://github.com/pac-dev/protoplug/releases) and install it (see [this section](#current-limitations) first if you are using Linux).
 
 Then if you are using Bitwig, you can use the `Arpligner.bwpreset` directly[^3].
 If you are using another DAW, load the `Lua Protoplug Gen` plugin[^4] as any VST2 plugin in your DAW project. Once opened, the GUI shows a code page.
@@ -56,6 +56,7 @@ But what happens if you go below C3? Or if you go "above" the last degree of you
 
 ### Current limitations
 
+- Protoplug is not working out of the box on recent Ubuntu right now (see https://github.com/pac-dev/protoplug/issues/56 for the discussion), it's probably the same for other Linux distributions
 - Note-off events are tricky to handle right, and the plugin's internal state will be fully refreshed every time it's reloaded, so if that happens it may lose track of some notes. If you ever get stuck notes, stop all MIDI data coming to Arpligner, open Protoplug's GUI and re-click on "Compile" to reset the script (or just disabling/re-enabling the Protoplug plugin might work, depending on your DAW).
 
 Video demo/tutorials to come...

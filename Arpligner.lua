@@ -80,28 +80,26 @@ function getDegreeShift(code)
 end
 
 function transformEvent(curChord, ev)
-  if ev:getNote() then
     local chan = ev:getChannel()
     local noteCodeIn = ev:getNote()
     local degShift = getDegreeShift(noteCodeIn)
     if ev:isNoteOn() then
-      local wantedDegree = degShift % #curChord + 1
-      local wantedOctaveShift = math.floor(degShift / #curChord)
-      local finalNote = curChord[wantedDegree] + 12*wantedOctaveShift
-      local oct = wantedOctaveShift>0
-              and "+"..wantedOctaveShift
-              or (wantedOctaveShift == 0 and "--" or wantedOctaveShift)
-      print("cur:"..table.concat(curChord, ","), "chan:"..chan, "deg:"..wantedDegree,
-            "oct:"..oct, "final:"..finalNote)
-      curMappings[chan][noteCodeIn] = finalNote
-      ev:setNote(finalNote)
+        local wantedDegree = degShift % #curChord + 1
+        local wantedOctaveShift = math.floor(degShift / #curChord)
+        local finalNote = curChord[wantedDegree] + 12*wantedOctaveShift
+        local oct = wantedOctaveShift>0
+                and "+"..wantedOctaveShift
+                or (wantedOctaveShift == 0 and "--" or wantedOctaveShift)
+        print("cur:"..table.concat(curChord, ","), "chan:"..chan, "deg:"..wantedDegree,
+              "oct:"..oct, "final:"..finalNote)
+        curMappings[chan][noteCodeIn] = finalNote
+        ev:setNote(finalNote)
     elseif ev:isNoteOff() then
-      local m = curMappings[chan][noteCodeIn]
-      if m then
-          ev:setNote(m)
-      end
+        local m = curMappings[chan][noteCodeIn]
+        if m then
+            ev:setNote(m)
+        end
     end
-  end
 end
 
 function onlyNoteOffs(events)
@@ -120,6 +118,7 @@ function plugin.processBlock(samples, smax, midiBuf)
     local eventsToProcess = {}
     local otherEvents = {}
     for ev in midiBuf:eachEvent() do
+        ev = midi.Event(ev) -- We copy ev so it stays valid once we clear the buffer
         if ev:getChannel() == chordChan then
             if ev:isNoteOn() then
                 addCurNote(ev:getNote())
@@ -127,12 +126,16 @@ function plugin.processBlock(samples, smax, midiBuf)
                 rmCurNote(ev:getNote())
             end
             if chordNotesPassthrough or (not ev:getNote()) then
-                table.insert(otherEvents, midi.Event(ev))
+                table.insert(otherEvents, ev)
             end
         else -- Event on some pattern chan:
-            c = ev:getNote()
-            if not (c and ignoreBlackKeysInPatterns and isBlackKey(c)) then
-                table.insert(eventsToProcess, midi.Event(ev))
+            note = ev:getNote()
+            if note then
+                if not (ignoreBlackKeysInPatterns and isBlackKey(note)) then
+                    table.insert(eventsToProcess, ev)
+                end
+            else
+                table.insert(otherEvents, ev)
             end
         end
     end
@@ -153,10 +156,12 @@ function plugin.processBlock(samples, smax, midiBuf)
             for _,code in ipairs(lastChord) do
                 table.insert(curChord, code+offset)
             end
+            lastChord = curChord
         elseif singleChordNoteBeh == singleChordNoteBehVals[2] then -- Powerchord
             curChord[2] = curChord[1] + 7
+            lastChord = curChord
         elseif singleChordNoteBeh == singleChordNoteBehVals[3] then -- Use "one-note chord" as it is
-            -- Do nothing
+            lastChord = curChord
         elseif singleChordNoteBeh == singleChordNoteBehVals[5] then -- Use pattern as notes (Ignore one-note chord)
             doProcess = false
         else -- Silence
@@ -174,7 +179,7 @@ function plugin.processBlock(samples, smax, midiBuf)
     
     -- Pass non-processable events through:
     for _,ev in pairs(otherEvents) do
-        midiBuf:addEvent(midi.Event(ev))
+        midiBuf:addEvent(ev)
     end
     
     -- Process and add processable events:

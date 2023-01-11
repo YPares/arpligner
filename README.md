@@ -16,6 +16,10 @@ Therefore, you can make use of your DAW piano rool and MIDI sequencing capabilit
 Therefore, you can use it as a regular arp, playing your chords against pre-written patterns, or the opposite.
 Or both can be live data! That would be having two keyboard players: one in charge of the chords and the other one in charge of how to layout those chords[^2].
 
+### Video demo/tutorials
+
+See https://youtu.be/IQ9GFEaS4Ag for an overview of the tool and the basic features.
+
 ### Installation
 
 You first need to [download Protoplug](https://github.com/pac-dev/protoplug/releases) and install it (see [this section](#current-limitations) first if you are using Linux).
@@ -81,9 +85,6 @@ But in any case, these params are also settable in the `params` tab in Protoplug
 - Protoplug is not working out of the box on recent Ubuntu right now (see https://github.com/pac-dev/protoplug/issues/56 for the discussion), it's probably the same for other Linux distributions.
 - Arpligner is quite strict for now regarding the timing of notes on the chord channel. When your chords are played from already quantized MIDI clips or by a sequencer it's not a problem, but for "classical" live arp usage, i.e. when playing chords live against a preset pattern, it can be. So in this scenario, I recommend to use some sort of beat quantizer on your chord channel before Arpligner, and to play around with the various settings until you get a satisfying result.
 - Note-off events are tricky to handle right, and the plugin's internal state will be fully refreshed every time it's reloaded, so if that happens it may lose track of some notes. If you ever get stuck notes, stop all MIDI data coming to Arpligner, open Protoplug's GUI and re-click on "Compile" to reset the script (or just disabling/re-enabling the Protoplug plugin might work, depending on your DAW). Do the same if the script crashed (Protoplug's GUI shows the console with possible errors at the bottom of the code page).
-
-Video demo/tutorials to come...
-
 
 [^1]: I use Bitwig and the piano roll editor and MIDI operators to manipulate notes are just so much better and so much more flexible than everything I've seen in plugins
 

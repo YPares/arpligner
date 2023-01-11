@@ -46,13 +46,25 @@ But what happens if you go below C3? Or if you go "above" the last degree of you
 
 - Arpligner should give more controllable results if you write/play your chords in their most canonical form: block chords, no inversions, without any octaving of notes. It will really use your chord note data as they come, it won't do anything fancy to try and detect which chord you are actually playing, what is its root, etc.
 - In pattern channels, only note pitches are affected. So your "pattern" notes will stay on the same channel, keep their velocity, etc. That means your patterns may contain velocity variations, pitch bends, CCs or that kind of things :)
-- Non-note events incoming on the chord channel (CCs, etc) will just pass through (and stay on channel 16). Note events will also passthrough if you set to true the param "Chord notes passthrough"[^5]
 - As it is working with potentially live MIDI data, Arpligner has no notion of things like "start point", "end point" or "loop", and thus cannot do things like "reset the pattern when the chord changes". Therefore, it's up to you to keep your chord and pattern clips in sync (or interestingly out-of-sync). E.g. for a regular arp "emulation", if you work with looping clips, just make your chord clip have a length that is a multiple of that of your pattern clip, so you'll repeat the same pattern several times over different chords.
 - Besides pre-writing chord progressions or playing them live, you can use plugins like [Scaler 2](https://www.pluginboutique.com/products/6439) which speed up the process of writing chord progressions, and which can output their chords as MIDI and sync with the host's tempo & transport.
-- When **no note** is playing on the chord channel, you have 3 options (controllable via a "When no chord notes" param[^5]). **DO NOT** change this parameter while notes are being played, else it will result in stuck notes. Stop the transport and stop playing first. Options are:
-    - "Use default chord": uses a C7 chord (though you can change that default chord at the top of the script)
-    - "Silence": play nothing
-    - "Passthrough": just use the pattern "notes" directly, as if they were real notes
+
+### Available settings
+
+Arpligner exposes some parameters to the host (how to view and set them depends on your DAW).
+But in any case, these params are also settable in the `params` tab in Protoplug's GUI.
+
+**IMPORTANT**: Most of these are meant to be set once, not automated or anything. I strongly advise you not to change these parameters while MIDI notes are being sent to Arpligner, or you will end up with stuck notes.
+
+| Parameter name | Alt. name | Default value | Documentation |
+|------------|------------------------|-------------|---------------|
+|**Chord channel**|**Param 0**|`16`|The channel to treat as chord channel. All other incoming channels with be considered pattern channels|
+|**First degree MIDI code**|**Param 1**|`60` (C3)|On pattern channels, the "reference note", the one to consider as "1st degree of the currently playing chord"
+|**When no chord note**|**Param 2**|`Use default chord`|What to do when no note is playing on the chord channel:|
+|                    |         |                   | - `Use default chord`: use a C7 chord (you can change that default chord at the top of the script)|
+|                    |         |                   | - `Silence`: ignore the pattern notes|
+|                    |         |                   | - `Passthrough`: just use the pattern "notes" directly, as if they were real notes|
+|**Chord notes passthrough**|**Param 3**|`false`|Whether note events on the chord channel should pass through instead of being consumed. Non-note events (such as CCs) on the chord channel will **always** pass through|
 
 ### Current limitations
 
@@ -69,5 +81,3 @@ Video demo/tutorials to come...
 [^3]: See for instance [this video by Mattias Holmgren](https://www.youtube.com/watch?v=siY4ZpNOeCY) for how to use third-party presets with Bitwig. If you are not using Bitwig, then ~~go download it~~ your DAW should have a similar way to save and share presets, and if you ever build one don't hesitate to submit a PR :)
 
 [^4]: Protoplug actually comes with 2 plugins, "Fx" (for audio FXs) and "Gen" (for synths). I believe in the case of Arpliner both should work but I really only tested with "Gen"
-
-[^5]: Such parameters are both exposed to the host (how to view and set them depends on your DAW) and settable in the "params" tab in Protoplug's GUI. These are meant to be set once, not automated or anything. I strongly advise you not to change these parameters while MIDI notes are being sent to Arpligner, at the risk of ending with stuck notes.

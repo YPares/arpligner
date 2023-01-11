@@ -15,6 +15,8 @@ local singleChordNoteBeh = singleChordNoteBehVals[1];
 
 local chordNotesPassthrough = false;
 
+local ignoreBlackKeysInPatterns = false;
+
 -- ## Private global vars
 
 local counters = {}
@@ -55,13 +57,36 @@ function getCurChord()
     return chord
 end
 
+function isBlackKey(code)
+    local rem = code % 12
+    return rem == 1 or rem == 3 or rem == 6 or rem == 8 or rem == 10
+end
+
+function getDegreeShift(code)
+    local x = code - firstDegreeCode
+    if ignoreBlackKeysInPatterns then
+        -- We need to correct the [firstDegreeCode,code] interval for the amount of black keys it contains:
+        local sign = (x < 0) and -1 or 1
+        local absX = sign * x
+        for i = firstDegreeCode,code,sign do
+            if isBlackKey(i) then
+                absX = absX - 1
+            end
+        end
+        return sign*absX
+    else
+        return x
+    end
+end
+
 function transformEvent(curChord, ev)
   if ev:getNote() then
     local chan = ev:getChannel()
     local noteCodeIn = ev:getNote()
+    local degShift = getDegreeShift(noteCodeIn)
     if ev:isNoteOn() then
-      local wantedDegree = (noteCodeIn - firstDegreeCode) % #curChord + 1
-      local wantedOctaveShift = math.floor((noteCodeIn - firstDegreeCode) / #curChord)
+      local wantedDegree = degShift % #curChord + 1
+      local wantedOctaveShift = math.floor(degShift / #curChord)
       local finalNote = curChord[wantedDegree] + 12*wantedOctaveShift
       local oct = wantedOctaveShift>0
               and "+"..wantedOctaveShift
@@ -104,8 +129,11 @@ function plugin.processBlock(samples, smax, midiBuf)
             if chordNotesPassthrough or (not ev:getNote()) then
                 table.insert(otherEvents, midi.Event(ev))
             end
-        else
-            table.insert(eventsToProcess, midi.Event(ev))
+        else -- Event on some pattern chan:
+            c = ev:getNote()
+            if not (c and ignoreBlackKeysInPatterns and isBlackKey(c)) then
+                table.insert(eventsToProcess, midi.Event(ev))
+            end
         end
     end
     midiBuf:clear()
@@ -193,5 +221,11 @@ plugin.manageParams {
       values = singleChordNoteBehVals;
       default = singleChordNoteBehVals[1];
       changed = function(x) singleChordNoteBeh = x end;
+    };
+    { name = "Ignore black keys in patterns";
+      type = "list";
+      values = {false; true};
+      default = ignoreBlackKeysInPatterns;
+      changed = function(x) ignoreBlackKeysInPatterns = x end
     };
 }

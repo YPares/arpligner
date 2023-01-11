@@ -72,6 +72,7 @@ But in any case, these params are also settable in the `params` tab in Protoplug
 | | |`Use as is`|Use _n_ as just a "one-note chord". Tread carefully, the end result may go up in octaves pretty fast|
 | | |`Silence`|Same as for "no chord note"|
 | | |`Use pattern as notes`|Same as for "no chord note"|
+|**Ignore black keys in patterns** (Param 5)|`false`|`true` or `false`|Map chord degrees to white notes only, instead of every MIDI note. It can be more convenient when playing patterns live|
 
 ### Current limitations
 

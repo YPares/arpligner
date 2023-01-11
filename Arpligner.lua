@@ -1,20 +1,21 @@
 require "include/protoplug"
 
--- When no notes are playing
+-- # GLOBALS
 
-local defaultChord = {60,64,67,70} -- a C7 chord (at octave 3). You can edit that
-
--- Params exposed to the host:
+-- ## Params exposed to the host
 
 local firstDegreeCode = 60
 local chordChan = 16
 
-local noChordBehVals = {"Use default chord (see script)"; "Silence"; "Passthrough"}
-local noChordBeh = noChordBehVals[1];
+local noChordNoteBehVals = {"Latch last chord"; "Silence"; "Use pattern as notes"}
+local noChordNoteBeh = noChordNoteBehVals[1];
+
+local singleChordNoteBehVals = {"Transpose last chord"; "Powerchord"; "Use as is"; "Silence"; "Use pattern as notes"}
+local singleChordNoteBeh = singleChordNoteBehVals[1];
 
 local chordNotesPassthrough = false;
 
--- Private global vars:
+-- ## Private global vars
 
 local counters = {}
 local curMappings = {}
@@ -23,6 +24,10 @@ for chan = 1,16 do
     curMappings[chan] = {}
 end
 
+local lastChord = nil
+
+
+-- # UTILITY FUNCTIONS
 
 -- We need to keep a counter for each current chord note, because for a given note,
 -- note offs can happen after the next note on (we don't want one single note off
@@ -50,21 +55,11 @@ function getCurChord()
     return chord
 end
 
-
 function transformEvent(curChord, ev)
   if ev:getNote() then
     local chan = ev:getChannel()
     local noteCodeIn = ev:getNote()
     if ev:isNoteOn() then
-      if #curChord == 0 then
-        if noChordBeh == noChordBehVals[2] then -- Silence
-          return nil
-        elseif noChordBeh == noChordBehVals[3] then -- Passthrough
-          return ev
-        else -- Use default chord
-          curChord = defaultChord
-        end
-      end
       local wantedDegree = (noteCodeIn - firstDegreeCode) % #curChord + 1
       local wantedOctaveShift = math.floor((noteCodeIn - firstDegreeCode) / #curChord)
       local finalNote = curChord[wantedDegree] + 12*wantedOctaveShift
@@ -82,41 +77,89 @@ function transformEvent(curChord, ev)
       end
     end
   end
-  return ev
 end
 
+function onlyNoteOffs(events)
+    newEvents = {}
+    for _,ev in ipairs(events) do
+        if ev:isNoteOff() then
+            table.insert(newEvents, ev)
+        end
+    end
+    return newEvents
+end
+
+-- # MAIN FUNCTION
 
 function plugin.processBlock(samples, smax, midiBuf)
     local eventsToProcess = {}
     local otherEvents = {}
     for ev in midiBuf:eachEvent() do
         if ev:getChannel() == chordChan then
-          if ev:isNoteOn() then
-            addCurNote(ev:getNote())
-          elseif ev:isNoteOff() then
-            rmCurNote(ev:getNote())
-          end
-          if chordNotesPassthrough or (not ev:getNote()) then
-            table.insert(otherEvents, midi.Event(ev))
-          end
+            if ev:isNoteOn() then
+                addCurNote(ev:getNote())
+            elseif ev:isNoteOff() then
+                rmCurNote(ev:getNote())
+            end
+            if chordNotesPassthrough or (not ev:getNote()) then
+                table.insert(otherEvents, midi.Event(ev))
+            end
         else
             table.insert(eventsToProcess, midi.Event(ev))
         end
     end
     midiBuf:clear()
     
+    -- Depending on settings, determine the current wanted chord:
     local curChord = getCurChord()
-    
-    for _,ev in pairs(eventsToProcess) do
-        ev2 = transformEvent(curChord, ev)
-        if ev2 then
-            midiBuf:addEvent(ev2)
+    local doProcess = true
+    if #curChord >= 2 then
+        -- Chord contains at least 2 notes. This is the "normal" situation.
+        -- We register the current chord if we need it later
+        lastChord = curChord
+    elseif #curChord == 1 then
+        -- Chord contains only one note. Behaviour depends on "When single chord note" parameter
+        if singleChordNoteBeh == singleChordNoteBehVals[1] and lastChord then -- Transpose last chord (if we have one)
+            local offset = curChord[1] - lastChord[1]
+            curChord = {}
+            for _,code in ipairs(lastChord) do
+                table.insert(curChord, code+offset)
+            end
+        elseif singleChordNoteBeh == singleChordNoteBehVals[2] then -- Powerchord
+            curChord[2] = curChord[1] + 7
+        elseif singleChordNoteBeh == singleChordNoteBehVals[3] then -- Use "one-note chord" as it is
+            -- Do nothing
+        elseif singleChordNoteBeh == singleChordNoteBehVals[5] then -- Use pattern as notes (Ignore one-note chord)
+            doProcess = false
+        else -- Silence
+            eventsToProcess = onlyNoteOffs(eventsToProcess)
+        end
+    else -- Chord is empty. Behaviour depends on "When no chord note" parameter
+        if noChordNoteBeh == noChordNoteBehVals[1] and lastChord then -- Use last chord (if we have one)
+            curChord = lastChord
+        elseif noChordNoteBeh == noChordNoteBehVals[3] then -- Use pattern as notes
+            doProcess = false
+        else -- Silence
+            eventsToProcess = onlyNoteOffs(eventsToProcess)
         end
     end
+    
+    -- Pass non-processable events through:
     for _,ev in pairs(otherEvents) do
         midiBuf:addEvent(midi.Event(ev))
     end
+    
+    -- Process and add processable events:
+    for _,ev in pairs(eventsToProcess) do
+        if doProcess then
+            transformEvent(curChord, ev)
+        end
+        midiBuf:addEvent(ev)
+    end
 end
+
+
+-- # EXPOSED PARAMETERS
 
 plugin.manageParams {
     { name = "Chord channel";
@@ -133,16 +176,22 @@ plugin.manageParams {
       default = 60;
       changed = function(x) firstDegreeCode = x end
     };
-    { name = "When no chord note";
-      type = "list";
-      values = noChordBehVals;
-      default = noChordBehVals[1];
-      changed = function(x) noChordBeh = x end
-    };
     { name = "Chord notes passthrough";
       type = "list";
       values = {false; true};
       default = false;
       changed = function(x) chordNotesPassthrough = x end
+    };
+    { name = "When no chord note";
+      type = "list";
+      values = noChordNoteBehVals;
+      default = noChordNoteBehVals[1];
+      changed = function(x) noChordNoteBeh = x end
+    };
+    { name = "When single chord note";
+      type = "list";
+      values = singleChordNoteBehVals;
+      default = singleChordNoteBehVals[1];
+      changed = function(x) singleChordNoteBeh = x end;
     };
 }

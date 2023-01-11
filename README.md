@@ -48,6 +48,7 @@ But what happens if you go below C3? Or if you go "above" the last degree of you
 - In pattern channels, only note pitches are affected. So your "pattern" notes will stay on the same channel, keep their velocity, etc. That means your patterns may contain velocity variations, pitch bends, CCs or that kind of things :)
 - As it is working with potentially live MIDI data, Arpligner has no notion of things like "start point", "end point" or "loop", and thus cannot do things like "reset the pattern when the chord changes". Therefore, it's up to you to keep your chord and pattern clips in sync (or interestingly out-of-sync). E.g. for a regular arp "emulation", if you work with looping clips, just make your chord clip have a length that is a multiple of that of your pattern clip, so you'll repeat the same pattern several times over different chords.
 - Besides pre-writing chord progressions or playing them live, you can use plugins like [Scaler 2](https://www.pluginboutique.com/products/6439) which speed up the process of writing chord progressions, and which can output their chords as MIDI and sync with the host's tempo & transport.
+- Arpligner offers different behaviours for when it is receiving no notes or just one note on the chord channel. Default behaviour is "latch & transpose": it will keep using the last chord if it receives no more notes, and it will transpose it if it receives just one note. See [the settings below](#available-settings) for more info.
 
 ### Available settings
 
@@ -56,20 +57,26 @@ But in any case, these params are also settable in the `params` tab in Protoplug
 
 **IMPORTANT**: Most of these are meant to be set once, not automated or anything. I strongly advise you not to change these parameters while MIDI notes are being sent to Arpligner, or you will end up with stuck notes.
 
-| Parameter name | Alt. name | Default value | Documentation |
-|------------|------------------------|-------------|---------------|
-|**Chord channel**|**Param 0**|`16`|The channel to treat as chord channel. All other incoming channels with be considered pattern channels|
-|**First degree MIDI code**|**Param 1**|`60` (C3)|On pattern channels, the "reference note", the one to consider as "1st degree of the currently playing chord"
-|**When no chord note**|**Param 2**|`Use default chord`|What to do when no note is playing on the chord channel:|
-|                    |         |                   | - `Use default chord`: use a C7 chord (you can change that default chord at the top of the script)|
-|                    |         |                   | - `Silence`: ignore the pattern notes|
-|                    |         |                   | - `Passthrough`: just use the pattern "notes" directly, as if they were real notes|
-|**Chord notes passthrough**|**Param 3**|`false`|Whether note events on the chord channel should pass through instead of being consumed. Non-note events (such as CCs) on the chord channel will **always** pass through|
+| Parameter name (alt. name[^5]) | Default value | Possible values | Documentation |
+|--------------------------------|---------------|-----------------|---------------|
+|**Chord channel** (Param 0)|`16`|Number between `1` and `16`|The channel to treat as chord channel. All other incoming channels with be considered pattern channels|
+|**First degree MIDI code** (Param 1)|`60` (C3)|Number between `0` and `127`|On pattern channels, the "reference note", the one to consider as "1st degree of the currently playing chord"
+|**Chord notes passthrough** (Param 2)|`false`|`true` or `false`|Whether note events on the chord channel should pass through instead of being consumed. Non-note events (such as CCs) on the chord channel will **always** pass through|
+|**When no chord note** (Param 3)|`Latch last chord`|Choose from:|What to do when **no** note is playing on the chord channel|
+| | |`Latch last chord`|Keep using the previous chord that played (`Silence` if no previous chord is known)|
+| | |`Silence`| Ignore the pattern notes|
+| | |`Use pattern as notes`|Consider the pattern "notes" as real notes, and pass them through without any change|
+|**When single chord note** (Param 4)|`Transpose last chord`|Choose from:|What to do when a **single** note _n_ is playing on the chord channel|
+| | |`Transpose last chord`|Transpose last chord so that its lowest note becomes _n_ (`Silence` if no previous chord is known)|
+| | |`Powerchord`|Turn _n_ into a "2-note chord": _n_ and the note a fifth above|
+| | |`Use as is`|Use _n_ as just a "one-note chord". Tread carefully, the end result may go up in octaves pretty fast|
+| | |`Silence`|Same as for "no chord note"|
+| | |`Use pattern as notes`|Same as for "no chord note"|
 
 ### Current limitations
 
 - Protoplug is not working out of the box on recent Ubuntu right now (see https://github.com/pac-dev/protoplug/issues/56 for the discussion), it's probably the same for other Linux distributions
-- Note-off events are tricky to handle right, and the plugin's internal state will be fully refreshed every time it's reloaded, so if that happens it may lose track of some notes. If you ever get stuck notes, stop all MIDI data coming to Arpligner, open Protoplug's GUI and re-click on "Compile" to reset the script (or just disabling/re-enabling the Protoplug plugin might work, depending on your DAW).
+- Note-off events are tricky to handle right, and the plugin's internal state will be fully refreshed every time it's reloaded, so if that happens it may lose track of some notes. If you ever get stuck notes, stop all MIDI data coming to Arpligner, open Protoplug's GUI and re-click on "Compile" to reset the script (or just disabling/re-enabling the Protoplug plugin might work, depending on your DAW). Do the same if the script crashed (Protoplug's GUI shows the console with possible errors at the bottom of the code page).
 
 Video demo/tutorials to come...
 
@@ -81,3 +88,5 @@ Video demo/tutorials to come...
 [^3]: See for instance [this video by Mattias Holmgren](https://www.youtube.com/watch?v=siY4ZpNOeCY) for how to use third-party presets with Bitwig. If you are not using Bitwig, then ~~go download it~~ your DAW should have a similar way to save and share presets, and if you ever build one don't hesitate to submit a PR :)
 
 [^4]: Protoplug actually comes with 2 plugins, "Fx" (for audio FXs) and "Gen" (for synths). I believe in the case of Arpliner both should work but I really only tested with "Gen"
+
+[^5]: Due to the VST2 format and to how DAWs usually deal with it, you generally will have to save your project and reload it to force host to update the parameter names if it shows only those alternative names

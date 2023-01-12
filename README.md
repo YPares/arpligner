@@ -10,7 +10,7 @@ Therefore, you can make use of your DAW piano rool and MIDI sequencing capabilit
 Therefore, you can use it as a regular arp, playing your chords against pre-written patterns, or the opposite.
 Or both can be live data! That would be having two keyboard players: one in charge of the chords and the other one in charge of how to layout those chords[^2].
 
-Arpligner is implemented as a Lua script for [Protoplug](https://www.osar.fr/protoplug/), for live MIDI chord manipulation.
+Arpligner is implemented as a Lua script for [Protoplug](https://www.osar.fr/protoplug/), a VST2 plugin for live MIDI & audio processing.
 
 Still experimental, please post issues here if you have a problem with the script :)
 

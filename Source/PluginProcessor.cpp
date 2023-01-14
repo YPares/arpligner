@@ -24,7 +24,22 @@ ArplignerJuceAudioProcessor::ArplignerJuceAudioProcessor()
                        )
 #endif
 {
-    addParameter (param = new juce::AudioParameterFloat ({ "param", 1 }, "My param", 0.0, 1.0, 0.5));
+  addParameter (chordChan = new juce::AudioParameterInt ("chordChan", "Chord channel", 1, 16, 16));
+  addParameter (firstDegreeCode = new juce::AudioParameterInt ("firstDegreeCode", "First degree MIDI code", 0, 127, 60));
+  addParameter (chordNotesPassthrough = new juce::AudioParameterBool("chordNotesPassthrough", "Chord notes passthrough", false));
+  addParameter
+    (whenNoChordNote = new juce::AudioParameterChoice
+     ("whenNoChordNote", "When no chord note",
+      juce::StringArray {"Latch last chord", "Silence", "Use patterns as notes"},
+      WhenNoChordNote::LATCH_LAST_CHORD
+      ));
+  addParameter
+    (whenSingleChordNote = new juce::AudioParameterChoice
+     ("whenSingleChordNote", "When single chord note",
+      juce::StringArray {"Transpose last chord", "Powerchord", "Use as is", "Silence", "Use patterns as notes"},
+      WhenSingleChordNote::TRANSPOSE_LAST_CHORD
+      ));
+  addParameter (ignoreBlackKeysInPatterns = new juce::AudioParameterBool("ignoreBlackKeysInPatterns", "Ignore black keys in patterns", false));
 }
 
 ArplignerJuceAudioProcessor::~ArplignerJuceAudioProcessor()
@@ -161,16 +176,26 @@ juce::AudioProcessorEditor* ArplignerJuceAudioProcessor::createEditor()
     return new juce::GenericAudioProcessorEditor (*this);
 }
 
-// Store state info
+// Save state info
 void ArplignerJuceAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   auto s = juce::MemoryOutputStream(destData, true);
-  s.writeFloat(*param);
+  s.writeInt(*chordChan);
+  s.writeInt(*firstDegreeCode);
+  s.writeBool(*chordNotesPassthrough);
+  s.writeInt(*whenNoChordNote);
+  s.writeInt(*whenSingleChordNote);
+  s.writeBool(*ignoreBlackKeysInPatterns);
 }
 
 // Reload state info
 void ArplignerJuceAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
   auto s = juce::MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false);
-  *param = s.readFloat();
+  *chordChan = s.readInt();
+  *firstDegreeCode = s.readInt();
+  *chordNotesPassthrough = s.readBool();
+  *whenNoChordNote = s.readInt();
+  *whenSingleChordNote = s.readInt();
+  *ignoreBlackKeysInPatterns = s.readBool();
 }

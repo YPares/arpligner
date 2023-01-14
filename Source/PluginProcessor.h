@@ -59,9 +59,31 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 protected:
-    juce::AudioParameterFloat* param;
+  juce::AudioParameterInt* chordChan;
+  juce::AudioParameterInt* firstDegreeCode;
+  juce::AudioParameterBool* chordNotesPassthrough;
+  juce::AudioParameterChoice* whenNoChordNote;
+  juce::AudioParameterChoice* whenSingleChordNote;
+  juce::AudioParameterBool* ignoreBlackKeysInPatterns;
 
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArplignerJuceAudioProcessor)
 };
+
+namespace WhenNoChordNote {
+enum Enum {
+  LATCH_LAST_CHORD = 0,
+  SILENCE,
+  USE_PATTERN_AS_NOTES
+};
+}
+namespace WhenSingleChordNote {
+enum Enum {
+  TRANSPOSE_LAST_CHORD = 0,
+  POWERCHORD,
+  USE_AS_IS,
+  SILENCE,
+  USE_PATTERN_AS_NOTES
+};
+}

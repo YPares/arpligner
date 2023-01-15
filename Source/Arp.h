@@ -21,7 +21,7 @@ using Counters = HashMap<NoteNumber, int>;
 using Chan = int;
 using Chord = SortedSet<NoteNumber>;
 
-#define IS_NOTE_EVENT(msg) (msg.isNoteOn() || msg.isNoteOff())
+#define IS_NOTE_MESSAGE(msg) (msg.isNoteOn() || msg.isNoteOff())
 
 class Arp : public ArplignerJuceAudioProcessor
 {
@@ -76,12 +76,12 @@ private:
       return x;
   }
   
-  void transformEvent(const Chord& curChord, MidiMessage& ev) {
-    Chan chan = ev.getChannel() - 1;
-    NoteNumber noteCodeIn = ev.getNoteNumber();
+  void processMIDIMessage(const Chord& curChord, MidiMessage& msg) {
+    Chan chan = msg.getChannel() - 1;
+    NoteNumber noteCodeIn = msg.getNoteNumber();
     int numChordNotes = curChord.size();
     int degShift = getDegreeShift(noteCodeIn);
-    if (ev.isNoteOn()) {
+    if (msg.isNoteOn()) {
       int wantedDegree;
       if (degShift >= 0)
 	wantedDegree = degShift % numChordNotes;
@@ -92,10 +92,10 @@ private:
       int wantedOctaveShift = floor((float)degShift / (float)numChordNotes);
       NoteNumber finalNote = curChord[wantedDegree] + 12*wantedOctaveShift;
       curMappings[chan].set(noteCodeIn, finalNote);
-      ev.setNoteNumber(finalNote);
+      msg.setNoteNumber(finalNote);
     }
-    else if (ev.isNoteOff() && curMappings[chan].contains(noteCodeIn)) {
-      ev.setNoteNumber(curMappings[chan][noteCodeIn]);
+    else if (msg.isNoteOff() && curMappings[chan].contains(noteCodeIn)) {
+      msg.setNoteNumber(curMappings[chan][noteCodeIn]);
     }
   }
 
@@ -107,7 +107,7 @@ private:
   
 public:
   void runArp(MidiBuffer& midibuf) {
-    Array<MidiMessage> eventsToProcess, eventsToPassthrough;
+    Array<MidiMessage> messagesToProcess, messagesToPassthrough;
     
     for (auto msgMD : midibuf) {
       auto msg = msgMD.getMessage();
@@ -116,16 +116,16 @@ public:
 	  addChordNote(msg.getNoteNumber());
 	else if(msg.isNoteOff())
 	  rmChordNote(msg.getNoteNumber());
-	if (chordNotesPassthrough->get() || !IS_NOTE_EVENT(msg))
-	  eventsToPassthrough.add(msg);
+	if (chordNotesPassthrough->get() || !IS_NOTE_MESSAGE(msg))
+	  messagesToPassthrough.add(msg);
       }
       else {
-	if (IS_NOTE_EVENT(msg)) {
+	if (IS_NOTE_MESSAGE(msg)) {
 	  if (!(ignoreBlackKeysInPatterns->get() && isBlackKey(msg.getNoteNumber())))
-	    eventsToProcess.add(msg);
+	    messagesToProcess.add(msg);
 	}
 	else
-	  eventsToPassthrough.add(msg);
+	  messagesToPassthrough.add(msg);
       }
     }
 
@@ -143,13 +143,13 @@ public:
 	if (lastChord.size() > 0)
 	  curChord = lastChord; 
 	else // No last chord known. We silence
-	  keepOnlyNoteOffs(eventsToProcess);
+	  keepOnlyNoteOffs(messagesToProcess);
 	break;
       case WhenNoChordNote::USE_PATTERN_AS_NOTES:
 	doProcess = false;
 	break;
       case WhenNoChordNote::SILENCE:
-	keepOnlyNoteOffs(eventsToProcess);
+	keepOnlyNoteOffs(messagesToProcess);
 	break;
       }
       break;
@@ -166,7 +166,7 @@ public:
 	  lastChord = curChord;
 	}
 	else // No last chord known. We silence
-	  keepOnlyNoteOffs(eventsToProcess);
+	  keepOnlyNoteOffs(messagesToProcess);
 	break;
       case WhenSingleChordNote::POWERCHORD:
 	curChord.add(curChord[0] + 7);
@@ -179,7 +179,7 @@ public:
 	doProcess = false;
 	break;
       case WhenSingleChordNote::SILENCE:
-	keepOnlyNoteOffs(eventsToProcess);
+	keepOnlyNoteOffs(messagesToProcess);
 	break;
       }
       break;
@@ -190,15 +190,15 @@ public:
       break;
     };
 
-    // Pass non-processable events through:
-    for (auto ev : eventsToPassthrough)
-      midibuf.addEvent(ev, 0);
+    // Pass non-processable messages through:
+    for (auto msg : messagesToPassthrough)
+      midibuf.addEvent(msg, 0);
 
-    // Process and add processable events:
-    for (auto ev : eventsToProcess) {
+    // Process and add processable messages:
+    for (auto msg : messagesToProcess) {
       if (doProcess)
-	transformEvent(curChord, ev);
-      midibuf.addEvent(ev, 0);
+	processMIDIMessage(curChord, msg);
+      midibuf.addEvent(msg, 0);
     }
   }
 };

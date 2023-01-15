@@ -69,15 +69,15 @@ patterns live on a MIDI keyboard.
 
 ## Installation
 
-Install the VST3 preset in your regular VST3 folder, depending on your system
-and DAW settings. Then if you are using Bitwig, you can use the [Bitwig
-preset](HostPresets/ArplignerJuce.bwpreset) directly[^3].
+Install the VST3 plugin in your regular VST3 folder, depending on your system
+and DAW settings. 
 
-After that, you'll need some way to feed MIDI into Arpligner. If you are using
-the Bitwig preset, place it on the track(s) where the **pattern** MIDI clips
-play. The preset comes with a Note Receiver device on which you can set where it
-should get the chords from (the preset automatically moves each incoming chord
-note to Channel 16).
+After that, you'll need some way to feed MIDI into Arpligner. I recommend placing
+the plugin on the track where the **pattern** MIDI clips play, and then use some
+MIDI routing. With Bitwig for instance, the `Note Receiver` device can do this,
+and you can use the `Channel Map` device in the `Source FX` section to make every
+incoming chord note go to Channel 16. Do not forget to deactivate the `Inputs`
+button in the "Mutes" so that pattern MIDI events from the track pass through too.
 
 ## Tips
 
@@ -156,9 +156,3 @@ are being sent to Arpligner, or you will end up with stuck notes.
 
 [^2]: And if someone ever makes a jazz jam session out of that, definitely
     record it and send me the video ^^
-
-[^3]: See for instance [this video by Mattias
-    Holmgren](https://www.youtube.com/watch?v=siY4ZpNOeCY) for how to use
-    third-party presets with Bitwig. If you are not using Bitwig, then your DAW
-    should have a similar way to save and share presets, and if you ever build
-    one don't hesitate to submit a PR :)

@@ -8,11 +8,11 @@
     <key>CFBundleIconFile</key>
     <string></string>
     <key>CFBundleIdentifier</key>
-    <string>com.Ywen.ArplignerJuce</string>
+    <string>com.Ywen.Arpligner</string>
     <key>CFBundleName</key>
-    <string>ArplignerJuce</string>
+    <string>Arpligner</string>
     <key>CFBundleDisplayName</key>
-    <string>ArplignerJuce</string>
+    <string>Arpligner</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleSignature</key>

@@ -13,15 +13,15 @@
 //==============================================================================
 /**
 */
-class ArplignerJuceAudioProcessor  : public juce::AudioProcessor
+class ArplignerAudioProcessor  : public juce::AudioProcessor
                             #if JucePlugin_Enable_ARA
                              , public juce::AudioProcessorARAExtension
                             #endif
 {
 public:
     //==============================================================================
-    ArplignerJuceAudioProcessor();
-    ~ArplignerJuceAudioProcessor() override;
+    ArplignerAudioProcessor();
+    ~ArplignerAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -68,7 +68,7 @@ protected:
 
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArplignerJuceAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArplignerAudioProcessor)
 };
 
 namespace WhenNoChordNote {

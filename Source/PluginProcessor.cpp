@@ -12,7 +12,7 @@
 #include "PluginProcessor.h"
 
 //==============================================================================
-ArplignerJuceAudioProcessor::ArplignerJuceAudioProcessor()
+ArplignerAudioProcessor::ArplignerAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -42,17 +42,17 @@ ArplignerJuceAudioProcessor::ArplignerJuceAudioProcessor()
   addParameter (ignoreBlackKeysInPatterns = new juce::AudioParameterBool("ignoreBlackKeysInPatterns", "Ignore black keys in patterns", false));
 }
 
-ArplignerJuceAudioProcessor::~ArplignerJuceAudioProcessor()
+ArplignerAudioProcessor::~ArplignerAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String ArplignerJuceAudioProcessor::getName() const
+const juce::String ArplignerAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool ArplignerJuceAudioProcessor::acceptsMidi() const
+bool ArplignerAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -61,7 +61,7 @@ bool ArplignerJuceAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool ArplignerJuceAudioProcessor::producesMidi() const
+bool ArplignerAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -70,7 +70,7 @@ bool ArplignerJuceAudioProcessor::producesMidi() const
    #endif
 }
 
-bool ArplignerJuceAudioProcessor::isMidiEffect() const
+bool ArplignerAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -79,50 +79,50 @@ bool ArplignerJuceAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double ArplignerJuceAudioProcessor::getTailLengthSeconds() const
+double ArplignerAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int ArplignerJuceAudioProcessor::getNumPrograms()
+int ArplignerAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int ArplignerJuceAudioProcessor::getCurrentProgram()
+int ArplignerAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void ArplignerJuceAudioProcessor::setCurrentProgram (int index)
+void ArplignerAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const juce::String ArplignerJuceAudioProcessor::getProgramName (int index)
+const juce::String ArplignerAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void ArplignerJuceAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void ArplignerAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void ArplignerJuceAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void ArplignerAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
 
-void ArplignerJuceAudioProcessor::releaseResources()
+void ArplignerAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool ArplignerJuceAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool ArplignerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -147,7 +147,7 @@ bool ArplignerJuceAudioProcessor::isBusesLayoutSupported (const BusesLayout& lay
 }
 #endif
 
-void ArplignerJuceAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void ArplignerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -166,18 +166,18 @@ void ArplignerJuceAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 }
 
 //==============================================================================
-bool ArplignerJuceAudioProcessor::hasEditor() const
+bool ArplignerAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* ArplignerJuceAudioProcessor::createEditor()
+juce::AudioProcessorEditor* ArplignerAudioProcessor::createEditor()
 {
     return new juce::GenericAudioProcessorEditor (*this);
 }
 
 // Save state info
-void ArplignerJuceAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void ArplignerAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   auto s = juce::MemoryOutputStream(destData, true);
   s.writeInt(*chordChan);
@@ -189,7 +189,7 @@ void ArplignerJuceAudioProcessor::getStateInformation (juce::MemoryBlock& destDa
 }
 
 // Reload state info
-void ArplignerJuceAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void ArplignerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
   auto s = juce::MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false);
   *chordChan = s.readInt();

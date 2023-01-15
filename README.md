@@ -30,6 +30,10 @@ to generate build files for other platforms or other plugin formats. Arpligner
 has no plugin-format-specific or OS-specific code so it should be pretty
 straightforward.
 
+**Important:** Due to [a VST3 limitation](https://forum.juce.com/t/arpeggiatorplugin-vst3-recognized-as-aufio-fx-instead-of-midi-fx/43563),
+Arpligner will be recognized by your DAW as an Audio Fx plugin, whereas it is only a MIDI Fx plugin.
+So if your DAW sorts or filters plugins by categories, you will have to look for Arpligner under this category.
+
 Still experimental, please post issues here in case of bugs or questions! :)
 
 _Note:_ I originally implemented Arpligner as a Lua script for

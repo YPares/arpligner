@@ -23,7 +23,7 @@ using Chord = SortedSet<NoteNumber>;
 
 #define IS_NOTE_MESSAGE(msg) (msg.isNoteOn() || msg.isNoteOff())
 
-class Arp : public ArplignerJuceAudioProcessor
+class Arp : public ArplignerAudioProcessor
 {
 private:
   // #note on - #note off for each note on the chord chan

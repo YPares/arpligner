@@ -41,19 +41,19 @@
  #define JucePlugin_Enable_ARA             0
 #endif
 #ifndef  JucePlugin_Name
- #define JucePlugin_Name                   "ArplignerJuce"
+ #define JucePlugin_Name                   "Arpligner"
 #endif
 #ifndef  JucePlugin_Desc
- #define JucePlugin_Desc                   "ArplignerJuce"
+ #define JucePlugin_Desc                   "Arpligner"
 #endif
 #ifndef  JucePlugin_Manufacturer
  #define JucePlugin_Manufacturer           "Ywen"
 #endif
 #ifndef  JucePlugin_ManufacturerWebsite
- #define JucePlugin_ManufacturerWebsite    "github.com/YPares"
+ #define JucePlugin_ManufacturerWebsite    "https://github.com/YPares"
 #endif
 #ifndef  JucePlugin_ManufacturerEmail
- #define JucePlugin_ManufacturerEmail      ""
+ #define JucePlugin_ManufacturerEmail      "yves.pares@gmail.com"
 #endif
 #ifndef  JucePlugin_ManufacturerCode
  #define JucePlugin_ManufacturerCode       0x5977656e
@@ -101,19 +101,19 @@
  #define JucePlugin_AUSubType              JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_AUExportPrefix
- #define JucePlugin_AUExportPrefix         ArplignerJuceAU
+ #define JucePlugin_AUExportPrefix         ArplignerAU
 #endif
 #ifndef  JucePlugin_AUExportPrefixQuoted
- #define JucePlugin_AUExportPrefixQuoted   "ArplignerJuceAU"
+ #define JucePlugin_AUExportPrefixQuoted   "ArplignerAU"
 #endif
 #ifndef  JucePlugin_AUManufacturerCode
  #define JucePlugin_AUManufacturerCode     JucePlugin_ManufacturerCode
 #endif
 #ifndef  JucePlugin_CFBundleIdentifier
- #define JucePlugin_CFBundleIdentifier     com.Ywen.ArplignerJuce
+ #define JucePlugin_CFBundleIdentifier     com.Ywen.Arpligner
 #endif
 #ifndef  JucePlugin_AAXIdentifier
- #define JucePlugin_AAXIdentifier          com.Ywen.ArplignerJuce
+ #define JucePlugin_AAXIdentifier          com.Ywen.Arpligner
 #endif
 #ifndef  JucePlugin_AAXManufacturerCode
  #define JucePlugin_AAXManufacturerCode    JucePlugin_ManufacturerCode
@@ -137,7 +137,7 @@
  #define JucePlugin_IAASubType             JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_IAAName
- #define JucePlugin_IAAName                "Ywen: ArplignerJuce"
+ #define JucePlugin_IAAName                "Ywen: Arpligner"
 #endif
 #ifndef  JucePlugin_VSTNumMidiInputs
  #define JucePlugin_VSTNumMidiInputs       16
@@ -152,10 +152,10 @@
  #define JucePlugin_ARATransformationFlags  0
 #endif
 #ifndef  JucePlugin_ARAFactoryID
- #define JucePlugin_ARAFactoryID           "com.Ywen.ArplignerJuce.factory"
+ #define JucePlugin_ARAFactoryID           "com.Ywen.Arpligner.factory"
 #endif
 #ifndef  JucePlugin_ARADocumentArchiveID
- #define JucePlugin_ARADocumentArchiveID   "com.Ywen.ArplignerJuce.aradocumentarchive.0.1"
+ #define JucePlugin_ARADocumentArchiveID   "com.Ywen.Arpligner.aradocumentarchive.0.1"
 #endif
 #ifndef  JucePlugin_ARACompatibleArchiveIDs
  #define JucePlugin_ARACompatibleArchiveIDs  ""

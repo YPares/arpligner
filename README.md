@@ -21,26 +21,7 @@ charge of how to layout those chords[^2].
 See https://youtu.be/IQ9GFEaS4Ag for an overview of the tool and the basic
 features (this uses the original Lua script but the video remains valid).
 
-Arpligner is implemented in C++ with [JUCE 7](https://juce.com/), and therefore
-supports a variety of systems and plugin formats. For now, I'm providing VST3
-builds for Linux and Windows (x86_64), but you can have a look under the
-`Builds` folder for supported platforms. The [project file](ArplignerJuce.jucer)
-for [Projucer](https://juce.com/discover/projucer) is also provided if you want
-to generate build files for other platforms or other plugin formats. Arpligner
-has no plugin-format-specific or OS-specific code so it should be pretty
-straightforward.
-
-**Important:** Due to [a VST3 limitation](https://forum.juce.com/t/arpeggiatorplugin-vst3-recognized-as-aufio-fx-instead-of-midi-fx/43563),
-Arpligner will be recognized by your DAW as an Audio Fx plugin, whereas it is only a MIDI Fx plugin.
-So if your DAW sorts or filters plugins by categories, you will have to look for Arpligner under this category.
-
 Still experimental, please post issues here in case of bugs or questions! :)
-
-_Note:_ I originally implemented Arpligner as a Lua script for
-[Protoplug](https://www.osar.fr/protoplug/), but switched to direct use of JUCE
-7 for maintainability and VST3 support. The original script can be found in
-[`ProtoplugArpligner.lua`](ProtoplugArpligner.lua) but I should no longer be
-maintaining it.
 
 ## How to use it
 
@@ -69,8 +50,16 @@ patterns live on a MIDI keyboard.
 
 ## Installation
 
-Install the VST3 plugin in your regular VST3 folder, depending on your system
-and DAW settings. 
+Please go to the [releases](https://github.com/YPares/arpligner/releases) (unfold the "Assets" section)
+to download the latest release. Alternatively, this repository comes with all the needed code
+to build the plugin and standalone application.
+
+Then install the VST3 plugin in your regular VST3 folder, depending on your system
+and DAW settings.
+
+**Important:** Due to [a VST3 limitation](https://forum.juce.com/t/arpeggiatorplugin-vst3-recognized-as-aufio-fx-instead-of-midi-fx/43563),
+Arpligner will be recognized by your DAW as an Audio Fx plugin, whereas it is only a MIDI Fx plugin.
+So if your DAW sorts or filters plugins by categories, you will have to look for Arpligner under this category.
 
 After that, you'll need some way to feed MIDI into Arpligner. I recommend placing
 the plugin on the track where the **pattern** MIDI clips play, and then use some
@@ -78,6 +67,23 @@ MIDI routing. With Bitwig for instance, the `Note Receiver` device can do this,
 and you can use the `Channel Map` device in the `Source FX` section to make every
 incoming chord note go to Channel 16. Do not forget to deactivate the `Inputs`
 button in the "Mutes" so that pattern MIDI events from the track pass through too.
+
+## Implementation & supported plugin formats
+
+Arpligner is implemented in C++ with [JUCE 7](https://juce.com/), and therefore
+should support a variety of systems and plugin formats. For now, I'm providing VST3
+builds for Linux and Windows x64, but you can have a look under the
+`Builds` folder for supported platforms. The [project file](Arpligner.jucer)
+for [Projucer](https://juce.com/discover/projucer) is also provided if you want
+to generate build files for other platforms or other plugin formats. Arpligner
+has no plugin-format-specific or OS-specific code so it should be pretty
+straightforward.
+
+I originally implemented Arpligner as a Lua script for
+[Protoplug](https://www.osar.fr/protoplug/), but switched to direct use of JUCE
+7 for maintainability and VST3 support. The original script can be found in
+[`ProtoplugArpligner.lua`](ProtoplugArpligner.lua) but I should no longer be
+maintaining it.
 
 ## Tips
 
@@ -111,8 +117,7 @@ button in the "Mutes" so that pattern MIDI events from the track pass through to
 
 ## Available settings
 
-Arpligner's GUI shows a few parameters, and exposes them to the host. How to
-view and set them depends on your DAW.
+Arpligner's GUI shows a few parameters, and exposes them to the host.
 
 **IMPORTANT**: Most of these are meant to be set once, not automated or
 anything. I strongly advise you not to change these parameters while MIDI notes

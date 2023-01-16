@@ -25,15 +25,27 @@ Still experimental, please post issues here in case of bugs or questions! :)
 
 ## How to use it
 
-Arpligner expects to be fed MIDI data on at least 2 channels:
+Arpligner has two modes: Single-instance and Multi-instance.
 
-- Channel 16, which will be treated as the "chord" channel
+In Single-instance mode, Arpligner expects to be fed MIDI data on at least 2
+channels:
+
+- Channel 16, which will be treated as the "chord" channel ("track")
 - One channel (or more) from 1 to 15, which will be treated as a "pattern"
-  channel
+  channel ("track")
 
-This script will interpret "notes" playing on **pattern** channels as the
-degrees of the chord which is currently playing on the **chord**
-channel. Starting from C3 and going up:
+In Multi-instance mode, several Arpligner plugins in your DAW session can
+communicate with one another. You would then have one Arpligner instance per
+track, one being configured as the "Global chord track", and the other ones as
+"Pattern tracks". MIDI channels no longer matter in that mode.
+
+Single-instance has the advantage of requiring a bit less CPU and
+RAM. Multi-instance has the advantage of alleviating MIDI routing configuration
+in your DAW, and is not limited by the number of MIDI channels.
+
+Then whatever the mode, Arpligner will interpret "notes" playing on **pattern**
+tracks as the degrees of the chord which is currently playing on the **chord**
+track. Starting from C3 and going up:
 
 - C3 means "first chord degree"
 - C#3 means "second chord degree"
@@ -48,6 +60,7 @@ You can also select that only the white keys will be used here ([see the
 settings](#available-settings)), which can be more convenient when playing
 patterns live on a MIDI keyboard.
 
+
 ## Installation
 
 Please go to the [releases](https://github.com/YPares/arpligner/releases) (unfold the "Assets" section)
@@ -61,12 +74,13 @@ and DAW settings.
 Arpligner will be recognized by your DAW as an Audio Fx plugin, whereas it is only a MIDI Fx plugin.
 So if your DAW sorts or filters plugins by categories, you will have to look for Arpligner under this category.
 
-After that, you'll need some way to feed MIDI into Arpligner. I recommend placing
-the plugin on the track where the **pattern** MIDI clips play, and then use some
-MIDI routing. With Bitwig for instance, the `Note Receiver` device can do this,
-and you can use the `Channel Map` device in the `Source FX` section to make every
-incoming chord note go to Channel 16. Do not forget to deactivate the `Inputs`
-button in the "Mutes" so that pattern MIDI events from the track pass through too.
+After that, if you use the Single-instance mode, you'll need some way to feed
+MIDI into Arpligner. I recommend placing the plugin on the track where the
+**pattern** MIDI clips play, and then use some MIDI routing. With Bitwig for
+instance, the `Note Receiver` device can do this, and you can use the `Channel
+Map` device in the `Source FX` section to make every incoming chord note go to
+Channel 16. Do not forget to deactivate the `Inputs` button in the "Mutes" so
+that pattern MIDI events from the track pass through too.
 
 ## Implementation & supported plugin formats
 
@@ -125,7 +139,12 @@ are being sent to Arpligner, or you will end up with stuck notes.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
-|**Chord channel**|`16`|Number between `1` and `16`|The channel to treat as chord channel. All other incoming channels with be considered pattern channels|
+|**Instance behaviour**|`Single-instance: Chords on chan 16`|Choose from:|The main behaviour of this Arpligner instance|
+| | |`Bypass`|Do nothing and just pass MIDI events through|
+| | |`Single-instance: Chord on chan XX`|Sets to Single-instance mode, and use channel `XX` as the chord channel (and any other channel as a pattern channel)|
+| | |`Multi-instance: Global chord track`|Sets this instance as the one that receives chord notes (any MIDI input, whatever its channel) and sets the current chord for all other connected instances|
+| | |`Multi-instance: Pattern track`|Sets this instance as a "follower" of the one set to `Global chord`. Any MIDI input, whatever its channel, is considered a pattern|
+| | |`Multi-instance: Pattern track (delayed by 1 buffer)`|Like the above, but can help in cases where chord notes begin at the exact same moment as pattern notes. It makes sure the `Global chord` instance properly updates the currently playing chord before `Pattern` instances run|
 |**First degree MIDI code**|`60` (C3)|Number between `0` and `127`|On pattern channels, the "reference note", the one to consider as "1st degree of the currently playing chord"
 |**Chord notes passthrough**|`Off`|`On` or `Off`|Whether note events on the chord channel should pass through instead of being consumed. Non-note events (such as CCs) on the chord channel will **always** pass through|
 |**When no chord note**|`Latch last chord`|Choose from:|What to do when **no** note is playing on the chord channel|

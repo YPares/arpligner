@@ -26,7 +26,7 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
 {
   auto behVals = juce::StringArray {"Bypass"};
   for (int i=1; i<=16; i++)
-    behVals.add("Single instance: Chords on chan " + std::to_string(i));
+    behVals.add("Single-instance: Chords on chan " + std::to_string(i));
   behVals.add("Multi-instance: Global chord track");
   behVals.add("Multi-instance: Pattern track");
   behVals.add("Multi-instance: Pattern track (delayed by 1 buffer)");

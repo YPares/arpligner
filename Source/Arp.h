@@ -23,37 +23,134 @@ using Chord = SortedSet<NoteNumber>;
 
 #define IS_NOTE_MESSAGE(msg) (msg.isNoteOn() || msg.isNoteOff())
 
-class Arp : public ArplignerAudioProcessor
-{
+template<class CritSec = CriticalSection>
+class ChordStore {
 private:
-  // #note on - #note off for each note on the chord chan
-  Counters counters;
-  Chord lastChord;
-
-  // On each pattern chan, to which note is currently mapped each incoming NoteNumber
-  HashMap<NoteNumber, NoteNumber> curMappings[16];
-
+  Counters mCounters;
+  Chord mCurrentChord;
+  bool mShouldProcess;
+  bool mShouldSilence;
+  CritSec mObjectLock;
+  
+public:
+  ChordStore() : mShouldProcess(true), mShouldSilence(false) {
+  }
+  
   void addChordNote(NoteNumber nn) {
-    if(!counters.contains(nn))
-      counters.set(nn, 1);
+    const ScopedLock lock(mObjectLock);
+    
+    if(!mCounters.contains(nn))
+      mCounters.set(nn, 1);
     else
-      counters.set(nn, counters[nn]+1);
+      mCounters.set(nn, mCounters[nn]+1);
   }
 
   void rmChordNote(NoteNumber nn) {
-    if(counters.contains(nn))
-      counters.set(nn, counters[nn]-1);
-    if(counters[nn] <= 0)
-      counters.remove(nn);
+    const ScopedLock lock(mObjectLock);
+    
+    if(mCounters.contains(nn))
+      mCounters.set(nn, mCounters[nn]-1);
+    if(mCounters[nn] <= 0)
+      mCounters.remove(nn);
   }
 
-  Chord getCurChord() {
-    Chord s;
-    for (Counters::Iterator i(counters); i.next();) {
-      s.add(i.getKey());
+  void updateCurrentChord(WhenNoChordNote::Enum whenNoChordNoteVal,
+			  WhenSingleChordNote::Enum whenSingleChordNoteVal) {
+    const ScopedLock lock(mObjectLock);
+
+    mShouldSilence = false;
+    mShouldProcess = true;
+    
+    Chord newChord;
+    for (Counters::Iterator i(mCounters); i.next();) {
+      newChord.add(i.getKey());
     }
-    return s;
+    
+    switch (newChord.size()) {
+    case 0:
+      // No chord notes
+      switch (whenNoChordNoteVal) {
+      case WhenNoChordNote::LATCH_LAST_CHORD:
+	if (mCurrentChord.size() == 0)
+	  // No last chord known. We silence
+	  mShouldSilence = true;
+	break;
+      case WhenNoChordNote::USE_PATTERN_AS_NOTES:
+	mShouldProcess = false;
+	break;
+      case WhenNoChordNote::SILENCE:
+	mShouldSilence = true;
+	break;
+      }
+      break;
+      
+    case 1:
+      // Just 1 chord note
+      switch (whenSingleChordNoteVal) {
+      case WhenSingleChordNote::TRANSPOSE_LAST_CHORD:
+	if (mCurrentChord.size() > 0) {
+	  int offset = newChord[0] - mCurrentChord[0];
+	  newChord.clear();
+	  for (NoteNumber nn : mCurrentChord)
+	    newChord.add(nn+offset);
+	  mCurrentChord = newChord;
+	}
+	else // No last chord known. We silence
+	  mShouldSilence = true;
+	break;
+      case WhenSingleChordNote::POWERCHORD:
+	newChord.add(newChord[0] + 7);
+	mCurrentChord = newChord;
+	break;
+      case WhenSingleChordNote::USE_AS_IS:
+	mCurrentChord = newChord;
+	break;
+      case WhenSingleChordNote::USE_PATTERN_AS_NOTES:
+	mShouldProcess = false;
+	break;
+      case WhenSingleChordNote::SILENCE:
+	mShouldSilence = true;
+	break;
+      }
+      break;
+
+    default:
+      // "Normal" case: 2 chords notes or more
+      mCurrentChord = newChord;
+      break;
+    };
   }
+
+  Chord getCurrentChord() {
+    return mCurrentChord;
+  }
+
+  bool shouldProcess() {
+    return mShouldProcess;
+  }
+
+  bool shouldSilence() {
+    return mShouldSilence;
+  }
+};
+
+// Used in a multi-instance configuration
+class GlobalChordStore : public ChordStore<> {
+public:
+  ~GlobalChordStore() {
+    clearSingletonInstance();
+  }
+
+  JUCE_DECLARE_SINGLETON(GlobalChordStore, false);
+};
+
+
+class Arp : public ArplignerAudioProcessor {
+private:
+  ChordStore<> localChordStore;
+  
+  // On each pattern chan, to which note is currently mapped each incoming NoteNumber
+  HashMap<NoteNumber, NoteNumber> curMappings[16];
 
   bool isBlackKey(NoteNumber nn) {
     int r = nn % 12;
@@ -98,24 +195,33 @@ private:
       msg.setNoteNumber(curMappings[chan][noteCodeIn]);
     }
   }
-
-  void keepOnlyNoteOffs(Array<MidiMessage>& arr) {
-    arr.removeIf ([](const MidiMessage& msg){
-      return !msg.isNoteOff();
-    });
-  }
   
 public:
   void runArp(MidiBuffer& midibuf) {
-    Array<MidiMessage> messagesToProcess, messagesToPassthrough;
+    auto behaviour = instanceBehaviour->getIndex();
+    if (behaviour == InstanceBehaviour::BYPASS)
+      return;
     
+    Array<MidiMessage> messagesToProcess, messagesToPassthrough;
+    ChordStore<>* chordStore;
+    
+    if (behaviour < InstanceBehaviour::IS_GLOBAL_CHORD_TRACK)
+      // We read chords from MIDI channel indicated by instanceBehaviour and use
+      // the local chord store
+      chordStore = &localChordStore;
+    else
+      // We read chord from the global chord store
+      chordStore = GlobalChordStore::getInstance();
+
     for (auto msgMD : midibuf) {
       auto msg = msgMD.getMessage();
-      if (msg.getChannel() == chordChan->get()) {
+      if (behaviour == InstanceBehaviour::IS_GLOBAL_CHORD_TRACK ||
+	  behaviour < InstanceBehaviour::IS_GLOBAL_CHORD_TRACK &&
+	  msg.getChannel() == behaviour) {
 	if (msg.isNoteOn())
-	  addChordNote(msg.getNoteNumber());
+	  chordStore->addChordNote(msg.getNoteNumber());
 	else if(msg.isNoteOff())
-	  rmChordNote(msg.getNoteNumber());
+	  chordStore->rmChordNote(msg.getNoteNumber());
 	if (chordNotesPassthrough->get() || !IS_NOTE_MESSAGE(msg))
 	  messagesToPassthrough.add(msg);
       }
@@ -131,73 +237,24 @@ public:
 
     midibuf.clear();
 
-    auto curChord = getCurChord();
-    auto doProcess = true;
-    DBG("Cur chord size: " << curChord.size());
+    if (behaviour <= InstanceBehaviour::IS_GLOBAL_CHORD_TRACK)
+      chordStore->updateCurrentChord
+	((WhenNoChordNote::Enum)whenNoChordNote->getIndex(),
+	 (WhenSingleChordNote::Enum)whenSingleChordNote->getIndex());
+
+    if (chordStore->shouldSilence())
+      messagesToProcess.removeIf ([](auto& msg){
+	return !msg.isNoteOff();
+      });
     
-    switch (curChord.size()) {
-    case 0:
-      // No chord notes
-      switch (whenNoChordNote->getIndex()) {
-      case WhenNoChordNote::LATCH_LAST_CHORD:
-	if (lastChord.size() > 0)
-	  curChord = lastChord; 
-	else // No last chord known. We silence
-	  keepOnlyNoteOffs(messagesToProcess);
-	break;
-      case WhenNoChordNote::USE_PATTERN_AS_NOTES:
-	doProcess = false;
-	break;
-      case WhenNoChordNote::SILENCE:
-	keepOnlyNoteOffs(messagesToProcess);
-	break;
-      }
-      break;
-      
-    case 1:
-      // Just 1 chord note
-      switch (whenSingleChordNote->getIndex()) {
-      case WhenSingleChordNote::TRANSPOSE_LAST_CHORD:
-	if (lastChord.size() > 0) {
-	  int offset = curChord[0] - lastChord[0];
-	  curChord.clear();
-	  for (NoteNumber nn : lastChord)
-	    curChord.add(nn+offset);
-	  lastChord = curChord;
-	}
-	else // No last chord known. We silence
-	  keepOnlyNoteOffs(messagesToProcess);
-	break;
-      case WhenSingleChordNote::POWERCHORD:
-	curChord.add(curChord[0] + 7);
-	lastChord = curChord;
-	break;
-      case WhenSingleChordNote::USE_AS_IS:
-	lastChord = curChord;
-	break;
-      case WhenSingleChordNote::USE_PATTERN_AS_NOTES:
-	doProcess = false;
-	break;
-      case WhenSingleChordNote::SILENCE:
-	keepOnlyNoteOffs(messagesToProcess);
-	break;
-      }
-      break;
-
-    default:
-      // "Normal" case: 2 chords notes or more
-      lastChord = curChord;
-      break;
-    };
-
     // Pass non-processable messages through:
     for (auto msg : messagesToPassthrough)
       midibuf.addEvent(msg, 0);
 
     // Process and add processable messages:
     for (auto msg : messagesToProcess) {
-      if (doProcess)
-	processMIDIMessage(curChord, msg);
+      if (chordStore->shouldProcess())
+	processMIDIMessage(chordStore->getCurrentChord(), msg);
       midibuf.addEvent(msg, 0);
     }
   }

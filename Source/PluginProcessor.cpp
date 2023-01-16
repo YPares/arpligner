@@ -24,7 +24,14 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
                        )
 #endif
 {
-  addParameter (chordChan = new juce::AudioParameterInt ("chordChan", "Chord channel", 1, 16, 16));
+  auto behVals = juce::StringArray {"Bypass"};
+  for (int i=1; i<=16; i++)
+    behVals.add("Single instance: Chords on chan " + std::to_string(i));
+  behVals.add("Multi-instance: Global chord track");
+  behVals.add("Multi-instance: Pattern track");
+  addParameter
+    (instanceBehaviour = new juce::AudioParameterChoice
+     ("chordChan", "Instance behaviour", behVals, 16));
   addParameter (firstDegreeCode = new juce::AudioParameterInt ("firstDegreeCode", "First degree MIDI code", 0, 127, 60));
   addParameter (chordNotesPassthrough = new juce::AudioParameterBool("chordNotesPassthrough", "Chord notes passthrough", false));
   addParameter
@@ -180,7 +187,7 @@ juce::AudioProcessorEditor* ArplignerAudioProcessor::createEditor()
 void ArplignerAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
   auto s = juce::MemoryOutputStream(destData, true);
-  s.writeInt(*chordChan);
+  s.writeInt(*instanceBehaviour);
   s.writeInt(*firstDegreeCode);
   s.writeBool(*chordNotesPassthrough);
   s.writeInt(*whenNoChordNote);
@@ -192,7 +199,7 @@ void ArplignerAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 void ArplignerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
   auto s = juce::MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false);
-  *chordChan = s.readInt();
+  *instanceBehaviour = s.readInt();
   *firstDegreeCode = s.readInt();
   *chordNotesPassthrough = s.readBool();
   *whenNoChordNote = s.readInt();

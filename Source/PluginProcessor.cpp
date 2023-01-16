@@ -29,6 +29,7 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
     behVals.add("Single instance: Chords on chan " + std::to_string(i));
   behVals.add("Multi-instance: Global chord track");
   behVals.add("Multi-instance: Pattern track");
+  behVals.add("Multi-instance: Pattern track (delayed by 1 buffer)");
   addParameter
     (instanceBehaviour = new juce::AudioParameterChoice
      ("chordChan", "Instance behaviour", behVals, 16));

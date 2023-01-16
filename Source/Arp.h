@@ -147,7 +147,8 @@ public:
 
 class Arp : public ArplignerAudioProcessor {
 private:
-  ChordStore<> localChordStore;
+  ChordStore<> mLocalChordStore;
+  Array<MidiMessage> mLastBufferMessagesToProcess;
   
   // On each pattern chan, to which note is currently mapped each incoming NoteNumber
   HashMap<NoteNumber, NoteNumber> curMappings[16];
@@ -208,9 +209,9 @@ public:
     if (behaviour < InstanceBehaviour::IS_GLOBAL_CHORD_TRACK)
       // We read chords from MIDI channel indicated by instanceBehaviour and use
       // the local chord store
-      chordStore = &localChordStore;
+      chordStore = &mLocalChordStore;
     else
-      // We read chord from the global chord store
+      // We read chords from the global chord store
       chordStore = GlobalChordStore::getInstance();
 
     for (auto msgMD : midibuf) {
@@ -236,12 +237,15 @@ public:
     }
 
     midibuf.clear();
-
+    
     if (behaviour <= InstanceBehaviour::IS_GLOBAL_CHORD_TRACK)
       chordStore->updateCurrentChord
 	((WhenNoChordNote::Enum)whenNoChordNote->getIndex(),
 	 (WhenSingleChordNote::Enum)whenSingleChordNote->getIndex());
-
+    else if (behaviour == InstanceBehaviour::IS_PATTERN_TRACK_DELAY_1_BUFFER) {
+      messagesToProcess.swapWith(mLastBufferMessagesToProcess);
+    }
+    
     if (chordStore->shouldSilence())
       messagesToProcess.removeIf ([](auto& msg){
 	return !msg.isNoteOff();

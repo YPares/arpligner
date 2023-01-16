@@ -8,6 +8,8 @@
               companyName="Ywen" version="0.1" companyEmail="yves.pares@gmail.com">
   <MAINGROUP id="aeHVfg" name="Arpligner">
     <GROUP id="{51850156-10C9-7B38-13DC-14989B0CF4FE}" name="Source">
+      <FILE id="egytYZ" name="ChordStore.cpp" compile="1" resource="0" file="Source/ChordStore.cpp"/>
+      <FILE id="iptsnH" name="ChordStore.h" compile="0" resource="0" file="Source/ChordStore.h"/>
       <FILE id="SksxYR" name="Arp.cpp" compile="1" resource="0" file="Source/Arp.cpp"/>
       <FILE id="OCahMI" name="Arp.h" compile="0" resource="0" file="Source/Arp.h"/>
       <FILE id="Fnl4NP" name="PluginProcessor.cpp" compile="1" resource="0"

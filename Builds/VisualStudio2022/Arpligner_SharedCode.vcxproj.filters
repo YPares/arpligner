@@ -577,6 +577,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\ChordStore.cpp">
+      <Filter>Arpligner\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Arp.cpp">
       <Filter>Arpligner\Source</Filter>
     </ClCompile>
@@ -2907,6 +2910,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\ChordStore.h">
+      <Filter>Arpligner\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Arp.h">
       <Filter>Arpligner\Source</Filter>
     </ClInclude>

@@ -59,7 +59,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 protected:
-  juce::AudioParameterInt* chordChan;
+  juce::AudioParameterChoice* instanceBehaviour;
   juce::AudioParameterInt* firstDegreeCode;
   juce::AudioParameterBool* chordNotesPassthrough;
   juce::AudioParameterChoice* whenNoChordNote;
@@ -70,6 +70,19 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArplignerAudioProcessor)
 };
+
+namespace InstanceBehaviour {
+enum Enum {
+  // Values between 1 & 16 are for isolated instance behaviour, where the value
+  // indicates the midi channel corresponding to the chord track. Values of 16+
+  // are for when using multiple instances of Arpligner, one being the chord
+  // track.
+  BYPASS = 0,
+  IS_GLOBAL_CHORD_TRACK = 17,
+  IS_PATTERN_TRACK,
+  IS_PATTERN_TRACK_DELAY_1_BUFFER
+};
+}
 
 namespace WhenNoChordNote {
 enum Enum {

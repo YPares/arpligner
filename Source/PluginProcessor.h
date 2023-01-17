@@ -60,7 +60,7 @@ public:
 
 protected:
   juce::AudioParameterChoice* instanceBehaviour;
-  juce::AudioParameterInt* firstDegreeCode;
+  juce::AudioParameterChoice* firstDegreeCode;
   juce::AudioParameterBool* chordNotesPassthrough;
   juce::AudioParameterChoice* whenNoChordNote;
   juce::AudioParameterChoice* whenSingleChordNote;
@@ -70,6 +70,7 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArplignerAudioProcessor)
 };
+
 
 namespace InstanceBehaviour {
 enum Enum {
@@ -91,6 +92,7 @@ enum Enum {
   USE_PATTERN_AS_NOTES
 };
 }
+
 namespace WhenSingleChordNote {
 enum Enum {
   TRANSPOSE_LAST_CHORD = 0,

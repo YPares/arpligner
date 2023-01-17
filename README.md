@@ -25,9 +25,9 @@ Still experimental, please post issues here in case of bugs or questions! :)
 
 ## How to use it
 
-Arpligner has two modes: Single-instance and Multi-instance.
+Arpligner has two modes: Multi-channel and Multi-instance.
 
-In Single-instance mode, Arpligner expects to be fed MIDI data on at least 2
+In Multi-channel mode, Arpligner expects to be fed MIDI data on at least 2
 channels:
 
 - Channel 16, which will be treated as the "chord" channel ("track")
@@ -39,7 +39,7 @@ communicate with one another. You would then have one Arpligner instance per
 track, one being configured as the "Global chord track", and the other ones as
 "Pattern tracks". MIDI channels no longer matter in that mode.
 
-Single-instance has the advantage of requiring a bit less CPU and
+Multi-channel has the advantage of requiring a bit less CPU and
 RAM. Multi-instance has the advantage of alleviating MIDI routing configuration
 in your DAW, and is not limited by the number of MIDI channels.
 
@@ -74,7 +74,7 @@ and DAW settings.
 Arpligner will be recognized by your DAW as an Audio Fx plugin, whereas it is only a MIDI Fx plugin.
 So if your DAW sorts or filters plugins by categories, you will have to look for Arpligner under this category.
 
-After that, if you use the Single-instance mode, you'll need some way to feed
+After that, if you use the Multi-channel mode, you'll need some way to feed
 MIDI into Arpligner. I recommend placing the plugin on the track where the
 **pattern** MIDI clips play, and then use some MIDI routing. With Bitwig for
 instance, the `Note Receiver` device can do this, and you can use the `Channel
@@ -139,13 +139,13 @@ are being sent to Arpligner, or you will end up with stuck notes.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
-|**Instance behaviour**|`Single-instance: Chords on chan 16`|Choose from:|The main behaviour of this Arpligner instance|
+|**Instance behaviour**|`[Multi-chan] Chords on chan 16`|Choose from:|The main behaviour of this Arpligner instance|
 | | |`Bypass`|Do nothing and just pass MIDI events through|
-| | |`Single-instance: Chord on chan XX`|Sets to Single-instance mode, and use channel `XX` as the chord channel (and any other channel as a pattern channel)|
-| | |`Multi-instance: Global chord track`|Sets this instance as the one that receives chord notes (any MIDI input, whatever its channel) and sets the current chord for all other connected instances|
-| | |`Multi-instance: Pattern track`|Sets this instance as a "follower" of the one set to `Global chord`. Any MIDI input, whatever its channel, is considered a pattern|
-| | |`Multi-instance: Pattern track (delayed by 1 buffer)`|Like the above, but can help in cases where chord notes begin at the exact same moment as pattern notes. It makes sure the `Global chord` instance properly updates the currently playing chord before `Pattern` instances run|
-|**First degree MIDI code**|`60` (C3)|Number between `0` and `127`|On pattern channels, the "reference note", the one to consider as "1st degree of the currently playing chord"
+| | |`[Multi-chan] Chords on chan XX`|Sets to Multi-channel mode, and use channel `XX` as the chord channel (and any other channel as a pattern channel)|
+| | |`[Multi-instance] Global chord track`|Sets this instance as the one that receives chord notes (any MIDI input, whatever its channel) and sets the current chord for all other connected instances|
+| | |`[Multi-instance] Pattern track`|Sets this instance as a "follower" of the one set to `Global chord`. Any MIDI input, whatever its channel, is considered a pattern|
+| | |`[Multi-instance] Pattern track (delayed by 1 buffer)`|Like the above, but can help in cases where chord notes begin at the exact same moment as pattern notes. It makes sure the `Global chord` instance properly updates the currently playing chord before `Pattern` instances run|
+|**First degree MIDI note**|`60 (C3)`|A MIDI note|On pattern channels, the "reference note", the one to consider as "1st degree of the currently playing chord"
 |**Chord notes passthrough**|`Off`|`On` or `Off`|Whether note events on the chord channel should pass through instead of being consumed. Non-note events (such as CCs) on the chord channel will **always** pass through|
 |**When no chord note**|`Latch last chord`|Choose from:|What to do when **no** note is playing on the chord channel|
 | | |`Latch last chord`|Keep using the previous chord that played (`Silence` if no previous chord is known)|

@@ -26,14 +26,17 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
 {
   auto behVals = juce::StringArray {"Bypass"};
   for (int i=1; i<=16; i++)
-    behVals.add("Single-instance: Chords on chan " + std::to_string(i));
-  behVals.add("Multi-instance: Global chord track");
-  behVals.add("Multi-instance: Pattern track");
-  behVals.add("Multi-instance: Pattern track (delayed by 1 buffer)");
+    behVals.add(juce::String("[Multi-chan] Chords on chan ") + juce::String(i));
+  behVals.add("[Multi-instance] Global chord track");
+  behVals.add("[Multi-instance] Pattern track");
+  behVals.add("[Multi-instance] Pattern track (delayed by 1 buffer)");
   addParameter
     (instanceBehaviour = new juce::AudioParameterChoice
      ("chordChan", "Instance behaviour", behVals, 16));
-  addParameter (firstDegreeCode = new juce::AudioParameterInt ("firstDegreeCode", "First degree MIDI code", 0, 127, 60));
+  juce::StringArray notes;
+  for (int i=0; i<=127; i++)
+    notes.add(juce::String(i) + " (" + juce::MidiMessage::getMidiNoteName(i,true,true,3) + ")");
+  addParameter (firstDegreeCode = new juce::AudioParameterChoice ("firstDegreeCode", "First degree MIDI note", notes, 60));
   addParameter (chordNotesPassthrough = new juce::AudioParameterBool("chordNotesPassthrough", "Chord notes passthrough", false));
   addParameter
     (whenNoChordNote = new juce::AudioParameterChoice

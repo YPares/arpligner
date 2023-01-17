@@ -70,7 +70,7 @@ void Arp::runArp(MidiBuffer& midibuf) {
     }
     else {
 	if (IS_NOTE_MESSAGE(msg)) {
-	  if (!(ignoreBlackKeysInPatterns->get() && isBlackKey(msg.getNoteNumber())))
+	  if (!(ignoreBlackKeysInPatterns->get() && MidiMessage::isMidiNoteBlack(msg.getNoteNumber())))
 	    messagesToProcess.add(msg);
 	}
 	else

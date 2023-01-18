@@ -10,6 +10,7 @@
 */
 
 #include "PluginProcessor.h"
+#include "ChordStore.h"
 
 //==============================================================================
 ArplignerAudioProcessor::ArplignerAudioProcessor()
@@ -24,6 +25,8 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
                        )
 #endif
 {
+  bool globalChordStoreExists = GlobalChordStore::getInstanceWithoutCreating() != NULL;
+  
   auto behVals = juce::StringArray {"Bypass"};
   for (int i=1; i<=16; i++)
     behVals.add(juce::String("[Multi-chan] Chords on chan ") + juce::String(i));
@@ -32,24 +35,30 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   behVals.add("[Multi-instance] Pattern track (delayed by 1 buffer)");
   addParameter
     (instanceBehaviour = new juce::AudioParameterChoice
-     ("chordChan", "Instance behaviour", behVals, 16));
+     ("chordChan", "Instance behaviour", behVals,
+      globalChordStoreExists ? InstanceBehaviour::IS_PATTERN_TRACK : 16));
+  
   juce::StringArray notes;
   for (int i=0; i<=127; i++)
     notes.add(juce::String(i) + " (" + juce::MidiMessage::getMidiNoteName(i,true,true,3) + ")");
   addParameter (firstDegreeCode = new juce::AudioParameterChoice ("firstDegreeCode", "First degree MIDI note", notes, 60));
+  
   addParameter (chordNotesPassthrough = new juce::AudioParameterBool("chordNotesPassthrough", "Chord notes passthrough", false));
+  
   addParameter
     (whenNoChordNote = new juce::AudioParameterChoice
      ("whenNoChordNote", "When no chord note",
       juce::StringArray {"Latch last chord", "Silence", "Use patterns as notes"},
       WhenNoChordNote::LATCH_LAST_CHORD
       ));
+  
   addParameter
     (whenSingleChordNote = new juce::AudioParameterChoice
      ("whenSingleChordNote", "When single chord note",
       juce::StringArray {"Transpose last chord", "Powerchord", "Use as is", "Silence", "Use patterns as notes"},
       WhenSingleChordNote::TRANSPOSE_LAST_CHORD
       ));
+  
   addParameter (ignoreBlackKeysInPatterns = new juce::AudioParameterBool("ignoreBlackKeysInPatterns", "Ignore black keys in patterns", false));
 }
 

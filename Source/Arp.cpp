@@ -59,22 +59,22 @@ void Arp::runArp(MidiBuffer& midibuf) {
   for (auto msgMD : midibuf) {
     auto msg = msgMD.getMessage();
     if (behaviour == InstanceBehaviour::IS_GLOBAL_CHORD_TRACK ||
-	  behaviour < InstanceBehaviour::IS_GLOBAL_CHORD_TRACK &&
-	  msg.getChannel() == behaviour) {
-	if (msg.isNoteOn())
-	  chordStore->addChordNote(msg.getNoteNumber());
-	else if(msg.isNoteOff())
-	  chordStore->rmChordNote(msg.getNoteNumber());
-	if (chordNotesPassthrough->get() || !IS_NOTE_MESSAGE(msg))
-	  messagesToPassthrough.add(msg);
+	behaviour < InstanceBehaviour::IS_GLOBAL_CHORD_TRACK &&
+	msg.getChannel() == behaviour) {
+      if (msg.isNoteOn())
+	chordStore->addChordNote(msg.getNoteNumber());
+      else if(msg.isNoteOff())
+	chordStore->rmChordNote(msg.getNoteNumber());
+      if (chordNotesPassthrough->get() || !IS_NOTE_MESSAGE(msg))
+	messagesToPassthrough.add(msg);
     }
     else {
-	if (IS_NOTE_MESSAGE(msg)) {
-	  if (!(ignoreBlackKeysInPatterns->get() && MidiMessage::isMidiNoteBlack(msg.getNoteNumber())))
-	    messagesToProcess.add(msg);
-	}
-	else
-	  messagesToPassthrough.add(msg);
+      if (IS_NOTE_MESSAGE(msg)) {
+	if (!(ignoreBlackKeysInPatterns->get() && MidiMessage::isMidiNoteBlack(msg.getNoteNumber())))
+	  messagesToProcess.add(msg);
+      }
+      else
+	messagesToPassthrough.add(msg);
     }
   }
 

@@ -25,25 +25,13 @@ Still experimental, please post issues here in case of bugs or questions! :)
 
 ## How to use it
 
-Arpligner has two modes: Multi-channel and Multi-instance.
+Arpligner has two modes: **Multi-channel** and **Multi-instance**, which affect
+how Arpligner will receive MIDI data and set what it considers to be a
+"**chord** track" and what it considers to be a "**pattern** track".
 
-In Multi-channel mode, Arpligner expects to be fed MIDI data on at least 2
-channels:
+### General behaviour
 
-- Channel 16, which will be treated as the "chord" channel ("track")
-- One channel (or more) from 1 to 15, which will be treated as a "pattern"
-  channel ("track")
-
-In Multi-instance mode, several Arpligner plugins in your DAW session can
-communicate with one another. You would then have one Arpligner instance per
-track, one being configured as the "Global chord track", and the other ones as
-"Pattern tracks". MIDI channels no longer matter in that mode.
-
-Multi-channel has the advantage of requiring a bit less CPU and
-RAM. Multi-instance has the advantage of alleviating MIDI routing configuration
-in your DAW, and is not limited by the number of MIDI channels.
-
-Then whatever the mode, Arpligner will interpret "notes" playing on **pattern**
+Whatever the mode, Arpligner will interpret "notes" playing on **pattern**
 tracks as the degrees of the chord which is currently playing on the **chord**
 track. Starting from C3 and going up:
 
@@ -60,37 +48,97 @@ You can also select that only the white keys will be used here ([see the
 settings](#available-settings)), which can be more convenient when playing
 patterns live on a MIDI keyboard.
 
+### Multi-channel mode
+
+In this mode, you can use as little as one single Arpligner plugin in your DAW
+session. It expects to be fed MIDI data on at least 2 channels:
+
+- Channel 16 (by default), which will be treated as the **chord** channel
+  ("track")
+- At least one _other_ channel (say, Channel 1), which will be treated as a
+  **pattern** channel ("track"). Any channel other than the **chord** channel
+  will do, they will all be treated equally.
+
+You can perfectly use several Arpligner instances set to that mode at the same
+time, but they will just be completely independent of one another. They will
+each receive their own chord track and pattern tracks.
+
+**Multi-channel** has the advantage of requiring a bit less CPU and RAM, and
+allowing for several chord "tracks" that can each one affect up to 15 patterns
+"tracks".
+
+### Multi-instance mode
+
+In this mode, the different instances of the Arpligner plugin in your DAW
+session can communicate with one another. You would then have one Arpligner
+instance per relevant track, one being configured as the **Global chord track**,
+and the other ones as **Pattern tracks**. MIDI channels no longer matter to
+Arpligner in that mode.
+
+**Multi-instance** has the advantage of alleviating MIDI routing configuration
+in your DAW, and is not limited by the number of MIDI channels. So you have just
+one chord track, but it can affect any number of pattern tracks.
+
+Note that it is perfectly possible to have in your DAW session both
+**Multi-instance** instances and **Multi-channel** instances. Only those set to
+**Multi-instance** will communicate, the other ones will keep depending solely
+on the MIDI data you directly feed into them.
+
 
 ## Installation
 
-Please go to the [releases](https://github.com/YPares/arpligner/releases) (unfold the "Assets" section)
-to download the latest release. Alternatively, this repository comes with all the needed code
-to build the plugin and standalone application.
+Please go to the [releases](https://github.com/YPares/arpligner/releases)
+(unfold the "Assets" section) to download the latest release. Alternatively,
+this repository comes with all the needed code to build the plugin and
+standalone application.
 
 Then install the VST3 plugin in your regular VST3 folder, depending on your system
 and DAW settings.
 
-**Important:** Due to [a VST3 limitation](https://forum.juce.com/t/arpeggiatorplugin-vst3-recognized-as-aufio-fx-instead-of-midi-fx/43563),
-Arpligner will be recognized by your DAW as an Audio Fx plugin, whereas it is only a MIDI Fx plugin.
-So if your DAW sorts or filters plugins by categories, you will have to look for Arpligner under this category.
+**Important:** Due to [a VST3
+limitation](https://forum.juce.com/t/arpeggiatorplugin-vst3-recognized-as-aufio-fx-instead-of-midi-fx/43563),
+Arpligner will be recognized by your DAW as an Audio Fx plugin, whereas it is
+only a MIDI Fx plugin. So if your DAW sorts or filters plugins by categories,
+you will have to look for Arpligner under this category.
 
-After that, if you use the Multi-channel mode, you'll need some way to feed
-MIDI into Arpligner. I recommend placing the plugin on the track where the
-**pattern** MIDI clips play, and then use some MIDI routing. With Bitwig for
-instance, the `Note Receiver` device can do this, and you can use the `Channel
-Map` device in the `Source FX` section to make every incoming chord note go to
-Channel 16. Do not forget to deactivate the `Inputs` button in the "Mutes" so
-that pattern MIDI events from the track pass through too.
+Then, I recommend to have one track dedicated to **chords**. After that, if you
+use the **Multi-channel** mode, you'll need some way to configure MIDI routing
+in your DAW so Arpligner receives what it expects.
+
+### Notes about MIDI routing in Multi-channel mode
+
+When using **Multi-channel** mode, you have two options:
+
+- Dedicate one MIDI channel to each of your instruments. Then use only one
+Arpligner instance on your **chord** track, and route **all** your MIDI data to
+it, making sure that this data is properly tagged by channel. Then, split back
+the MIDI data that Arpligner outputs by MIDI channel, and route each channel to
+its corresponding instrument. Depending on your DAW, you may have to use 2
+tracks per instrument in that fashion: one for the pattern clips for this
+instrument, and one for the actual instrument.
+- Place one instance of Arpligner on each of your **pattern** tracks, and route
+the same **chord track** to all of them. Each instance will then receive a
+pattern track on only one MIDI channel, and they will all process their patterns
+according to the same chord progression. Each instance can then process pattern
+data on several channels (this can be useful for multi-timbral instruments like
+Kontakt or Omnisphere, or if your DAW supports layering several instruments on
+the same track).
+
+For example in Bitwig, the `Note Receiver` device can do this, and you can use
+the `Channel Map` device in the `Source FX` section of this `Note Receiver` to
+make every incoming note goes to the right MIDI channel. Do not forget to
+deactivate the `Inputs` button in the "Mutes" so that MIDI events from the track
+pass through too.
 
 ## Implementation & supported plugin formats
 
 Arpligner is implemented in C++ with [JUCE 7](https://juce.com/), and therefore
-should support a variety of systems and plugin formats. For now, I'm providing VST3
-builds for Linux and Windows x64, but you can have a look under the
-`Builds` folder for supported platforms. The [project file](Arpligner.jucer)
-for [Projucer](https://juce.com/discover/projucer) is also provided if you want
-to generate build files for other platforms or other plugin formats. Arpligner
-has no plugin-format-specific or OS-specific code so it should be pretty
+should support a variety of systems and plugin formats. For now, I'm providing
+VST3 builds for Linux and Windows x64, but you can have a look under the
+`Builds` folder for supported platforms. The [project file](Arpligner.jucer) for
+[Projucer](https://juce.com/discover/projucer) is also provided if you want to
+generate build files for other platforms or other plugin formats. Arpligner has
+no plugin-format-specific or OS-specific code so it should be pretty
 straightforward.
 
 I originally implemented Arpligner as a Lua script for

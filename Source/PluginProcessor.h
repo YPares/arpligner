@@ -68,6 +68,7 @@ protected:
   AudioParameterChoice* whenSingleChordNote;
   AudioParameterChoice* firstDegreeCode;
   AudioParameterChoice* patternNotesMapping;
+  AudioParameterBool* unmappedPatternNotesPassthrough;
   
 private:
     //==============================================================================
@@ -107,7 +108,9 @@ enum Enum {
 
 namespace PatternNotesMapping {
 enum Enum {
-  SEMITONES_TO_DEGREES = 0,
-  WHITE_NOTES_TO_DEGREES
+  MAP_NOTHING = 0,
+  SEMITONE_TO_DEGREE,
+  WHITE_NOTE_TO_DEGREE,
+  TRANSPOSE_FROM_FIRST_DEGREE
 };
 }

@@ -39,14 +39,18 @@ track. Starting from C3 and going up:
 - C#3 means "second chord degree"
 - D3 means "third chord degree", etc.
 
-But what happens if you go below C3? Or if you go "above" the last degree of
-your chord? Well then, Arpligner will loop through the chord, but transposing
-the notes up or down as many octaves as needed, so it always has a sensible
-chord note to play.
+C3 is therefore treated as the _reference_ pattern note, the one from which
+everything will be derived.
 
-You can also select that only the white keys will be used here ([see the
-settings](#available-settings)), which can be more convenient when playing
-patterns live on a MIDI keyboard.
+However, you may wonder then what happens if you go below C3. Or if you go
+"above" the last degree of your chord. Well then, Arpligner will loop through
+the chord, but transposing the notes up or down as many octaves as needed, so it
+always has a sensible chord note to play.
+
+You can also select a different mapping method. For instance, you can choose
+that only the white keys will be used here, which can be more convenient when
+playing patterns live on a MIDI keyboard. See the [pattern settings
+section](#pattern-parameters) for more info.
 
 ### Multi-channel mode
 
@@ -181,14 +185,16 @@ maintaining it.
 
 Arpligner's GUI shows a few parameters, and exposes them to the host.
 
-**IMPORTANT**: Most of these are meant to be set once, not automated or
-anything. I strongly advise you not to change these parameters while MIDI notes
-are being sent to Arpligner, or you will end up with stuck notes.
+**IMPORTANT**: Unless stated otherwise, these parameters are **not** meant to be
+changed while Arpligner is processing notes. If you really want to automate some
+of these (for any reason), I strongly advise you to change their values **only**
+during a moment in your song when no MIDI notes are being sent to Arpligner, or
+you will end up with stuck notes.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
 |**Instance behaviour**|`[Multi-chan] Chords on chan 16`|Choose from:|The main behaviour of this Arpligner instance|
-| | |`Bypass`|Do nothing and just pass MIDI events through|
+| | |`Bypass`|Do nothing and just pass all MIDI events through|
 | | |`[Multi-chan] Chords on chan XX`|Sets to Multi-channel mode, and use channel `XX` as the chord track (and any other channel as a pattern track)|
 | | |`[Multi-instance] Global chord instance`|Sets this instance as the one that receives chord notes (any MIDI input, whatever its channel) and sets the current chord for all other connected instances|
 | | |`[Multi-instance] Pattern instance`|Sets this instance as a "follower" of the one set to `Global instance`. Any MIDI input, whatever its channel, is considered a pattern|
@@ -214,14 +220,25 @@ These parameters are used *only* in Multi-chan mode or by *Chord* instances.
 
 ### Pattern parameters
 
-These parameters are used *only* in Multi-chan mode or by *Pattern* instances.
+These parameters are used *only* in Multi-chan mode or by *Pattern*
+instances. When using the **Multi-instance** mode, you can therefore select a
+different behaviour for each Pattern instance. This can be useful for instance
+if some instruments are to be played live and others via MIDI sequencing, or if
+different live players have different preferences.
+
+**These parameters should be safe to change at any time**, either for weird
+effects or for practical reasons, like when switching between sections of your
+song.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
-|**Pattern MIDI note for first degree**|`60 (C3)`|A MIDI note|On pattern tracks, the "reference note", the one to consider as "1st degree of the currently playing chord"
-|**Pattern notes mapping**|`Semitones -> Degrees`|Choose from:|How to map midi note codes on pattern tracks to actual notes|
-| | |`Semitones -> Degrees`|All MIDI keys are used. Going up one semitone in the pattern track means going up one degree in the chord|
-| | |`White notes -> Degrees`|Only white keys are used. It can be more convenient when playing patterns live on a keyboard|
+|**Pattern notes mapping**|`Semitone to degree`|Choose from:|How to map midi note codes on pattern tracks to actual notes|
+| | |`Map nothing`|No pattern note is mapped|
+| | |`Semitone to degree`|Going up/down one _semitone_ in the pattern track means going up/down one degree in the chord|
+| | |`White note to degree`|Going up/down one _white key_ in the pattern track means going up/down one degree in the chord. Black keys are not mapped|
+| | |`Transpose from 1st degree`|Use Arpligner as a "dynamic" transposer: ignore all chord degrees besides the first (lowest) one. Pattern notes are just transposed accordingly. This allows you to play notes that are outside the current chord, but keeping your patterns centered around the reference note|
+|**Reference pattern note**|`60 (C3)`|A MIDI note|On pattern tracks, the note that will always be mapped to the first (lowest) degree of the currently playing chord|
+|**Unmapped pattern notes passthrough**|`Off`|`On` or `Off`|When the above mapping method leaves some notes unmapped, whether to pass them through or just silence them|
 
 ## Current limitations
 

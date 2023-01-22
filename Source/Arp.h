@@ -26,12 +26,6 @@ private:
   
   // On each pattern chan, to which note is currently mapped each incoming NoteNumber
   HashMap<NoteNumber, NoteNumber> curMappings[16];
-
-  bool shouldDiscardPatternNote(NoteNumber);
-  
-  int getDegreeNumber(NoteNumber);
-  
-  void processMIDIMessage(const Chord&, MidiMessage&);
   
 public:
   void runArp(MidiBuffer&);

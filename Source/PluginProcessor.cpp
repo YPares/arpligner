@@ -53,18 +53,27 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
       StringArray {"Transpose last chord", "Powerchord", "Use as is", "Silence", "Use pattern notes as final notes"},
       WhenSingleChordNote::TRANSPOSE_LAST_CHORD
       ));
-
-  StringArray notes;
-  for (int i=0; i<=127; i++)
-    notes.add(String(i) + " (" + MidiMessage::getMidiNoteName(i,true,true,3) + ")");
-  addParameter (firstDegreeCode = new AudioParameterChoice ("firstDegreeCode", "Pattern MIDI note for first degree", notes, 60));
   
   addParameter
     (patternNotesMapping = new AudioParameterChoice
      ("patternNotesMapping", "Pattern notes mapping",
-      StringArray {"Semitones -> Degrees", "White notes -> Degrees"},
-      PatternNotesMapping::SEMITONES_TO_DEGREES
+      StringArray {
+	"Map nothing",
+	"Semitone to degree",
+	"White note to degree",
+	"Transpose from 1st degree"
+      },
+      PatternNotesMapping::SEMITONE_TO_DEGREE
       ));
+
+  StringArray notes;
+  for (int i=0; i<=127; i++)
+    notes.add(String(i) + " (" + MidiMessage::getMidiNoteName(i,true,true,3) + ")");
+  addParameter (firstDegreeCode = new AudioParameterChoice
+		("firstDegreeCode", "Reference pattern note", notes, 60));
+  
+  addParameter (unmappedPatternNotesPassthrough = new AudioParameterBool
+		("unmappedPatternNotesPassthrough", "Unmapped pattern notes passthrough", false));
 }
 
 ArplignerAudioProcessor::~ArplignerAudioProcessor()
@@ -211,6 +220,7 @@ void ArplignerAudioProcessor::getStateInformation (MemoryBlock& destData)
   s.writeInt(*whenNoChordNote);
   s.writeInt(*whenSingleChordNote);
   s.writeInt(*patternNotesMapping);
+  s.writeBool(*unmappedPatternNotesPassthrough);
 }
 
 // Reload state info
@@ -223,4 +233,5 @@ void ArplignerAudioProcessor::setStateInformation (const void* data, int sizeInB
   *whenNoChordNote = s.readInt();
   *whenSingleChordNote = s.readInt();
   *patternNotesMapping = s.readInt();
+  *unmappedPatternNotesPassthrough = s.readBool();
 }

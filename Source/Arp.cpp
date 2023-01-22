@@ -17,56 +17,59 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 }
 
 
-bool Arp::shouldDiscardPatternNote(NoteNumber nn) {
-  switch (patternNotesMapping->getIndex()) {
-  case PatternNotesMapping::WHITE_NOTES_TO_DEGREES:
-    return MidiMessage::isMidiNoteBlack(nn);
-  default:
+// Pure functions that compute the mappings of input pattern notes:
+namespace Mapping {
+  
+bool patternNoteIsMapped(PatternNotesMapping::Enum mappingMode, NoteNumber nn) {
+  switch (mappingMode) {
+  case PatternNotesMapping::MAP_NOTHING:
     return false;
+  case PatternNotesMapping::WHITE_NOTE_TO_DEGREE:
+    return !MidiMessage::isMidiNoteBlack(nn);
+  default:
+    return true;
   }
 }
 
-int Arp::getDegreeNumber(NoteNumber nn) {
-  int offset = nn - firstDegreeCode->getIndex();
-  switch (patternNotesMapping->getIndex()) {
-  case PatternNotesMapping::WHITE_NOTES_TO_DEGREES: {
-    // We need to correct the [firstDegreeCode,nn] interval for the amount
+NoteNumber mapToChordDegree(const Chord& curChord, int degreeNum) {
+  int numChordNotes = curChord.size();
+  int wantedDegree;
+  if (degreeNum >= 0)
+    wantedDegree = degreeNum % numChordNotes;
+  else {
+    int absRem = (-degreeNum) % numChordNotes;
+    wantedDegree = (absRem == 0) ? 0 : numChordNotes - absRem;
+  }
+  int wantedOctaveShift = floor((float)degreeNum / (float)numChordNotes);
+  return curChord[wantedDegree] + 12*wantedOctaveShift;
+}
+
+NoteNumber mapPatternNote(NoteNumber referenceNote,
+			  PatternNotesMapping::Enum mappingMode,
+			  const Chord& curChord,
+			  NoteNumber noteCodeIn) {
+  int offsetFromRef = noteCodeIn - referenceNote;
+  switch (mappingMode) {
+  case PatternNotesMapping::TRANSPOSE_FROM_FIRST_DEGREE:
+    return curChord[0] + offsetFromRef;
+  case PatternNotesMapping::WHITE_NOTE_TO_DEGREE: {
+    // We need to correct the [referenceNote,noteCodeIn] interval for the amount
     // of black keys it contains:
-    int sign = (offset < 0) ? -1 : 1;
-    int absOffset = sign * offset;
-    for (int i=firstDegreeCode->getIndex(); i!=nn; i=i+sign)
+    int sign = (offsetFromRef < 0) ? -1 : 1;
+    int absOffset = sign * offsetFromRef;
+    for (int i=referenceNote; i!=noteCodeIn; i+=sign)
       if (MidiMessage::isMidiNoteBlack(i))
 	absOffset--;
-    return sign * absOffset;
+    return mapToChordDegree(curChord, sign * absOffset);
     }
   default:
-    return offset;
+    return mapToChordDegree(curChord, offsetFromRef);
   }
 }
 
-void Arp::processMIDIMessage(const Chord& curChord, MidiMessage& msg) {
-  int chan = msg.getChannel() - 1;
-  NoteNumber noteCodeIn = msg.getNoteNumber();
-  if (msg.isNoteOn()) {
-    int numChordNotes = curChord.size();
-    int degreeNum = getDegreeNumber(noteCodeIn);
-    int wantedDegree;
-    if (degreeNum >= 0)
-	wantedDegree = degreeNum % numChordNotes;
-    else {
-      int absRem = (-degreeNum) % numChordNotes;
-      wantedDegree = (absRem == 0) ? 0 : numChordNotes - absRem;
-    }
-    int wantedOctaveShift = floor((float)degreeNum / (float)numChordNotes);
-    NoteNumber finalNote = curChord[wantedDegree] + 12*wantedOctaveShift;
-    curMappings[chan].set(noteCodeIn, finalNote);
-    msg.setNoteNumber(finalNote);
-  }
-  else if (msg.isNoteOff() && curMappings[chan].contains(noteCodeIn)) {
-    msg.setNoteNumber(curMappings[chan][noteCodeIn]);
-  }
-}
+} // end namespace Mapping
 
+  
 void Arp::runArp(MidiBuffer& midibuf) {
   auto behaviour = instanceBehaviour->getIndex();
   if (behaviour == InstanceBehaviour::BYPASS)
@@ -74,6 +77,12 @@ void Arp::runArp(MidiBuffer& midibuf) {
   
   Array<MidiMessage> messagesToProcess, messagesToPassthrough;
   ChordStore* chordStore;
+  // We get some parameter values here to make sure they will remain coherent
+  // throughout the processing of the whole buffer:
+  auto mappingMode = (PatternNotesMapping::Enum)patternNotesMapping->getIndex();
+  auto referenceNote = firstDegreeCode->getIndex();
+  auto chordPassthrough = chordNotesPassthrough->get();
+  auto unmappedPassthrough = unmappedPatternNotesPassthrough->get();
   
   if (behaviour < InstanceBehaviour::IS_CHORD)
     // We read chords from MIDI channel indicated by instanceBehaviour and use
@@ -92,13 +101,15 @@ void Arp::runArp(MidiBuffer& midibuf) {
 	chordStore->addChordNote(msg.getNoteNumber());
       else if(msg.isNoteOff())
 	chordStore->rmChordNote(msg.getNoteNumber());
-      if (chordNotesPassthrough->get() || !IS_NOTE_MESSAGE(msg))
+      if (chordPassthrough || !IS_NOTE_MESSAGE(msg))
 	messagesToPassthrough.add(msg);
     }
     else {
       if (IS_NOTE_MESSAGE(msg)) {
-	if (!shouldDiscardPatternNote(msg.getNoteNumber()))
+	if (Mapping::patternNoteIsMapped(mappingMode, msg.getNoteNumber()))
 	  messagesToProcess.add(msg);
+	else if (unmappedPassthrough)
+	  messagesToPassthrough.add(msg);
       }
       else
 	messagesToPassthrough.add(msg);
@@ -114,8 +125,12 @@ void Arp::runArp(MidiBuffer& midibuf) {
   else if (behaviour == InstanceBehaviour::IS_PATTERN_1_BUFFER_DELAY) {
     messagesToProcess.swapWith(mLastBufferMessagesToProcess);
   }
+
+  auto shouldSilence = chordStore->shouldSilence();
+  auto shouldProcess = chordStore->shouldProcess();
+  auto curChord = chordStore->getCurrentChord();  
   
-  if (chordStore->shouldSilence())
+  if (shouldSilence)
     messagesToProcess.removeIf ([](auto& msg){
       return !msg.isNoteOff();
     });
@@ -126,8 +141,21 @@ void Arp::runArp(MidiBuffer& midibuf) {
 
   // Process and add processable messages:
   for (auto msg : messagesToProcess) {
-    if (chordStore->shouldProcess())
-      processMIDIMessage(chordStore->getCurrentChord(), msg);
+    if (shouldProcess) {
+      int chan = msg.getChannel() - 1;
+      NoteNumber noteCodeIn = msg.getNoteNumber();
+      if (msg.isNoteOn()) {
+	NoteNumber noteCodeOut = Mapping::mapPatternNote(referenceNote,
+							 mappingMode,
+							 curChord,
+							 noteCodeIn);
+	msg.setNoteNumber(noteCodeOut);
+	curMappings[chan].set(noteCodeIn, noteCodeOut);
+      }
+      else if (msg.isNoteOff() && curMappings[chan].contains(noteCodeIn)) {
+	msg.setNoteNumber(curMappings[chan][noteCodeIn]);
+      }      
+    }
     midibuf.addEvent(msg, 0);
   }
 }

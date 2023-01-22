@@ -69,14 +69,12 @@ NoteNumber mapPatternNote(NoteNumber referenceNote,
 
 } // end namespace Mapping
 
-  
-void Arp::runArp(MidiBuffer& midibuf) {
-  auto behaviour = instanceBehaviour->getIndex();
-  if (behaviour == InstanceBehaviour::BYPASS)
-    return;
-  
+// If this is called, we are either in Multi-channel mode, or a Pattern instance
+// in Multi-instance mode:
+void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enum behaviour) {
   Array<MidiMessage> messagesToProcess, messagesToPassthrough;
-  ChordStore* chordStore;
+  ChordStore* chordStore = &mLocalChordStore;
+  
   // We get some parameter values here to make sure they will remain coherent
   // throughout the processing of the whole buffer:
   auto mappingMode = (PatternNotesMapping::Enum)patternNotesMapping->getIndex();
@@ -84,23 +82,17 @@ void Arp::runArp(MidiBuffer& midibuf) {
   auto chordPassthrough = chordNotesPassthrough->get();
   auto unmappedPassthrough = unmappedPatternNotesPassthrough->get();
   
-  if (behaviour < InstanceBehaviour::IS_CHORD)
-    // We read chords from MIDI channel indicated by instanceBehaviour and use
-    // the local chord store
-    chordStore = &mLocalChordStore;
-  else
-    // We read chords from the global chord store
+  if (behaviour >= InstanceBehaviour::IS_PATTERN)
+    // We are a Pattern instance. We read chords from the global chord store
     chordStore = GlobalChordStore::getInstance();
 
   for (auto msgMD : midibuf) {
     auto msg = msgMD.getMessage();
-    if (behaviour == InstanceBehaviour::IS_CHORD ||
-	behaviour < InstanceBehaviour::IS_CHORD &&
+    if (behaviour < InstanceBehaviour::IS_PATTERN &&
 	msg.getChannel() == behaviour) {
-      if (msg.isNoteOn())
-	chordStore->addChordNote(msg.getNoteNumber());
-      else if(msg.isNoteOff())
-	chordStore->rmChordNote(msg.getNoteNumber());
+      // We are a Multi-channel instance. We should process chords landing on
+      // our chord channel:
+      toChordStore(chordStore, msg);
       if (chordPassthrough || !IS_NOTE_MESSAGE(msg))
 	messagesToPassthrough.add(msg);
     }
@@ -118,13 +110,15 @@ void Arp::runArp(MidiBuffer& midibuf) {
 
   midibuf.clear();
   
-  if (behaviour <= InstanceBehaviour::IS_CHORD)
-    chordStore->updateCurrentChord
-      ((WhenNoChordNote::Enum)whenNoChordNote->getIndex(),
-       (WhenSingleChordNote::Enum)whenSingleChordNote->getIndex());
+  if (behaviour < InstanceBehaviour::IS_PATTERN)
+    updateChordStore(chordStore);
   else if (behaviour == InstanceBehaviour::IS_PATTERN_1_BUFFER_DELAY) {
     messagesToProcess.swapWith(mLastBufferMessagesToProcess);
   }
+
+  // Pass non-processable messages through:
+  for (auto msg : messagesToPassthrough)
+    midibuf.addEvent(msg, 0);
 
   auto shouldSilence = chordStore->shouldSilence();
   auto shouldProcess = chordStore->shouldProcess();
@@ -135,10 +129,6 @@ void Arp::runArp(MidiBuffer& midibuf) {
       return !msg.isNoteOff();
     });
   
-  // Pass non-processable messages through:
-  for (auto msg : messagesToPassthrough)
-    midibuf.addEvent(msg, 0);
-
   // Process and add processable messages:
   for (auto msg : messagesToProcess) {
     if (shouldProcess) {

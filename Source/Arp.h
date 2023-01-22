@@ -27,21 +27,9 @@ private:
   // On each pattern chan, to which note is currently mapped each incoming NoteNumber
   HashMap<NoteNumber, NoteNumber> curMappings[16];
 
-  int getDegreeShift(NoteNumber nn) {
-    int x = nn - firstDegreeCode->getIndex();
-    if (ignoreBlackKeysInPatterns->get()) {
-      // We need to correct the [firstDegreeCode,nn] interval for the amount
-      // of black keys it contains:
-      int sign = (x < 0) ? -1 : 1;
-      int absX = sign * x;
-      for (int i=firstDegreeCode->getIndex(); i!=nn; i=i+sign)
-	if (MidiMessage::isMidiNoteBlack(i))
-	  absX--;
-      return sign * absX;
-    }
-    else
-      return x;
-  }
+  bool shouldDiscardPatternNote(NoteNumber);
+  
+  int getDegreeNumber(NoteNumber);
   
   void processMIDIMessage(const Chord&, MidiMessage&);
   

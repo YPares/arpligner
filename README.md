@@ -189,7 +189,7 @@ are being sent to Arpligner, or you will end up with stuck notes.
 |--------------------------------|---------------|-----------------|---------------|
 |**Instance behaviour**|`[Multi-chan] Chords on chan 16`|Choose from:|The main behaviour of this Arpligner instance|
 | | |`Bypass`|Do nothing and just pass MIDI events through|
-| | |`[Multi-chan] Chords on chan XX`|Sets to Multi-channel mode, and use channel `XX` as the chord channel (and any other channel as a pattern channel)|
+| | |`[Multi-chan] Chords on chan XX`|Sets to Multi-channel mode, and use channel `XX` as the chord track (and any other channel as a pattern track)|
 | | |`[Multi-instance] Global chord instance`|Sets this instance as the one that receives chord notes (any MIDI input, whatever its channel) and sets the current chord for all other connected instances|
 | | |`[Multi-instance] Pattern instance`|Sets this instance as a "follower" of the one set to `Global instance`. Any MIDI input, whatever its channel, is considered a pattern|
 | | |`[Multi-instance] Pattern instance (1-buffer delay)`|Like the above, but can help in cases where chord notes begin at the exact same moment as pattern notes. It makes sure the Chord instance properly updates the currently playing chord before `Pattern` instances run|
@@ -200,17 +200,17 @@ These parameters are used *only* in Multi-chan mode or by *Chord* instances.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
-|**Chord notes passthrough**|`Off`|`On` or `Off`|Whether note events on the chord channel should pass through instead of being consumed. Non-note events (such as CCs) on the chord channel will **always** pass through|
-|**When no chord note**|`Latch last chord`|Choose from:|What to do when **no** note is playing on the chord channel|
+|**Chord notes passthrough**|`Off`|`On` or `Off`|Whether note events on the chord track should pass through instead of being consumed. Non-note events (such as CCs) on the chord track will **always** pass through|
+|**When no chord note**|`Latch last chord`|Choose from:|What to do when **no** note is playing on the chord track|
 | | |`Latch last chord`|Keep using the previous chord that played (`Silence` if no previous chord is known)|
 | | |`Silence`| Ignore the pattern notes|
-| | |`Use pattern as notes`|Consider the pattern "notes" as real notes, and pass them through without any change|
-|**When single chord note**|`Transpose last chord`|Choose from:|What to do when a **single** note _n_ is playing on the chord channel|
+| | |`Use pattern notes as final notes`|Consider the pattern "notes" as real notes, and pass them through without any change|
+|**When single chord note**|`Transpose last chord`|Choose from:|What to do when a **single** note _n_ is playing on the chord track|
 | | |`Transpose last chord`|Transpose last chord so that its lowest note becomes _n_ (`Silence` if no previous chord is known)|
 | | |`Powerchord`|Turn _n_ into a "2-note chord": _n_ and the note a fifth above|
 | | |`Use as is`|Use _n_ as just a "one-note chord". Tread carefully, the end result may go up in octaves pretty fast|
 | | |`Silence`|Same as for "no chord note"|
-| | |`Use pattern as notes`|Same as for "no chord note"|
+| | |`Use pattern notes as final notes`|Same as for "no chord note"|
 
 ### Pattern parameters
 
@@ -218,8 +218,10 @@ These parameters are used *only* in Multi-chan mode or by *Pattern* instances.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
-|**First degree MIDI note**|`60 (C3)`|A MIDI note|On pattern channels, the "reference note", the one to consider as "1st degree of the currently playing chord"
-|**Ignore black keys in patterns**|`Off`|`On` or `Off`|Map chord degrees to white keys only, instead of every MIDI note. It can be more convenient when playing patterns live on a keyboard|
+|**Pattern MIDI note for first degree**|`60 (C3)`|A MIDI note|On pattern tracks, the "reference note", the one to consider as "1st degree of the currently playing chord"
+|**Pattern notes mapping**|`Semitones -> Degrees`|Choose from:|How to map midi note codes on pattern tracks to actual notes|
+| | |`Semitones -> Degrees`|All MIDI keys are used. Going up one semitone in the pattern track means going up one degree in the chord|
+| | |`White notes -> Degrees`|Only white keys are used. It can be more convenient when playing patterns live on a keyboard|
 
 ## Current limitations
 

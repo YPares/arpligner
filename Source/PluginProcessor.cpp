@@ -37,29 +37,34 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
     (instanceBehaviour = new AudioParameterChoice
      ("chordChan", "Instance behaviour", behVals,
       globalChordStoreExists ? InstanceBehaviour::IS_PATTERN : 16));
-  
-  StringArray notes;
-  for (int i=0; i<=127; i++)
-    notes.add(String(i) + " (" + MidiMessage::getMidiNoteName(i,true,true,3) + ")");
-  addParameter (firstDegreeCode = new AudioParameterChoice ("firstDegreeCode", "First degree MIDI note", notes, 60));
-  
+    
   addParameter (chordNotesPassthrough = new AudioParameterBool("chordNotesPassthrough", "Chord notes passthrough", false));
   
   addParameter
     (whenNoChordNote = new AudioParameterChoice
      ("whenNoChordNote", "When no chord note",
-      StringArray {"Latch last chord", "Silence", "Use patterns as notes"},
+      StringArray {"Latch last chord", "Silence", "Use pattern notes as final notes"},
       WhenNoChordNote::LATCH_LAST_CHORD
       ));
   
   addParameter
     (whenSingleChordNote = new AudioParameterChoice
      ("whenSingleChordNote", "When single chord note",
-      StringArray {"Transpose last chord", "Powerchord", "Use as is", "Silence", "Use patterns as notes"},
+      StringArray {"Transpose last chord", "Powerchord", "Use as is", "Silence", "Use pattern notes as final notes"},
       WhenSingleChordNote::TRANSPOSE_LAST_CHORD
       ));
+
+  StringArray notes;
+  for (int i=0; i<=127; i++)
+    notes.add(String(i) + " (" + MidiMessage::getMidiNoteName(i,true,true,3) + ")");
+  addParameter (firstDegreeCode = new AudioParameterChoice ("firstDegreeCode", "Pattern MIDI note for first degree", notes, 60));
   
-  addParameter (ignoreBlackKeysInPatterns = new AudioParameterBool("ignoreBlackKeysInPatterns", "Ignore black keys in patterns", false));
+  addParameter
+    (patternNotesMapping = new AudioParameterChoice
+     ("patternNotesMapping", "Pattern notes mapping",
+      StringArray {"Semitones -> Degrees", "White notes -> Degrees"},
+      PatternNotesMapping::SEMITONES_TO_DEGREES
+      ));
 }
 
 ArplignerAudioProcessor::~ArplignerAudioProcessor()
@@ -205,7 +210,7 @@ void ArplignerAudioProcessor::getStateInformation (MemoryBlock& destData)
   s.writeBool(*chordNotesPassthrough);
   s.writeInt(*whenNoChordNote);
   s.writeInt(*whenSingleChordNote);
-  s.writeBool(*ignoreBlackKeysInPatterns);
+  s.writeInt(*patternNotesMapping);
 }
 
 // Reload state info
@@ -217,5 +222,5 @@ void ArplignerAudioProcessor::setStateInformation (const void* data, int sizeInB
   *chordNotesPassthrough = s.readBool();
   *whenNoChordNote = s.readInt();
   *whenSingleChordNote = s.readInt();
-  *ignoreBlackKeysInPatterns = s.readBool();
+  *patternNotesMapping = s.readInt();
 }

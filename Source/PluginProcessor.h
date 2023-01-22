@@ -63,11 +63,11 @@ public:
 
 protected:
   AudioParameterChoice* instanceBehaviour;
-  AudioParameterChoice* firstDegreeCode;
   AudioParameterBool* chordNotesPassthrough;
   AudioParameterChoice* whenNoChordNote;
   AudioParameterChoice* whenSingleChordNote;
-  AudioParameterBool* ignoreBlackKeysInPatterns;
+  AudioParameterChoice* firstDegreeCode;
+  AudioParameterChoice* patternNotesMapping;
   
 private:
     //==============================================================================
@@ -77,10 +77,9 @@ private:
 
 namespace InstanceBehaviour {
 enum Enum {
-  // Values between 1 & 16 are for isolated instance behaviour, where the value
-  // indicates the midi channel corresponding to the chord track. Values of 16+
-  // are for when using multiple instances of Arpligner, one being the chord
-  // track.
+  // Values between 1 & 16 are for Multi-channel behaviour, where the value
+  // indicates the midi channel corresponding to the chord track. Values of 17+
+  // are for Multi-instance behaviour
   BYPASS = 0,
   IS_CHORD = 17,
   IS_PATTERN,
@@ -103,5 +102,12 @@ enum Enum {
   USE_AS_IS,
   SILENCE,
   USE_PATTERN_AS_NOTES
+};
+}
+
+namespace PatternNotesMapping {
+enum Enum {
+  SEMITONES_TO_DEGREES = 0,
+  WHITE_NOTES_TO_DEGREES
 };
 }

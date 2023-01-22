@@ -17,20 +17,47 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 }
 
 
+bool Arp::shouldDiscardPatternNote(NoteNumber nn) {
+  switch (patternNotesMapping->getIndex()) {
+  case PatternNotesMapping::WHITE_NOTES_TO_DEGREES:
+    return MidiMessage::isMidiNoteBlack(nn);
+  default:
+    return false;
+  }
+}
+
+int Arp::getDegreeNumber(NoteNumber nn) {
+  int offset = nn - firstDegreeCode->getIndex();
+  switch (patternNotesMapping->getIndex()) {
+  case PatternNotesMapping::WHITE_NOTES_TO_DEGREES: {
+    // We need to correct the [firstDegreeCode,nn] interval for the amount
+    // of black keys it contains:
+    int sign = (offset < 0) ? -1 : 1;
+    int absOffset = sign * offset;
+    for (int i=firstDegreeCode->getIndex(); i!=nn; i=i+sign)
+      if (MidiMessage::isMidiNoteBlack(i))
+	absOffset--;
+    return sign * absOffset;
+    }
+  default:
+    return offset;
+  }
+}
+
 void Arp::processMIDIMessage(const Chord& curChord, MidiMessage& msg) {
   int chan = msg.getChannel() - 1;
   NoteNumber noteCodeIn = msg.getNoteNumber();
-  int numChordNotes = curChord.size();
-  int degShift = getDegreeShift(noteCodeIn);
   if (msg.isNoteOn()) {
+    int numChordNotes = curChord.size();
+    int degreeNum = getDegreeNumber(noteCodeIn);
     int wantedDegree;
-    if (degShift >= 0)
-	wantedDegree = degShift % numChordNotes;
+    if (degreeNum >= 0)
+	wantedDegree = degreeNum % numChordNotes;
     else {
-	int x = (-degShift) % numChordNotes;
-      wantedDegree = (x==0) ? 0 : numChordNotes - x;
+      int absRem = (-degreeNum) % numChordNotes;
+      wantedDegree = (absRem == 0) ? 0 : numChordNotes - absRem;
     }
-    int wantedOctaveShift = floor((float)degShift / (float)numChordNotes);
+    int wantedOctaveShift = floor((float)degreeNum / (float)numChordNotes);
     NoteNumber finalNote = curChord[wantedDegree] + 12*wantedOctaveShift;
     curMappings[chan].set(noteCodeIn, finalNote);
     msg.setNoteNumber(finalNote);
@@ -70,8 +97,7 @@ void Arp::runArp(MidiBuffer& midibuf) {
     }
     else {
       if (IS_NOTE_MESSAGE(msg)) {
-	if (!(ignoreBlackKeysInPatterns->get() &&
-	      MidiMessage::isMidiNoteBlack(msg.getNoteNumber())))
+	if (!shouldDiscardPatternNote(msg.getNoteNumber()))
 	  messagesToProcess.add(msg);
       }
       else

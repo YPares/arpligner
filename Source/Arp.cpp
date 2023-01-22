@@ -11,7 +11,7 @@
 #include "Arp.h"
 
 
-juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new Arp();
 }
@@ -48,7 +48,7 @@ void Arp::runArp(MidiBuffer& midibuf) {
   Array<MidiMessage> messagesToProcess, messagesToPassthrough;
   ChordStore* chordStore;
   
-  if (behaviour < InstanceBehaviour::IS_GLOBAL_CHORD_TRACK)
+  if (behaviour < InstanceBehaviour::IS_CHORD)
     // We read chords from MIDI channel indicated by instanceBehaviour and use
     // the local chord store
     chordStore = &mLocalChordStore;
@@ -58,8 +58,8 @@ void Arp::runArp(MidiBuffer& midibuf) {
 
   for (auto msgMD : midibuf) {
     auto msg = msgMD.getMessage();
-    if (behaviour == InstanceBehaviour::IS_GLOBAL_CHORD_TRACK ||
-	behaviour < InstanceBehaviour::IS_GLOBAL_CHORD_TRACK &&
+    if (behaviour == InstanceBehaviour::IS_CHORD ||
+	behaviour < InstanceBehaviour::IS_CHORD &&
 	msg.getChannel() == behaviour) {
       if (msg.isNoteOn())
 	chordStore->addChordNote(msg.getNoteNumber());
@@ -70,7 +70,8 @@ void Arp::runArp(MidiBuffer& midibuf) {
     }
     else {
       if (IS_NOTE_MESSAGE(msg)) {
-	if (!(ignoreBlackKeysInPatterns->get() && MidiMessage::isMidiNoteBlack(msg.getNoteNumber())))
+	if (!(ignoreBlackKeysInPatterns->get() &&
+	      MidiMessage::isMidiNoteBlack(msg.getNoteNumber())))
 	  messagesToProcess.add(msg);
       }
       else
@@ -80,17 +81,17 @@ void Arp::runArp(MidiBuffer& midibuf) {
 
   midibuf.clear();
   
-  if (behaviour <= InstanceBehaviour::IS_GLOBAL_CHORD_TRACK)
+  if (behaviour <= InstanceBehaviour::IS_CHORD)
     chordStore->updateCurrentChord
-	((WhenNoChordNote::Enum)whenNoChordNote->getIndex(),
-	 (WhenSingleChordNote::Enum)whenSingleChordNote->getIndex());
-  else if (behaviour == InstanceBehaviour::IS_PATTERN_TRACK_DELAY_1_BUFFER) {
+      ((WhenNoChordNote::Enum)whenNoChordNote->getIndex(),
+       (WhenSingleChordNote::Enum)whenSingleChordNote->getIndex());
+  else if (behaviour == InstanceBehaviour::IS_PATTERN_1_BUFFER_DELAY) {
     messagesToProcess.swapWith(mLastBufferMessagesToProcess);
   }
   
   if (chordStore->shouldSilence())
     messagesToProcess.removeIf ([](auto& msg){
-	return !msg.isNoteOff();
+      return !msg.isNoteOff();
     });
   
   // Pass non-processable messages through:
@@ -100,7 +101,7 @@ void Arp::runArp(MidiBuffer& midibuf) {
   // Process and add processable messages:
   for (auto msg : messagesToProcess) {
     if (chordStore->shouldProcess())
-	processMIDIMessage(chordStore->getCurrentChord(), msg);
+      processMIDIMessage(chordStore->getCurrentChord(), msg);
     midibuf.addEvent(msg, 0);
   }
 }

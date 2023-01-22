@@ -10,12 +10,15 @@
 
 #include <JuceHeader.h>
 
+using namespace juce;
+
+
 //==============================================================================
 /**
 */
-class ArplignerAudioProcessor  : public juce::AudioProcessor
+class ArplignerAudioProcessor  : public AudioProcessor
                             #if JucePlugin_Enable_ARA
-                             , public juce::AudioProcessorARAExtension
+                             , public AudioProcessorARAExtension
                             #endif
 {
 public:
@@ -31,16 +34,16 @@ public:
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
    #endif
 
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
 
-    virtual void runArp(juce::MidiBuffer&) = 0;
+    virtual void runArp(MidiBuffer&) = 0;
     
     //==============================================================================
-    juce::AudioProcessorEditor* createEditor() override;
+    AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
 
     //==============================================================================
-    const juce::String getName() const override;
+    const String getName() const override;
 
     bool acceptsMidi() const override;
     bool producesMidi() const override;
@@ -51,21 +54,21 @@ public:
     int getNumPrograms() override;
     int getCurrentProgram() override;
     void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+    const String getProgramName (int index) override;
+    void changeProgramName (int index, const String& newName) override;
 
     //==============================================================================
-    void getStateInformation (juce::MemoryBlock& destData) override;
+    void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 protected:
-  juce::AudioParameterChoice* instanceBehaviour;
-  juce::AudioParameterChoice* firstDegreeCode;
-  juce::AudioParameterBool* chordNotesPassthrough;
-  juce::AudioParameterChoice* whenNoChordNote;
-  juce::AudioParameterChoice* whenSingleChordNote;
-  juce::AudioParameterBool* ignoreBlackKeysInPatterns;
-
+  AudioParameterChoice* instanceBehaviour;
+  AudioParameterChoice* firstDegreeCode;
+  AudioParameterBool* chordNotesPassthrough;
+  AudioParameterChoice* whenNoChordNote;
+  AudioParameterChoice* whenSingleChordNote;
+  AudioParameterBool* ignoreBlackKeysInPatterns;
+  
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArplignerAudioProcessor)
@@ -79,9 +82,9 @@ enum Enum {
   // are for when using multiple instances of Arpligner, one being the chord
   // track.
   BYPASS = 0,
-  IS_GLOBAL_CHORD_TRACK = 17,
-  IS_PATTERN_TRACK,
-  IS_PATTERN_TRACK_DELAY_1_BUFFER
+  IS_CHORD = 17,
+  IS_PATTERN,
+  IS_PATTERN_1_BUFFER_DELAY
 };
 }
 

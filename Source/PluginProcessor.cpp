@@ -18,48 +18,48 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
                       #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+                       .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
                        )
 #endif
 {
   bool globalChordStoreExists = GlobalChordStore::getInstanceWithoutCreating() != NULL;
   
-  auto behVals = juce::StringArray {"Bypass"};
+  auto behVals = StringArray {"Bypass"};
   for (int i=1; i<=16; i++)
-    behVals.add(juce::String("[Multi-chan] Chords on chan ") + juce::String(i));
-  behVals.add("[Multi-instance] Global chord track");
-  behVals.add("[Multi-instance] Pattern track");
-  behVals.add("[Multi-instance] Pattern track (delayed by 1 buffer)");
+    behVals.add(String("[Multi-chan] Chords on chan ") + String(i));
+  behVals.add("[Multi-instance] Global chord instance");
+  behVals.add("[Multi-instance] Pattern instance");
+  behVals.add("[Multi-instance] Pattern instance (1-buffer delay)");
   addParameter
-    (instanceBehaviour = new juce::AudioParameterChoice
+    (instanceBehaviour = new AudioParameterChoice
      ("chordChan", "Instance behaviour", behVals,
-      globalChordStoreExists ? InstanceBehaviour::IS_PATTERN_TRACK : 16));
+      globalChordStoreExists ? InstanceBehaviour::IS_PATTERN : 16));
   
-  juce::StringArray notes;
+  StringArray notes;
   for (int i=0; i<=127; i++)
-    notes.add(juce::String(i) + " (" + juce::MidiMessage::getMidiNoteName(i,true,true,3) + ")");
-  addParameter (firstDegreeCode = new juce::AudioParameterChoice ("firstDegreeCode", "First degree MIDI note", notes, 60));
+    notes.add(String(i) + " (" + MidiMessage::getMidiNoteName(i,true,true,3) + ")");
+  addParameter (firstDegreeCode = new AudioParameterChoice ("firstDegreeCode", "First degree MIDI note", notes, 60));
   
-  addParameter (chordNotesPassthrough = new juce::AudioParameterBool("chordNotesPassthrough", "Chord notes passthrough", false));
+  addParameter (chordNotesPassthrough = new AudioParameterBool("chordNotesPassthrough", "Chord notes passthrough", false));
   
   addParameter
-    (whenNoChordNote = new juce::AudioParameterChoice
+    (whenNoChordNote = new AudioParameterChoice
      ("whenNoChordNote", "When no chord note",
-      juce::StringArray {"Latch last chord", "Silence", "Use patterns as notes"},
+      StringArray {"Latch last chord", "Silence", "Use patterns as notes"},
       WhenNoChordNote::LATCH_LAST_CHORD
       ));
   
   addParameter
-    (whenSingleChordNote = new juce::AudioParameterChoice
+    (whenSingleChordNote = new AudioParameterChoice
      ("whenSingleChordNote", "When single chord note",
-      juce::StringArray {"Transpose last chord", "Powerchord", "Use as is", "Silence", "Use patterns as notes"},
+      StringArray {"Transpose last chord", "Powerchord", "Use as is", "Silence", "Use patterns as notes"},
       WhenSingleChordNote::TRANSPOSE_LAST_CHORD
       ));
   
-  addParameter (ignoreBlackKeysInPatterns = new juce::AudioParameterBool("ignoreBlackKeysInPatterns", "Ignore black keys in patterns", false));
+  addParameter (ignoreBlackKeysInPatterns = new AudioParameterBool("ignoreBlackKeysInPatterns", "Ignore black keys in patterns", false));
 }
 
 ArplignerAudioProcessor::~ArplignerAudioProcessor()
@@ -67,7 +67,7 @@ ArplignerAudioProcessor::~ArplignerAudioProcessor()
 }
 
 //==============================================================================
-const juce::String ArplignerAudioProcessor::getName() const
+const String ArplignerAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
@@ -119,12 +119,12 @@ void ArplignerAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const juce::String ArplignerAudioProcessor::getProgramName (int index)
+const String ArplignerAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void ArplignerAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void ArplignerAudioProcessor::changeProgramName (int index, const String& newName)
 {
 }
 
@@ -145,15 +145,15 @@ void ArplignerAudioProcessor::releaseResources()
 bool ArplignerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
+    ignoreUnused (layouts);
     return true;
   #else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
     // Some plugin hosts, such as certain GarageBand versions, will only
     // load plugins that support stereo bus layouts.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
+     && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
         return false;
 
     // This checks if the input layout matches the output layout
@@ -167,9 +167,9 @@ bool ArplignerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 }
 #endif
 
-void ArplignerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void ArplignerAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
+    ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
@@ -191,15 +191,15 @@ bool ArplignerAudioProcessor::hasEditor() const
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* ArplignerAudioProcessor::createEditor()
+AudioProcessorEditor* ArplignerAudioProcessor::createEditor()
 {
-    return new juce::GenericAudioProcessorEditor (*this);
+    return new GenericAudioProcessorEditor (*this);
 }
 
 // Save state info
-void ArplignerAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void ArplignerAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-  auto s = juce::MemoryOutputStream(destData, true);
+  auto s = MemoryOutputStream(destData, true);
   s.writeInt(*instanceBehaviour);
   s.writeInt(*firstDegreeCode);
   s.writeBool(*chordNotesPassthrough);
@@ -211,7 +211,7 @@ void ArplignerAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 // Reload state info
 void ArplignerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-  auto s = juce::MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false);
+  auto s = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false);
   *instanceBehaviour = s.readInt();
   *firstDegreeCode = s.readInt();
   *chordNotesPassthrough = s.readBool();

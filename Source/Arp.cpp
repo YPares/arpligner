@@ -72,7 +72,7 @@ NoteNumber mapPatternNote(NoteNumber referenceNote,
 // If this is called, we are either in Multi-channel mode, or a Pattern instance
 // in Multi-instance mode:
 void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enum behaviour) {
-  Array<MidiMessage> messagesToProcess, messagesToPassthrough;
+  Array<MidiMessage> noteOnsToProcess, noteOffsToProcess, messagesToPassthrough;
   ChordStore* chordStore = &mLocalChordStore;
   
   // We get some parameter values here to make sure they will remain coherent
@@ -98,8 +98,12 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
     }
     else {
       if (IS_NOTE_MESSAGE(msg)) {
-	if (Mapping::patternNoteIsMapped(mappingMode, msg.getNoteNumber()))
-	  messagesToProcess.add(msg);
+	if (Mapping::patternNoteIsMapped(mappingMode, msg.getNoteNumber())) {
+	  if (msg.isNoteOn())
+	    noteOnsToProcess.add(msg);
+	  else
+	    noteOffsToProcess.add(msg);
+	}
 	else if (unmappedPassthrough)
 	  messagesToPassthrough.add(msg);
       }
@@ -113,7 +117,7 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
   if (behaviour < InstanceBehaviour::IS_PATTERN)
     updateChordStore(chordStore);
   else if (behaviour == InstanceBehaviour::IS_PATTERN_1_BUFFER_DELAY) {
-    messagesToProcess.swapWith(mLastBufferMessagesToProcess);
+    noteOnsToProcess.swapWith(mLastBufferNoteOnsToProcess);
   }
 
   // Pass non-processable messages through:
@@ -125,26 +129,28 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
   auto curChord = chordStore->getCurrentChord();  
   
   if (shouldSilence)
-    messagesToProcess.removeIf ([](auto& msg){
-      return !msg.isNoteOff();
-    });
+    noteOnsToProcess.clear();
   
   // Process and add processable messages:
-  for (auto msg : messagesToProcess) {
+  for (auto msg : noteOffsToProcess) { // Note OFFs first
+    int chan = msg.getChannel() - 1;
+    NoteNumber noteCodeIn = msg.getNoteNumber();
+    if (mCurMappings[chan].contains(noteCodeIn)) {
+      msg.setNoteNumber(mCurMappings[chan][noteCodeIn]);
+      mCurMappings[chan].remove(noteCodeIn);
+    }
+    midibuf.addEvent(msg,0);
+  }
+  for (auto msg : noteOnsToProcess) { // Then note ONs
     if (shouldProcess) {
       int chan = msg.getChannel() - 1;
       NoteNumber noteCodeIn = msg.getNoteNumber();
-      if (msg.isNoteOn()) {
-	NoteNumber noteCodeOut = Mapping::mapPatternNote(referenceNote,
-							 mappingMode,
-							 curChord,
-							 noteCodeIn);
-	msg.setNoteNumber(noteCodeOut);
-	curMappings[chan].set(noteCodeIn, noteCodeOut);
-      }
-      else if (msg.isNoteOff() && curMappings[chan].contains(noteCodeIn)) {
-	msg.setNoteNumber(curMappings[chan][noteCodeIn]);
-      }      
+      NoteNumber noteCodeOut = Mapping::mapPatternNote(referenceNote,
+						       mappingMode,
+						       curChord,
+						       noteCodeIn);
+      msg.setNoteNumber(noteCodeOut);
+      mCurMappings[chan].set(noteCodeIn, noteCodeOut);
     }
     midibuf.addEvent(msg, 0);
   }

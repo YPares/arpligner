@@ -22,10 +22,10 @@ using namespace juce;
 class Arp : public ArplignerAudioProcessor {
 private:
   ChordStore mLocalChordStore;
-  Array<MidiMessage> mLastBufferMessagesToProcess;
+  Array<MidiMessage> mLastBufferNoteOnsToProcess;
   
   // On each pattern chan, to which note is currently mapped each incoming NoteNumber
-  HashMap<NoteNumber, NoteNumber> curMappings[16];
+  HashMap<NoteNumber, NoteNumber> mCurMappings[16];
 
   void nonGlobalChordInstanceWork(MidiBuffer&, InstanceBehaviour::Enum);
 

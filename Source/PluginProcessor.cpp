@@ -32,7 +32,7 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
     behVals.add(String("[Multi-chan] Chords on chan ") + String(i));
   behVals.add("[Multi-instance] Global chord instance");
   behVals.add("[Multi-instance] Pattern instance");
-  behVals.add("[Multi-instance] Pattern instance (1-buffer delay)");
+  behVals.add("[Multi-instance] 1-buffer delay pattern instance (EXPERIMENTAL)");
   addParameter
     (instanceBehaviour = new AudioParameterChoice
      ("chordChan", "Instance behaviour", behVals,
@@ -183,7 +183,7 @@ bool ArplignerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 
 void ArplignerAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    // ScopedNoDenormals noDenormals;
+    ScopedNoDenormals noDenormals;
     // auto totalNumInputChannels  = getTotalNumInputChannels();
     // auto totalNumOutputChannels = getTotalNumOutputChannels();
 

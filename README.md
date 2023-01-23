@@ -198,7 +198,7 @@ you will end up with stuck notes.
 | | |`[Multi-chan] Chords on chan XX`|Sets to Multi-channel mode, and use channel `XX` as the chord track (and any other channel as a pattern track)|
 | | |`[Multi-instance] Global chord instance`|Sets this instance as the one that receives chord notes (any MIDI input, whatever its channel) and sets the current chord for all other connected instances|
 | | |`[Multi-instance] Pattern instance`|Sets this instance as a "follower" of the one set to `Global instance`. Any MIDI input, whatever its channel, is considered a pattern|
-| | |`[Multi-instance] Pattern instance (1-buffer delay)`|Like the above, but can help in cases where chord notes begin at the exact same moment as pattern notes. It makes sure the Chord instance properly updates the currently playing chord before `Pattern` instances run|
+| | |`[Multi-instance] 1-buffer delay pattern instance`|Like the above, but will always introduce a delay of 1 midi buffer in the pattern track. See the [current limitations](#current-limitations) for when to use this|
 
 ### Chord parameters
 
@@ -226,10 +226,6 @@ different behaviour for each Pattern instance. This can be useful for instance
 if some instruments are to be played live and others via MIDI sequencing, or if
 different live players have different preferences.
 
-**These parameters should be safe to change at any time**, either for weird
-effects or for practical reasons, like when switching between sections of your
-song.
-
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
 |**Pattern notes mapping**|`Semitone to degree`|Choose from:|How to map midi note codes on pattern tracks to actual notes|
@@ -242,6 +238,20 @@ song.
 
 ## Current limitations
 
+- In Multi-instance mode, when chord notes and pattern notes `note on` MIDI
+  events are perfectly aligned (which is a ubiquitous case when using MIDI clips
+  or sequencers), there is really no guarantee that the chord instance will have
+  the time to update the current chord before the pattern instances processes
+  the notes, and therefore in these cases it can happen that your patterns will
+  play a note that comes from the "previous" chord. In such cases, if your DAW
+  has a feature to delay MIDI notes by a few milliseconds on pattern tracks, I
+  recommend using it (in Bitwig, that's the `Note Delay` device, which can go as
+  low as 10ms delay, which in my tests was enough). If not, you can try setting
+  the `Instance behaviour` to `[Multi-instance] 1-buffer delay pattern
+  instance`, but this feature may still contain bugs, that's why I recommend not
+  using it if your DAW has a proper MIDI delay. Multi-channel mode does not have
+  this problem because given all events are processed by the same instance, I
+  can make sure to update the current chord prior to processing pattern notes.
 - Arpligner is quite strict for now regarding the timing of notes on the chord
   channel. When your chords are played from already quantized MIDI clips or by a
   sequencer it's not a problem, but for "classical" live arp usage, i.e. when

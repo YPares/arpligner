@@ -27,15 +27,14 @@ private:
   Chord mCurrentChord;
   bool mShouldProcess;
   bool mShouldSilence;
-  CriticalSection mObjectLock;
+  bool mNeedsUpdate;
   
 public:
-  ChordStore() : mShouldProcess(true), mShouldSilence(false) {
+  ChordStore() : mShouldProcess(true), mShouldSilence(false), mNeedsUpdate(false) {
   }
   
   void addChordNote(NoteNumber nn) {
-    const ScopedLock lock(mObjectLock);
-    
+    mNeedsUpdate = true;
     if(!mCounters.contains(nn))
       mCounters.set(nn, 1);
     else
@@ -43,8 +42,7 @@ public:
   }
 
   void rmChordNote(NoteNumber nn) {
-    const ScopedLock lock(mObjectLock);
-    
+    mNeedsUpdate = true;
     if(mCounters.contains(nn))
       mCounters.set(nn, mCounters[nn]-1);
     if(mCounters[nn] <= 0)
@@ -53,24 +51,28 @@ public:
 
   void updateCurrentChord(WhenNoChordNote::Enum, WhenSingleChordNote::Enum);
   
-  Chord getCurrentChord() {
-    return mCurrentChord;
-  }
-
-  bool shouldProcess() {
-    return mShouldProcess;
-  }
-
-  bool shouldSilence() {
-    return mShouldSilence;
+  virtual void getCurrentChord(Chord& chord, bool& shouldProcess, bool& shouldSilence) {
+    chord = mCurrentChord;
+    shouldProcess = mShouldProcess;
+    shouldSilence = mShouldSilence;
   }
 };
 
 // A JUCE singleton ChordStore. Used in a multi-instance configuration
 class GlobalChordStore : public ChordStore {
 public:
+  ReadWriteLock globalStoreLock;
+  
   ~GlobalChordStore() {
     clearSingletonInstance();
+  }
+
+  void getCurrentChord(Chord& chord, bool& shouldProcess, bool& shouldSilence) override {
+    // This will prevent a Pattern instance to access the current chord if the
+    // Global chord instance is still updating it
+    const ScopedReadLock lock(globalStoreLock);
+    
+    ChordStore::getCurrentChord(chord, shouldProcess, shouldSilence);
   }
 
   JUCE_DECLARE_SINGLETON(GlobalChordStore, false);

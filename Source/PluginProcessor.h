@@ -69,6 +69,7 @@ protected:
   AudioParameterChoice* firstDegreeCode;
   AudioParameterChoice* patternNotesMapping;
   AudioParameterBool* unmappedPatternNotesPassthrough;
+  AudioParameterInt* numMillisecsOfLatency;
   
 private:
     //==============================================================================
@@ -83,8 +84,7 @@ enum Enum {
   // are for Multi-instance behaviour
   BYPASS = 0,
   IS_CHORD = 17,
-  IS_PATTERN,
-  IS_PATTERN_1_BUFFER_DELAY
+  IS_PATTERN
 };
 }
 

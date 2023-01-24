@@ -115,18 +115,16 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
   midibuf.clear();
   
   if (behaviour < InstanceBehaviour::IS_PATTERN)
+    // We are a Multi-channel instance, we update our chord store:
     updateChordStore(chordStore);
-  else if (behaviour == InstanceBehaviour::IS_PATTERN_1_BUFFER_DELAY) {
-    noteOnsToProcess.swapWith(mLastBufferNoteOnsToProcess);
-  }
 
   // Pass non-processable messages through:
   for (auto msg : messagesToPassthrough)
     midibuf.addEvent(msg, 0);
 
-  auto shouldSilence = chordStore->shouldSilence();
-  auto shouldProcess = chordStore->shouldProcess();
-  auto curChord = chordStore->getCurrentChord();  
+  Chord curChord;
+  bool shouldProcess, shouldSilence;
+  chordStore->getCurrentChord(curChord, shouldProcess, shouldSilence);
   
   if (shouldSilence)
     noteOnsToProcess.clear();

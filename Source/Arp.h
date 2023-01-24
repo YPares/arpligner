@@ -22,7 +22,6 @@ using namespace juce;
 class Arp : public ArplignerAudioProcessor {
 private:
   ChordStore mLocalChordStore;
-  Array<MidiMessage> mLastBufferNoteOnsToProcess;
   
   // On each pattern chan, to which note is currently mapped each incoming NoteNumber
   HashMap<NoteNumber, NoteNumber> mCurMappings[16];
@@ -42,10 +41,12 @@ private:
        (WhenSingleChordNote::Enum)whenSingleChordNote->getIndex());
   }
 
-  // We special-case the main loop of the global chord instance since it has much
-  // less operations to do
+  // We special-case the main loop of the global chord instance since it has
+  // much less operations to do, and should lock the chord store
   void globalChordInstanceWork(const MidiBuffer& midibuf) {
-    ChordStore* chordStore = GlobalChordStore::getInstance();
+    GlobalChordStore* chordStore = GlobalChordStore::getInstance();
+    const ScopedWriteLock lock(chordStore->globalStoreLock);
+
     for (auto msgMD : midibuf) {
       toChordStore(chordStore, msgMD.getMessage());
     }

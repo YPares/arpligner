@@ -116,32 +116,8 @@ you will have to look for Arpligner under this category.
 
 Then, I recommend to have one track dedicated to **chords**. After that, if you
 use the **Multi-channel** mode, you'll need some way to configure MIDI routing
-in your DAW so Arpligner receives what it expects.
-
-### Notes about MIDI routing in Multi-channel mode
-
-When using **Multi-channel** mode, you have two options:
-
-- Dedicate one MIDI channel to each of your instruments. Then use only one
-Arpligner instance on your **chord** track, and route **all** your MIDI data to
-it, making sure that this data is properly tagged by channel. Then, split back
-the MIDI data that Arpligner outputs by MIDI channel, and route each channel to
-its corresponding instrument. Depending on your DAW, you may have to use 2
-tracks per instrument in that fashion: one for the pattern clips for this
-instrument, and one for the actual instrument.
-- Place one instance of Arpligner on each of your **pattern** tracks, and route
-the same **chord track** to all of them. Each instance will then receive a
-pattern track on only one MIDI channel, and they will all process their patterns
-according to the same chord progression. Each instance can then process pattern
-data on several channels (this can be useful for multi-timbral instruments like
-Kontakt or Omnisphere, or if your DAW supports layering several instruments on
-the same track).
-
-For example in Bitwig, you can put the `Note Receiver` device in a track to
-route MIDI events from another track, and you can use the `Channel Map` device
-in the `Source FX` section of this `Note Receiver` to make every incoming note
-go to the right MIDI channel. Do not forget to deactivate the `Inputs` button in
-the "Mutes" so that MIDI events from the track pass through too.
+in your DAW so Arpligner receives what it expects. See [this
+section](#tips-for-multi-channel-mode) for tips.
 
 ## Implementation & supported plugin formats
 
@@ -161,6 +137,8 @@ I originally implemented Arpligner as a Lua script for
 maintaining it.
 
 ## Tips
+
+### General tips
 
 - Arpligner should give more controllable results if you write/play your chords
   in their most canonical form: block chords, no inversions, without any
@@ -190,6 +168,67 @@ maintaining it.
   transpose it if it receives just one note. See [the settings
   below](#available-settings) for more info.
 
+### Tips for Multi-channel mode
+
+When using **Multi-channel** mode, you have two options:
+
+- Dedicate one MIDI channel to each of your instruments. Then use only one
+Arpligner instance on your **chord** track, and route **all** your MIDI data to
+it, making sure that this data is properly tagged by channel. Then, split back
+the MIDI data that Arpligner outputs by MIDI channel, and route each channel to
+its corresponding instrument. Depending on your DAW, you may have to use 2
+tracks per instrument in that fashion: one for the pattern clips for this
+instrument, and one for the actual instrument.
+- Place one instance of Arpligner on each of your **pattern** tracks, and route
+the same **chord track** to all of them. Each instance will then receive a
+pattern track on only one MIDI channel, and they will all process their patterns
+according to the same chord progression. Each instance can then process pattern
+data on several channels (this can be useful for multi-timbral instruments like
+Kontakt or Omnisphere, or if your DAW supports layering several instruments on
+the same track).
+
+For example in Bitwig, you can put the `Note Receiver` device in a track to
+route MIDI events from another track, and you can use the `Channel Map` device
+in the `Source FX` section of this `Note Receiver` to make every incoming note
+go to the right MIDI channel. Do not forget to deactivate the `Inputs` button in
+the "Mutes" so that MIDI events from the track pass through too.
+
+### Tips for Multi-instance mode
+
+In **Multi-instance** mode, when some chord notes and pattern notes start at the
+exact same time (which is a ubiquitous case when using MIDI clips or
+sequencers), you will probably need one of the following two options (don't do
+both at the same time):
+
+- Either introduce some delay on each one of your **pattern** tracks: if your
+DAW has a feature to delay MIDI notes by a few milliseconds on pattern tracks,
+it can be used here (in Bitwig, that's the `Note Delay` device, which can go as
+low as 10ms delay, which in my tests was enough)
+- Activate the `Global chord track lookahead` on your **chord** track:
+increasing this delay parameter (in milliseconds) on your Global chord instance
+should have an effect similar to the first option (but requires a change on only
+one track, not on all your pattern tracks). The lookahead time on the Global
+chord instance is 10ms by default. You probably will need to reload
+(deactivate/reactivate) your Global chord instance if you change it, so your DAW
+may register the change. This will tell your DAW that this Global chord instance
+needs a bit of extra time, and it will delay all the other tracks in
+consequence.
+
+If you do not do that, your pattern instances may process their notes _before_
+the chord instance has noticed that the chord has changed, and you would get
+some final result which is still using the previous chord. This is perfectly
+expected and cannot be avoided in situations where your MIDI is sequenced. It
+comes from the fact that you have no guarantee over the order in which your DAW
+will execute your plugins' logic, and therefore over which instance will notice
+first some perfectly synchronized MIDI events. Therefore we need to delay a
+little bit (by inaudible amounts) the pattern tracks with respect to the chord
+track to make sure everything is updated in the right order. In live situations,
+such perfect synchronization never occurs, so it's much less of a concern.
+
+Note that **Multi-channel** mode does not raise this concern at all (live or
+not). In that mode, given all events are processed by the same instance, I can
+make sure to update the current chord prior to processing pattern notes.
+
 ## Available settings
 
 Arpligner's GUI shows a few parameters, and exposes them to the host.
@@ -207,7 +246,6 @@ you will end up with stuck notes.
 | | |`[Multi-chan] Chords on chan XX`|Sets to Multi-channel mode, and use channel `XX` as the chord track (and any other channel as a pattern track)|
 | | |`[Multi-instance] Global chord instance`|Sets this instance as the one that receives chord notes (any MIDI input, whatever its channel) and sets the current chord for all other connected instances|
 | | |`[Multi-instance] Pattern instance`|Sets this instance as a "follower" of the one set to `Global instance`. Any MIDI input, whatever its channel, is considered a pattern|
-| | |`[Multi-instance] 1-buffer delay pattern instance`|Like the above, but will always introduce a delay of 1 midi buffer in the pattern track. See the [current limitations](#current-limitations) for when to use this|
 
 ### Chord parameters
 
@@ -226,6 +264,7 @@ These parameters are used *only* in Multi-chan mode or by *Chord* instances.
 | | |`Use as is`|Use _n_ as just a "one-note chord". Tread carefully, the end result may go up in octaves pretty fast|
 | | |`Silence`|Same as for "no chord note"|
 | | |`Use pattern notes as final notes`|Same as for "no chord note"|
+|**Global chord track lookahead**|`10ms`|A delay between 0 and 50ms|Only used by a Global chord instance. Triggers your DAW Plugin Delay Compensation (if above zero) to deal with perfectly synchronized chord and pattern events. See [this section](#tips-for-multi-instance-mode) for when to use this|
 
 ### Pattern parameters
 
@@ -247,20 +286,6 @@ different live players have different preferences.
 
 ## Current limitations
 
-- In Multi-instance mode, when chord notes and pattern notes `note on` MIDI
-  events are perfectly aligned (which is a ubiquitous case when using MIDI clips
-  or sequencers), there is really no guarantee that the chord instance will have
-  the time to update the current chord before the pattern instances processes
-  the notes, and therefore in these cases it can happen that your patterns will
-  play a note that comes from the "previous" chord. In such cases, if your DAW
-  has a feature to delay MIDI notes by a few milliseconds on pattern tracks, I
-  recommend using it (in Bitwig, that's the `Note Delay` device, which can go as
-  low as 10ms delay, which in my tests was enough). If not, you can try setting
-  the `Instance behaviour` to `[Multi-instance] 1-buffer delay pattern
-  instance`, but this feature may still contain bugs, that's why I recommend not
-  using it if your DAW has a proper MIDI delay. Multi-channel mode does not have
-  this problem because given all events are processed by the same instance, I
-  can make sure to update the current chord prior to processing pattern notes.
 - Arpligner is quite strict for now regarding the timing of notes on the chord
   channel. When your chords are played from already quantized MIDI clips or by a
   sequencer it's not a problem, but for "classical" live arp usage, i.e. when

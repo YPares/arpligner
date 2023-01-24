@@ -2,8 +2,9 @@
 
 void ChordStore::updateCurrentChord(WhenNoChordNote::Enum whenNoChordNoteVal,
                                     WhenSingleChordNote::Enum whenSingleChordNoteVal) {
-  const ScopedLock lock(mObjectLock);
-
+  if (!mNeedsUpdate)
+    return;
+  
   mShouldSilence = false;
   mShouldProcess = true;
   
@@ -65,6 +66,8 @@ void ChordStore::updateCurrentChord(WhenNoChordNote::Enum whenNoChordNoteVal,
     mCurrentChord = newChord;
     break;
   };
+
+  mNeedsUpdate = false;
 }
 
 JUCE_IMPLEMENT_SINGLETON(GlobalChordStore);

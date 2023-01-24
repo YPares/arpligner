@@ -32,7 +32,6 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
     behVals.add(String("[Multi-chan] Chords on chan ") + String(i));
   behVals.add("[Multi-instance] Global chord instance");
   behVals.add("[Multi-instance] Pattern instance");
-  behVals.add("[Multi-instance] 1-buffer delay pattern instance (EXPERIMENTAL)");
   addParameter
     (instanceBehaviour = new AudioParameterChoice
      ("chordChan", "Instance behaviour", behVals,
@@ -53,6 +52,10 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
       StringArray {"Transpose last chord", "Powerchord", "Use as is", "Silence", "Use pattern notes as final notes"},
       WhenSingleChordNote::TRANSPOSE_LAST_CHORD
       ));
+
+  addParameter
+    (numMillisecsOfLatency = new AudioParameterInt
+     ("numMillisecsOfLatency", "Global chord track lookahead (ms)", 0, 50, 10));
   
   addParameter
     (patternNotesMapping = new AudioParameterChoice
@@ -74,6 +77,8 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   
   addParameter (unmappedPatternNotesPassthrough = new AudioParameterBool
 		("unmappedPatternNotesPassthrough", "Unmapped pattern notes passthrough", false));
+
+  setLatencySamples(0);
 }
 
 ArplignerAudioProcessor::~ArplignerAudioProcessor()
@@ -145,8 +150,12 @@ void ArplignerAudioProcessor::changeProgramName (int index, const String& newNam
 //==============================================================================
 void ArplignerAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+  int latency = 0;
+  if (instanceBehaviour->getIndex() == InstanceBehaviour::IS_CHORD) {
+    int wanted = numMillisecsOfLatency->get();
+    latency = (samplesPerBlock * sampleRate * wanted) / 512000;
+  }
+  setLatencySamples(latency);
 }
 
 void ArplignerAudioProcessor::releaseResources()
@@ -221,6 +230,7 @@ void ArplignerAudioProcessor::getStateInformation (MemoryBlock& destData)
   s.writeInt(*whenSingleChordNote);
   s.writeInt(*patternNotesMapping);
   s.writeBool(*unmappedPatternNotesPassthrough);
+  s.writeInt(*numMillisecsOfLatency);
 }
 
 // Reload state info
@@ -234,4 +244,5 @@ void ArplignerAudioProcessor::setStateInformation (const void* data, int sizeInB
   *whenSingleChordNote = s.readInt();
   *patternNotesMapping = s.readInt();
   *unmappedPatternNotesPassthrough = s.readBool();
+  *numMillisecsOfLatency = s.readInt();
 }

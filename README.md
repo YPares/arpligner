@@ -18,7 +18,7 @@ standalone application.
 To achieve this, the big difference between Arpligner and the aforementioned
 plugins is that Arpligner does very intentionally _**not** come with its own
 graphical interface for editing patterns_. Instead it will rely on arp patterns
-being fed to it as regular (and possibly live) MIDI data. Therefore, you can
+being fed to it as regular (and possibly live) MIDI data: you can thus
 make use of your DAW piano rool and MIDI sequencing capabilities[^1], play those
 patterns live, or use an external MIDI sequencer (software or hardware).
 
@@ -63,7 +63,7 @@ section](#pattern-parameters) for more info.
 
 ### Multi-channel mode
 
-In this mode, you can use as little as one single Arpligner plugin in your DAW
+In this mode, you can use as little as one single Arpligner instance in your DAW
 session. It expects to be fed MIDI data on at least 2 channels:
 
 - Channel 16 (by default), which will be treated as the **chord** channel
@@ -204,7 +204,7 @@ both at the same time):
 DAW has a feature to delay MIDI notes by a few milliseconds on pattern tracks,
 it can be used here (in Bitwig, that's the `Note Delay` device, which can go as
 low as 10ms delay, which in my tests was enough)
-- Activate the `Global chord track lookahead` on your **chord** track:
+- Or make sure the `Global chord track lookahead` on your **chord** track has a non-zero value:
 increasing this delay parameter (in milliseconds) on your Global chord instance
 should have an effect similar to the first option (but requires a change on only
 one track, not on all your pattern tracks). The lookahead time on the Global
@@ -243,9 +243,9 @@ you will end up with stuck notes.
 |--------------------------------|---------------|-----------------|---------------|
 |**Instance behaviour**|`[Multi-chan] Chords on chan 16`|Choose from:|The main behaviour of this Arpligner instance|
 | | |`Bypass`|Do nothing and just pass all MIDI events through|
-| | |`[Multi-chan] Chords on chan XX`|Sets to Multi-channel mode, and use channel `XX` as the chord track (and any other channel as a pattern track)|
+| | |`[Multi-chan] Chords on chan XX`|Sets to **Multi-channel** mode, and use channel `XX` as the chord track (and any other channel as a pattern track)|
 | | |`[Multi-instance] Global chord instance`|Sets this instance as the one that receives chord notes (any MIDI input, whatever its channel) and sets the current chord for all other connected instances|
-| | |`[Multi-instance] Pattern instance`|Sets this instance as a "follower" of the one set to `Global instance`. Any MIDI input, whatever its channel, is considered a pattern|
+| | |`[Multi-instance] Pattern instance`|Sets this instance as a "follower" of the one set to `Global chord instance`. Any MIDI input, whatever its channel, is considered a pattern event, and will stay on the same channel|
 
 ### Chord parameters
 
@@ -253,7 +253,7 @@ These parameters are used *only* in Multi-chan mode or by *Chord* instances.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
-|**Chord notes passthrough**|`Off`|`On` or `Off`|Whether note events on the chord track should pass through instead of being consumed. Non-note events (such as CCs) on the chord track will **always** pass through|
+|**Chord notes passthrough**|`Off`|`On` or `Off`|Whether note events on the chord track should pass through instead of being consumed. Non-note events (such as CCs) on the chord track will **always** pass through. _(Ignored if instance is `Global chord instance`: notes always pass through in that case)_|
 |**When no chord note**|`Latch last chord`|Choose from:|What to do when **no** note is playing on the chord track|
 | | |`Latch last chord`|Keep using the previous chord that played (`Silence` if no previous chord is known)|
 | | |`Silence`| Ignore the pattern notes|
@@ -297,7 +297,11 @@ different live players have different preferences.
   will be fully refreshed every time it's reloaded, so if that happens it may
   lose track of some notes. If you ever get stuck notes, stop all MIDI data
   coming to Arpligner and disable/re-enable the plugin.
-
+- I would love to be able to support MPE in patterns: given in Multi-instance mode you can
+  use as many channels as you want for your patterns, this would allow you to
+  play your patterns on any MPE instrument, with glides, polyphonic bends, expression changes, etc,
+  record them and be able to keep these in your final arpeggios while re-using them over a different harmony :).
+  Sadly my JUCE skills are not up to this task yet, but any help is welcome!
 
 [^1]: I use Bitwig and the piano roll editor and MIDI operators to manipulate
     notes are just so much better and so much more flexible than everything I've

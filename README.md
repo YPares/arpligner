@@ -1,17 +1,26 @@
+<noscript><a href="https://liberapay.com/Ywen/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript> <img src="https://img.shields.io/liberapay/patrons/Ywen.svg?logo=liberapay">
+
 # Arpligner
 
-Arpligner is a polyphonic arpeggiator MIDI plugin that will use your own arp
-patterns (like Xfer Cthulhu, Reason PolyStep Sequencer, FL VFX Sequencer, 2Rule
-TugMidiSeq...). Each step can thus play several notes of a chord at the same
-time. "Steps" can also hold over an arbitrary length of time and overlap.  So
-besides arpeggiation _per se_, you can do strumming or really any kind of
-"turning a plain block chord into something more interesting".
+Arpligner is a **multi-track** & **polyphonic** arpeggiator which will use your
+own arpeggiation patterns (like Xfer Cthulhu, Reason PolyStep Sequencer, FL VFX
+Sequencer, 2Rule TugMidiSeq). It is packaged as a VST3 MIDI plugin and as a
+standalone application.
 
-The big difference is that Arpligner does (very intentionally) **not** come with
-its own GUI for editing patterns. Instead it will rely on arp patterns being fed
-to it as regular (and possibly live) MIDI data. Therefore, you can make use of
-your DAW piano rool and MIDI sequencing capabilities[^1], play those patterns
-live, or use an external MIDI sequencer (software or hardware).
+- **Multi-track**: Multiple arpeggiation patterns can play at the same time for
+  a given chord, each one in its own track of your DAW, or on its own MIDI
+  channel,
+- **Polyphonic**: Each step can play several notes of a chord at the same
+  time. "Steps" can also hold over an arbitrary length of time and overlap.  So
+  besides arpeggiation _per se_, you can do strumming or really any kind of
+  "turning a plain block chord into something more interesting".
+
+To achieve this, the big difference between Arpligner and the aforementioned
+plugins is that Arpligner does very intentionally _**not** come with its own
+graphical interface for editing patterns_. Instead it will rely on arp patterns
+being fed to it as regular (and possibly live) MIDI data. Therefore, you can
+make use of your DAW piano rool and MIDI sequencing capabilities[^1], play those
+patterns live, or use an external MIDI sequencer (software or hardware).
 
 Therefore, you can use it as a regular arp, playing your chords against
 pre-written patterns, or the opposite. Or both can be live data! That would be
@@ -68,8 +77,8 @@ time, but they will just be completely independent of one another. They will
 each receive their own chord track and pattern tracks.
 
 **Multi-channel** has the advantage of requiring a bit less CPU and RAM, and
-allowing for several chord "tracks" that can each one affect up to 15 patterns
-"tracks".
+enables you to have several chord tracks, each one affecting up to 15 patterns
+tracks.
 
 ### Multi-instance mode
 

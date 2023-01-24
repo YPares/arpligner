@@ -135,7 +135,9 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
     NoteNumber noteCodeIn = msg.getNoteNumber();
     if (mCurMappings[chan].contains(noteCodeIn)) {
       msg.setNoteNumber(mCurMappings[chan][noteCodeIn]);
-      mCurMappings[chan].remove(noteCodeIn);
+      // The following should work, but seems to trigger stuck notes:
+      //mCurMappings[chan].remove(noteCodeIn);
+      // Commented out until further investigation.
     }
     midibuf.addEvent(msg,0);
   }

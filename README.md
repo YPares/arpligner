@@ -1,4 +1,4 @@
-<noscript><a href="https://liberapay.com/Ywen/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript> <img src="https://img.shields.io/liberapay/patrons/Ywen.svg?logo=liberapay">
+<noscript><a href="https://liberapay.com/Ywen/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"/></a></noscript> <img src="https://img.shields.io/liberapay/patrons/Ywen.svg?logo=liberapay"> <a href="https://gitter.im/arpligner/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/arpligner/community.svg" align="right" alt="Join the chat at https://gitter.im/arpligner/community"/></a>
 
 # Arpligner
 
@@ -30,7 +30,8 @@ charge of how to layout those chords[^2].
 See https://youtu.be/IQ9GFEaS4Ag for an overview of the tool and the basic
 features (this uses the original Lua script but the video remains valid).
 
-Still experimental, please post issues here in case of bugs or questions! :)
+Still experimental, please post issues here in case of bugs or questions, or get
+in touch with the [gitter chat](https://gitter.im/arpligner/community)! :)
 
 ## How to use it
 

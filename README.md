@@ -232,13 +232,8 @@ make sure to update the current chord prior to processing pattern notes.
 
 ## Available settings
 
-Arpligner's GUI shows a few parameters, and exposes them to the host.
-
-**IMPORTANT**: Unless stated otherwise, these parameters are **not** meant to be
-changed while Arpligner is processing notes. If you really want to automate some
-of these (for any reason), I strongly advise you to change their values **only**
-during a moment in your song when no MIDI notes are being sent to Arpligner, or
-you will end up with stuck notes.
+Arpligner's GUI shows a few parameters. This parameters are also exposed to the
+host, and can be automated[^3].
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
@@ -299,19 +294,21 @@ unmapped. In such case, those notes will simply be silenced.
   I recommend to use some sort of beat quantizer on your chord channel before
   Arpligner, and to play around with the various settings until you get a
   satisfying result.
-- Note-off events are tricky to handle right, and the plugin's internal state
-  will be fully refreshed every time it's reloaded, so if that happens it may
-  lose track of some notes. If you ever get stuck notes, stop all MIDI data
-  coming to Arpligner and disable/re-enable the plugin.
-- I would love to be able to support MPE in patterns: given in Multi-instance mode you can
-  use as many channels as you want for your patterns, this would allow you to
-  play your patterns on any MPE instrument, with glides, polyphonic bends, expression changes, etc,
-  record them and be able to keep these in your final arpeggios while re-using them over a different harmony :).
-  Sadly my JUCE skills are not up to this task yet, but any help is welcome!
+- I would love to be able to support MPE in patterns: given in Multi-instance
+  mode you can use as many channels as you want for your patterns, this would
+  allow you to play your patterns on any MPE instrument, with glides, polyphonic
+  bends, expression changes, etc, record them and be able to keep these in your
+  final arpeggios while re-using them over a different harmony :).  Sadly my
+  JUCE skills are not up to this task yet, but any help is welcome!
 
 [^1]: I use Bitwig and the piano roll editor and MIDI operators to manipulate
-    notes are just so much better and so much more flexible than everything I've
-    seen in plugins
+      notes are just so much better and so much more flexible than everything
+      I've seen in plugins
 
 [^2]: And if someone ever makes a jazz jam session out of that, definitely
-    record it and send me the video ^^
+      record it and send me the video ^^
+
+[^3]: **WARNING:** In some cases, automation of some of these parameters while
+      Arpligner is processing notes may cause stuck notes, please report an
+      issue here if this happens to you, preferably with a set of MIDI files
+      that will help me reproduce the problem

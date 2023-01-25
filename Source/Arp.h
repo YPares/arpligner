@@ -16,17 +16,13 @@
 
 using namespace juce;
 
-#define IS_NOTE_MESSAGE(msg) (msg.isNoteOn() || msg.isNoteOff())
-
 
 class Arp : public ArplignerAudioProcessor {
 private:
   ChordStore mLocalChordStore;
   
   // On each pattern chan, to which note is currently mapped each incoming NoteNumber
-  HashMap<NoteNumber, NoteNumber> mCurMappings[16];
-
-  void nonGlobalChordInstanceWork(MidiBuffer&, InstanceBehaviour::Enum);
+  NoteNumber mCurMappings[16][128];
 
   void toChordStore(ChordStore* chordStore, const MidiMessage& msg) {
     if (msg.isNoteOn())
@@ -52,8 +48,16 @@ private:
     }
     updateChordStore(chordStore);
   }
+
+  void patternOrSingleInstanceWork(MidiBuffer&, InstanceBehaviour::Enum);
   
 public:
+  Arp() : ArplignerAudioProcessor() {
+    for (int chan=0; chan<16; chan++)
+      for (int note=0; note<128; note++)
+	mCurMappings[chan][note] = ~0;
+  }
+  
   void runArp(MidiBuffer& midibuf) {
     auto behaviour = (InstanceBehaviour::Enum)instanceBehaviour->getIndex();
     switch (behaviour) {
@@ -63,7 +67,7 @@ public:
       globalChordInstanceWork(midibuf);
       break;
     default:
-      nonGlobalChordInstanceWork(midibuf, behaviour);
+      patternOrSingleInstanceWork(midibuf, behaviour);
       break;
     }
   }

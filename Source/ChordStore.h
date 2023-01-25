@@ -15,7 +15,7 @@
 
 using namespace juce;
 
-using NoteNumber = int;
+using NoteNumber = uint8;
 using Chord = SortedSet<NoteNumber>;
 using Counters = HashMap<NoteNumber, int>;
 

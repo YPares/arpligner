@@ -13,7 +13,7 @@
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new Arp();
+  return new Arp();
 }
 
 
@@ -92,7 +92,7 @@ void mapPatternNote(NoteNumber referenceNote,
 
 // If this is called, we are either in Multi-channel mode, or a Pattern instance
 // in Multi-instance mode:
-void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enum behaviour) {
+void Arp::patternOrSingleInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enum behaviour) {
   Array<MidiMessage> noteOnsToProcess, noteOffsToProcess, messagesToPassthrough;
   ChordStore* chordStore = &mLocalChordStore;
   
@@ -144,20 +144,17 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
   for (auto msg : noteOffsToProcess) { // Note OFFs first
     int chan = msg.getChannel() - 1;
     NoteNumber noteCodeIn = msg.getNoteNumber();
-    if (mCurMappings[chan].contains(noteCodeIn)) {
-      msg.setNoteNumber(mCurMappings[chan][noteCodeIn]);
-      // The following should work, but seems to trigger stuck notes:
-      //mCurMappings[chan].remove(noteCodeIn);
-      // Commented out until further investigation.
-    }
+    NoteNumber noteCodeOut = mCurMappings[chan][noteCodeIn];
+    if (noteCodeOut != ~0)
+      msg.setNoteNumber(noteCodeOut);
     midibuf.addEvent(msg, 0);
   }
   for (auto msg : noteOnsToProcess) { // Then note ONs
     bool isMapped = true;
-    if (shouldProcess) {
-      int chan = msg.getChannel() - 1;
-      NoteNumber noteCodeIn = msg.getNoteNumber();
-      NoteNumber noteCodeOut = noteCodeIn;
+    int chan = msg.getChannel() - 1;
+    NoteNumber noteCodeIn = msg.getNoteNumber();
+    NoteNumber noteCodeOut = noteCodeIn;
+    if (shouldProcess)
       Mapping::mapPatternNote(referenceNote,
 			      mappingMode,
 			      wrapMode,
@@ -165,12 +162,10 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
 			      noteCodeIn,
 			      noteCodeOut,
 			      isMapped);
-      if (isMapped) {
-	msg.setNoteNumber(noteCodeOut);
-	mCurMappings[chan].set(noteCodeIn, noteCodeOut);
-      }
-    }
-    if (isMapped)
+    mCurMappings[chan][noteCodeIn] = noteCodeOut;
+    if (isMapped) {
+      msg.setNoteNumber(noteCodeOut);
       midibuf.addEvent(msg, 0);
+    }
   }
 }

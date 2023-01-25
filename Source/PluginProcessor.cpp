@@ -36,8 +36,6 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
     (instanceBehaviour = new AudioParameterChoice
      ("chordChan", "Instance behaviour", behVals,
       globalChordStoreExists ? InstanceBehaviour::IS_PATTERN : 16));
-    
-  addParameter (chordNotesPassthrough = new AudioParameterBool("chordNotesPassthrough", "Chord notes passthrough", false));
   
   addParameter
     (whenNoChordNote = new AudioParameterChoice
@@ -76,17 +74,14 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
       ));
 
   StringArray waModes = StringArray
-    {"No wraparound", "[Dynamic] After all chord degrees", "[Static] Every 3rd pattern note"};
+    {"No wraparound", "[Dynamic] After all chord degrees", "[Fixed] Every 3rd pattern note"};
   for (int i=3; i<=12; i++)
-    waModes.add(String("[Static] Every ") + String(i+1) + "th pattern note");
+    waModes.add(String("[Fixed] Every ") + String(i+1) + "th pattern note");
   addParameter
     (patternNotesWraparound = new AudioParameterChoice
-     ("patternNotesWraparound", "Octave wraparound", waModes,
+     ("patternNotesWraparound", "Pattern octave wraparound", waModes,
       PatternNotesWraparound::AFTER_ALL_CHORD_DEGREES));
   
-  addParameter (unmappedPatternNotesPassthrough = new AudioParameterBool
-		("unmappedPatternNotesPassthrough", "Unmapped pattern notes passthrough", false));
-
   setLatencySamples(0);
 }
 
@@ -234,11 +229,9 @@ void ArplignerAudioProcessor::getStateInformation (MemoryBlock& destData)
   auto s = MemoryOutputStream(destData, true);
   s.writeInt(*instanceBehaviour);
   s.writeInt(*firstDegreeCode);
-  s.writeBool(*chordNotesPassthrough);
   s.writeInt(*whenNoChordNote);
   s.writeInt(*whenSingleChordNote);
   s.writeInt(*patternNotesMapping);
-  s.writeBool(*unmappedPatternNotesPassthrough);
   s.writeInt(*numMillisecsOfLatency);
   s.writeInt(*patternNotesWraparound);
 }
@@ -249,11 +242,9 @@ void ArplignerAudioProcessor::setStateInformation (const void* data, int sizeInB
   auto s = MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false);
   *instanceBehaviour = s.readInt();
   *firstDegreeCode = s.readInt();
-  *chordNotesPassthrough = s.readBool();
   *whenNoChordNote = s.readInt();
   *whenSingleChordNote = s.readInt();
   *patternNotesMapping = s.readInt();
-  *unmappedPatternNotesPassthrough = s.readBool();
   *numMillisecsOfLatency = s.readInt();
   *patternNotesWraparound = s.readInt();
 }

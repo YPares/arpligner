@@ -53,14 +53,14 @@ C3 is therefore treated as the _reference_ pattern note, the one from which
 everything will be derived.
 
 However, you may wonder then what happens if you go below C3. Or if you go
-"above" the last degree of your chord. Well then, Arpligner will loop through
+"above" the last degree of your chord. Well then, Arpligner will "wrap around"
 the chord, but transposing the notes up or down as many octaves as needed, so it
 always has a sensible chord note to play.
 
-You can also select a different mapping method. For instance, you can choose
-that only the white keys will be used here, which can be more convenient when
-playing patterns live on a MIDI keyboard. See the [pattern settings
-section](#pattern-parameters) for more info.
+You can also select different mapping and wraparound methods. For instance, you
+can choose that only the white keys will be used here, which can be more
+convenient when playing patterns live on a MIDI keyboard. See the [pattern
+settings section](#pattern-parameters) for more info.
 
 ### Multi-channel mode
 
@@ -254,7 +254,6 @@ These parameters are used *only* in Multi-chan mode or by *Chord* instances.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
-|**Chord notes passthrough**|`Off`|`On` or `Off`|Whether note events on the chord track should pass through instead of being consumed. Non-note events (such as CCs) on the chord track will **always** pass through. _(Ignored if instance is `Global chord instance`: notes always pass through in that case)_|
 |**When no chord note**|`Latch last chord`|Choose from:|What to do when **no** note is playing on the chord track|
 | | |`Latch last chord`|Keep using the previous chord that played (`Silence` if no previous chord is known)|
 | | |`Silence`| Ignore the pattern notes|
@@ -277,13 +276,19 @@ different live players have different preferences.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
+|**Reference pattern note**|`60 (C3)`|A MIDI note|On pattern tracks, the note that will always be mapped to the first (lowest) degree of the currently playing chord|
 |**Pattern notes mapping**|`Semitone to degree`|Choose from:|How to map midi note codes on pattern tracks to actual notes|
 | | |`Map nothing`|No pattern note is mapped|
 | | |`Semitone to degree`|Going up/down one _semitone_ in the pattern track means going up/down one degree in the chord|
 | | |`White note to degree`|Going up/down one _white key_ in the pattern track means going up/down one degree in the chord. Black keys are not mapped|
 | | |`Transpose from 1st degree`|Use Arpligner as a "dynamic" transposer: ignore all chord degrees besides the first (lowest) one. Pattern notes are just transposed accordingly. This allows you to play notes that are outside the current chord, but keeping your patterns centered around the reference note|
-|**Reference pattern note**|`60 (C3)`|A MIDI note|On pattern tracks, the note that will always be mapped to the first (lowest) degree of the currently playing chord|
-|**Unmapped pattern notes passthrough**|`Off`|`On` or `Off`|When the above mapping method leaves some notes unmapped, whether to pass them through or just silence them|
+|**Pattern octave wraparound**|`[Dynamic] After all chord degrees`|Choose from:|When should your pattern wrap around the chord, ie. play it at a higher/lower octave. _(Used depending on the mapping setting above)_|
+| | |`No wraparound`|Never. Once we are past the last chord degree, pattern notes are silenced, and notes below the Reference note too|
+| | |`[Dynamic] After all chord degrees`|Repeatedly go up one octave (and back to the first chord degree) as soon as we're past the last chord degree, or down one octave (and to the _last_ chord degree) in the other direction. No pattern note is therefore ever silenced.|
+| | |`[Fixed] Every XXth pattern note`|Use a fixed wraparound setting. You will go up one octave (and back to the first chord degree) every time your pattern goes up `XX` notes, and down one octave (and to the _last_ chord degree) every time your pattern goes _down_ `XX` notes. Intermediary pattern notes that do not correspond to chord degrees are just silenced.|
+
+Depending on the above settings, some input pattern MIDI notes may be left
+unmapped. In such case, those notes will simply be silenced.
 
 ## Current limitations
 

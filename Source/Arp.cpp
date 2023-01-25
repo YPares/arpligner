@@ -101,8 +101,6 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
   auto mappingMode = (PatternNotesMapping::Enum)patternNotesMapping->getIndex();
   auto wrapMode = (PatternNotesWraparound::Enum)patternNotesWraparound->getIndex();
   auto referenceNote = firstDegreeCode->getIndex();
-  auto chordPassthrough = chordNotesPassthrough->get();
-  auto unmappedPassthrough = unmappedPatternNotesPassthrough->get();
   
   if (behaviour >= InstanceBehaviour::IS_PATTERN)
     // We are a Pattern instance. We read chords from the global chord store
@@ -115,8 +113,7 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
       // We are a Multi-channel instance. We should process chords landing on
       // our chord channel:
       toChordStore(chordStore, msg);
-      if (chordPassthrough || !IS_NOTE_MESSAGE(msg))
-	messagesToPassthrough.add(msg);
+      messagesToPassthrough.add(msg);
     }
     else if (msg.isNoteOn())
       noteOnsToProcess.add(msg);
@@ -156,7 +153,7 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
     midibuf.addEvent(msg, 0);
   }
   for (auto msg : noteOnsToProcess) { // Then note ONs
-    bool addToBuf = true;
+    bool isMapped = true;
     if (shouldProcess) {
       int chan = msg.getChannel() - 1;
       NoteNumber noteCodeIn = msg.getNoteNumber();
@@ -167,14 +164,13 @@ void Arp::nonGlobalChordInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enu
 			      curChord,
 			      noteCodeIn,
 			      noteCodeOut,
-			      addToBuf);
-      if (addToBuf) {
+			      isMapped);
+      if (isMapped) {
 	msg.setNoteNumber(noteCodeOut);
 	mCurMappings[chan].set(noteCodeIn, noteCodeOut);
       }
-      addToBuf = addToBuf || unmappedPassthrough;
     }
-    if (addToBuf)
+    if (isMapped)
       midibuf.addEvent(msg, 0);
   }
 }

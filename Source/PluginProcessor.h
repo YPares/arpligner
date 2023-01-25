@@ -63,12 +63,10 @@ public:
 
 protected:
   AudioParameterChoice* instanceBehaviour;
-  AudioParameterBool* chordNotesPassthrough;
   AudioParameterChoice* whenNoChordNote;
   AudioParameterChoice* whenSingleChordNote;
   AudioParameterChoice* firstDegreeCode;
   AudioParameterChoice* patternNotesMapping;
-  AudioParameterBool* unmappedPatternNotesPassthrough;
   AudioParameterInt* numMillisecsOfLatency;
   AudioParameterChoice* patternNotesWraparound;
   

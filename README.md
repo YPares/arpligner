@@ -2,6 +2,8 @@
 
 # Arpligner
 
+[![Join the chat at https://gitter.im/arpligner/community](https://badges.gitter.im/arpligner/community.svg)](https://gitter.im/arpligner/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Arpligner is a **multi-track** & **polyphonic** arpeggiator which will use your
 own arpeggiation patterns (like Xfer Cthulhu, Reason PolyStep Sequencer, FL VFX
 Sequencer, 2Rule TugMidiSeq). It is packaged as a VST3 MIDI plugin and as a

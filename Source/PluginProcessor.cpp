@@ -57,6 +57,12 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
     (numMillisecsOfLatency = new AudioParameterInt
      ("numMillisecsOfLatency", "Global chord track lookahead (ms)", 0, 50, 10));
   
+  StringArray notes;
+  for (int i=0; i<=127; i++)
+    notes.add(String(i) + " (" + MidiMessage::getMidiNoteName(i,true,true,3) + ")");
+  addParameter (firstDegreeCode = new AudioParameterChoice
+		("firstDegreeCode", "Reference pattern note", notes, 60));
+  
   addParameter
     (patternNotesMapping = new AudioParameterChoice
      ("patternNotesMapping", "Pattern notes mapping",
@@ -69,11 +75,14 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
       PatternNotesMapping::SEMITONE_TO_DEGREE
       ));
 
-  StringArray notes;
-  for (int i=0; i<=127; i++)
-    notes.add(String(i) + " (" + MidiMessage::getMidiNoteName(i,true,true,3) + ")");
-  addParameter (firstDegreeCode = new AudioParameterChoice
-		("firstDegreeCode", "Reference pattern note", notes, 60));
+  StringArray waModes = StringArray
+    {"No wraparound", "[Dynamic] After all chord degrees", "[Static] Every 3rd pattern note"};
+  for (int i=3; i<=12; i++)
+    waModes.add(String("[Static] Every ") + String(i+1) + "th pattern note");
+  addParameter
+    (patternNotesWraparound = new AudioParameterChoice
+     ("patternNotesWraparound", "Octave wraparound", waModes,
+      PatternNotesWraparound::AFTER_ALL_CHORD_DEGREES));
   
   addParameter (unmappedPatternNotesPassthrough = new AudioParameterBool
 		("unmappedPatternNotesPassthrough", "Unmapped pattern notes passthrough", false));
@@ -231,6 +240,7 @@ void ArplignerAudioProcessor::getStateInformation (MemoryBlock& destData)
   s.writeInt(*patternNotesMapping);
   s.writeBool(*unmappedPatternNotesPassthrough);
   s.writeInt(*numMillisecsOfLatency);
+  s.writeInt(*patternNotesWraparound);
 }
 
 // Reload state info
@@ -245,4 +255,5 @@ void ArplignerAudioProcessor::setStateInformation (const void* data, int sizeInB
   *patternNotesMapping = s.readInt();
   *unmappedPatternNotesPassthrough = s.readBool();
   *numMillisecsOfLatency = s.readInt();
+  *patternNotesWraparound = s.readInt();
 }

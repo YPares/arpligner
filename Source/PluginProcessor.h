@@ -70,6 +70,7 @@ protected:
   AudioParameterChoice* patternNotesMapping;
   AudioParameterBool* unmappedPatternNotesPassthrough;
   AudioParameterInt* numMillisecsOfLatency;
+  AudioParameterChoice* patternNotesWraparound;
   
 private:
     //==============================================================================
@@ -112,5 +113,16 @@ enum Enum {
   SEMITONE_TO_DEGREE,
   WHITE_NOTE_TO_DEGREE,
   TRANSPOSE_FROM_FIRST_DEGREE
+};
+}
+
+namespace PatternNotesWraparound {
+enum Enum {
+  NO_WRAPAROUND = 0,
+  AFTER_ALL_CHORD_DEGREES = 1,
+  // Values of 2 and above indicate a specific number of notes after which to
+  // wrap around (effectively discarding all the chords degrees above that
+  // number, and leaving unmapped pattern notes that are above the last degree
+  // of the chord but before the wraparound value)
 };
 }

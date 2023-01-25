@@ -37,6 +37,13 @@ private:
        (WhenSingleChordNote::Enum)whenSingleChordNote->getIndex());
   }
 
+  ChordStore* getChordStore(InstanceBehaviour::Enum beh) {
+    if (beh >= InstanceBehaviour::IS_CHORD)
+      return GlobalChordStore::getInstance();
+    else
+      return &mLocalChordStore;
+  }
+
   // We special-case the main loop of the global chord instance since it has
   // much less operations to do, and should lock the chord store
   void globalChordInstanceWork(const MidiBuffer& midibuf) {
@@ -50,13 +57,13 @@ private:
   }
 
   void patternOrSingleInstanceWork(MidiBuffer&, InstanceBehaviour::Enum);
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Arp);
   
 public:
-  Arp() : ArplignerAudioProcessor() {
-    for (int chan=0; chan<16; chan++)
-      for (int note=0; note<128; note++)
-	mCurMappings[chan][note] = ~0;
-  }
+  Arp() : ArplignerAudioProcessor() {}
+
+  void prepareToPlay (double sampleRate, int samplesPerBlock) override;
   
   void runArp(MidiBuffer& midibuf) {
     auto behaviour = (InstanceBehaviour::Enum)instanceBehaviour->getIndex();

@@ -25,8 +25,6 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
                        )
 #endif
 {
-  bool globalChordStoreExists = GlobalChordStore::getInstanceWithoutCreating() != NULL;
-  
   auto behVals = StringArray {"Bypass"};
   for (int i=1; i<=16; i++)
     behVals.add(String("[Multi-chan] Chords on chan ") + String(i));
@@ -34,8 +32,7 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   behVals.add("[Multi-instance] Pattern instance");
   addParameter
     (instanceBehaviour = new AudioParameterChoice
-     ("chordChan", "Instance behaviour", behVals,
-      globalChordStoreExists ? InstanceBehaviour::IS_PATTERN : 16));
+     ("chordChan", "Instance behaviour", behVals, 16));
   
   addParameter
     (whenNoChordNote = new AudioParameterChoice
@@ -81,8 +78,6 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
     (patternNotesWraparound = new AudioParameterChoice
      ("patternNotesWraparound", "Pattern octave wraparound", waModes,
       PatternNotesWraparound::AFTER_ALL_CHORD_DEGREES));
-  
-  setLatencySamples(0);
 }
 
 ArplignerAudioProcessor::~ArplignerAudioProcessor()
@@ -151,17 +146,6 @@ void ArplignerAudioProcessor::changeProgramName (int index, const String& newNam
 {
 }
 
-//==============================================================================
-void ArplignerAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
-{
-  int latency = 0;
-  if (instanceBehaviour->getIndex() == InstanceBehaviour::IS_CHORD) {
-    int wanted = numMillisecsOfLatency->get();
-    latency = (samplesPerBlock * sampleRate * wanted) / 512000;
-  }
-  setLatencySamples(latency);
-}
-
 void ArplignerAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
@@ -197,17 +181,17 @@ bool ArplignerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 void ArplignerAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
-    // auto totalNumInputChannels  = getTotalNumInputChannels();
-    // auto totalNumOutputChannels = getTotalNumOutputChannels();
+    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // // In case we have more outputs than inputs, this code clears any output
-    // // channels that didn't contain input data, (because these aren't
-    // // guaranteed to be empty - they may contain garbage).
-    // // This is here to avoid people getting screaming feedback
-    // // when they first compile a plugin, but obviously you don't need to keep
-    // // this code if your algorithm always overwrites all the output channels.
-    // for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-    //     buffer.clear (i, 0, buffer.getNumSamples());
+    // In case we have more outputs than inputs, this code clears any output
+    // channels that didn't contain input data, (because these aren't
+    // guaranteed to be empty - they may contain garbage).
+    // This is here to avoid people getting screaming feedback
+    // when they first compile a plugin, but obviously you don't need to keep
+    // this code if your algorithm always overwrites all the output channels.
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+      buffer.clear (i, 0, buffer.getNumSamples());
     
     runArp(midiMessages);
 }

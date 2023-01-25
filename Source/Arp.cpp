@@ -21,14 +21,15 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 namespace Mapping {
 
 void mapToChordDegree(PatternNotesWraparound::Enum wrapMode,
-		      const Chord& curChord,
-		      int degreeNum,
-		      NoteNumber& noteCodeOut,
-		      bool& isMapped) {
+		              const Chord& curChord,
+		              int degreeNum,
+		              NoteNumber& noteCodeOut,
+		              bool& isMapped) {
   int numChordDegrees = curChord.size();
 
   if ((degreeNum < 0 || degreeNum >= numChordDegrees) &&
-      wrapMode == PatternNotesWraparound::NO_WRAPAROUND) {
+      wrapMode == PatternNotesWraparound::NO_WRAPAROUND ||
+      numChordDegrees == 0) {
     isMapped = false;
     return;
   }
@@ -90,26 +91,42 @@ void mapPatternNote(NoteNumber referenceNote,
 
 } // end namespace Mapping
 
+//==============================================================================
+void Arp::prepareToPlay (double sampleRate, int samplesPerBlock)
+{
+  for (int chan=0; chan<16; chan++)
+    for (int note=0; note<128; note++)
+      mCurMappings[chan][note] = ~0;
+  
+  auto behaviour = (InstanceBehaviour::Enum)instanceBehaviour->getIndex();
+
+  int latency = 0;
+  if (behaviour == InstanceBehaviour::IS_CHORD) {
+    int wanted = numMillisecsOfLatency->get();
+    latency = (samplesPerBlock * sampleRate * wanted) / 512000;
+  }
+  setLatencySamples(latency);
+
+  if (behaviour != InstanceBehaviour::IS_PATTERN)
+    getChordStore(behaviour)->flushCurrentChord();
+}
+
 // If this is called, we are either in Multi-channel mode, or a Pattern instance
 // in Multi-instance mode:
 void Arp::patternOrSingleInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enum behaviour) {
   Array<MidiMessage> noteOnsToProcess, noteOffsToProcess, messagesToPassthrough;
-  ChordStore* chordStore = &mLocalChordStore;
+  ChordStore* chordStore = getChordStore(behaviour);
   
   // We get some parameter values here to make sure they will remain coherent
   // throughout the processing of the whole buffer:
   auto mappingMode = (PatternNotesMapping::Enum)patternNotesMapping->getIndex();
   auto wrapMode = (PatternNotesWraparound::Enum)patternNotesWraparound->getIndex();
   auto referenceNote = firstDegreeCode->getIndex();
-  
-  if (behaviour >= InstanceBehaviour::IS_PATTERN)
-    // We are a Pattern instance. We read chords from the global chord store
-    chordStore = GlobalChordStore::getInstance();
 
   for (auto msgMD : midibuf) {
     auto msg = msgMD.getMessage();
     if (behaviour < InstanceBehaviour::IS_PATTERN &&
-	msg.getChannel() == behaviour) {
+        msg.getChannel() == behaviour) {
       // We are a Multi-channel instance. We should process chords landing on
       // our chord channel:
       toChordStore(chordStore, msg);

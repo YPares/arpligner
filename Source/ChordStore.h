@@ -15,7 +15,7 @@
 
 using namespace juce;
 
-using NoteNumber = uint8;
+using NoteNumber = int;
 using Chord = SortedSet<NoteNumber>;
 using Counters = HashMap<NoteNumber, int>;
 
@@ -50,6 +50,14 @@ public:
   }
 
   void updateCurrentChord(WhenNoChordNote::Enum, WhenSingleChordNote::Enum);
+
+  virtual void flushCurrentChord() {
+    mCounters.clear();
+    mCurrentChord.clear();
+    mShouldProcess = true;
+    mShouldSilence = false;
+    mNeedsUpdate = false;
+  }
   
   virtual void getCurrentChord(Chord& chord, bool& shouldProcess, bool& shouldSilence) {
     chord = mCurrentChord;
@@ -67,11 +75,15 @@ public:
     clearSingletonInstance();
   }
 
+  void flushCurrentChord() override {
+    const ScopedWriteLock lock(globalStoreLock);
+    ChordStore::flushCurrentChord();
+  }
+
   void getCurrentChord(Chord& chord, bool& shouldProcess, bool& shouldSilence) override {
     // This will prevent a Pattern instance to access the current chord if the
     // Global chord instance is still updating it
     const ScopedReadLock lock(globalStoreLock);
-    
     ChordStore::getCurrentChord(chord, shouldProcess, shouldSilence);
   }
 

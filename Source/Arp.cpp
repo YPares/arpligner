@@ -93,11 +93,7 @@ void mapPatternNote(NoteNumber referenceNote,
 
 //==============================================================================
 void Arp::prepareToPlay (double sampleRate, int samplesPerBlock)
-{
-  for (int chan=0; chan<16; chan++)
-    for (int note=0; note<128; note++)
-      mCurMappings[chan][note] = ~0;
-  
+{  
   auto behaviour = (InstanceBehaviour::Enum)instanceBehaviour->getIndex();
 
   int latency = 0;

@@ -3,9 +3,14 @@
 # Arpligner
 
 Arpligner is a **multi-track** & **polyphonic** arpeggiator which will use your
-own arpeggiation patterns (like Xfer Cthulhu, Reason PolyStep Sequencer, FL VFX
-Sequencer, 2Rule TugMidiSeq). It is packaged as a VST3 MIDI plugin and as a
-standalone application.
+own arpeggiation patterns (like [2Rule
+TugMidiSeq](https://tugrulakyuz.gumroad.com/l/xfzgta),
+[LibreArp](https://librearp.gitlab.io/), [Xfer
+Cthulhu](https://xferrecords.com/products/cthulhu), [Reason PolyStep
+Sequencer](https://www.reasonstudios.com/shop/rack-extension/polystep-sequencer/),
+or [FL's VFX
+Sequencer](https://www.image-line.com/fl-studio-learning/fl-studio-beta-online-manual/html/plugins/VFX%20Sequencer.htm)). It
+is packaged as a VST3 MIDI plugin and as a standalone application.
 
 - **Multi-track**: Multiple arpeggiation patterns can play at the same time for
   a given chord, each one in its own track of your DAW, or on its own MIDI

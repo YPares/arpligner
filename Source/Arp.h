@@ -16,25 +16,22 @@
 
 using namespace juce;
 
+using NoteOnChan = int;
+
+using Mappings = HashMap< NoteOnChan, Array<NoteNumber> >;
 
 class Arp : public ArplignerAudioProcessor {
 private:
   ChordStore mLocalChordStore;
-  
-  // On each pattern chan, to which note is currently mapped each incoming NoteNumber
-  NoteNumber mCurMappings[16][128];
 
-  void toChordStore(ChordStore* chordStore, const MidiMessage& msg) {
-    if (msg.isNoteOn())
-      chordStore->addChordNote(msg.getNoteNumber());
-    else if (msg.isNoteOff())
-      chordStore->rmChordNote(msg.getNoteNumber());
-  }
+  // On each pattern chan, to which note has been mapped each incoming
+  // NoteNumber, so we can send the correct NOTE OFFs afterwards
+  Mappings mCurMappings;
 
   void updateChordStore(ChordStore* chordStore) {
     chordStore->updateCurrentChord
-      ((WhenNoChordNote::Enum)whenNoChordNote->getIndex(),
-       (WhenSingleChordNote::Enum)whenSingleChordNote->getIndex());
+    ((WhenNoChordNote::Enum)whenNoChordNote->getIndex(),
+      (WhenSingleChordNote::Enum)whenSingleChordNote->getIndex());
   }
 
   ChordStore* getChordStore(InstanceBehaviour::Enum beh) {
@@ -44,42 +41,17 @@ private:
       return &mLocalChordStore;
   }
 
-  // We special-case the main loop of the global chord instance since it has
-  // much less operations to do, and should lock the chord store
-  void globalChordInstanceWork(const MidiBuffer& midibuf) {
-    GlobalChordStore* chordStore = GlobalChordStore::getInstance();
-    const ScopedWriteLock lock(chordStore->globalStoreLock);
+  void processPatternNotes(ChordStore* chd, Array<MidiMessage>&, Array<MidiMessage>&, MidiBuffer&);
 
-    for (auto msgMD : midibuf) {
-      toChordStore(chordStore, msgMD.getMessage());
-    }
-    updateChordStore(chordStore);
-  }
+  //void finalizeMappings(MidiBuffer&);
 
-  void patternOrSingleInstanceWork(MidiBuffer&, InstanceBehaviour::Enum);
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Arp);
 
-JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Arp);
-  
 public:
   Arp() : ArplignerAudioProcessor() {
-    for (int chan=0; chan<16; chan++)
-      for (int note=0; note<128; note++)
-        mCurMappings[chan][note] = ~0;
   }
 
-  void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-  
-  void runArp(MidiBuffer& midibuf) override {
-    auto behaviour = (InstanceBehaviour::Enum)instanceBehaviour->getIndex();
-    switch (behaviour) {
-    case InstanceBehaviour::BYPASS:
-      break;
-    case InstanceBehaviour::IS_CHORD:
-      globalChordInstanceWork(midibuf);
-      break;
-    default:
-      patternOrSingleInstanceWork(midibuf, behaviour);
-      break;
-    }
-  }
+  void prepareToPlay(double, int) override;
+
+  void runArp(MidiBuffer&) override;
 };

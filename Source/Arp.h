@@ -64,7 +64,7 @@ public:
   Arp() : ArplignerAudioProcessor() {
     for (int chan=0; chan<16; chan++)
       for (int note=0; note<128; note++)
-	mCurMappings[chan][note] = ~0;
+        mCurMappings[chan][note] = ~0;
   }
 
   void prepareToPlay (double sampleRate, int samplesPerBlock) override;

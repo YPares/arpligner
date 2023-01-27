@@ -199,7 +199,7 @@ void ArplignerAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuff
 //==============================================================================
 bool ArplignerAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
 AudioProcessorEditor* ArplignerAudioProcessor::createEditor()

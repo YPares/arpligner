@@ -237,8 +237,8 @@ make sure to update the current chord prior to processing pattern notes.
 
 ## Available settings
 
-Arpligner's GUI shows a few parameters. This parameters are also exposed to the
-host, and can be automated[^3].
+Arpligner's GUI shows a few parameters that you can change to make Arpligner fit your usage and workflow.
+These parameters are also exposed to the host, and can be automated[^3].
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|

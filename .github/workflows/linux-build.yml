@@ -23,8 +23,9 @@ jobs:
       with:
         name: arpligner-build-linux
         path: Builds/LinuxMakefile/Artifacts
-#    - name: release
-#      uses: softprops/action-gh-release@v1
-#      if: startsWith(github.ref, 'refs/tags/v')
-#      with:
-#        files: release.zip
+    - name: release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        files: Builds/LinuxMakefile/Artifacts/*
+        generate_release_notes: true

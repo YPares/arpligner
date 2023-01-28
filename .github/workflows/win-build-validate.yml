@@ -55,3 +55,9 @@ jobs:
       with:
         name: arpligner-build-win
         path: Builds/VisualStudio2022/Artifacts
+    - name: release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        files: Builds/VisualStudio2022/Artifacts/*
+        generate_release_notes: true

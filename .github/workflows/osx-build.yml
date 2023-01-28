@@ -1,8 +1,6 @@
-name: Xcode - Build and Analyze
+name: Build (OSX)
 
-on:
-  schedule:
-    - cron: '0 2 * * *' # run at 2 AM UTC
+on: workflow_dispatch
 
 jobs:
   build:
@@ -28,3 +26,11 @@ jobs:
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
           xcodebuild clean build analyze -scheme "$scheme" -"$filetype_parameter" "$file_to_build" | xcpretty && exit ${PIPESTATUS[0]}
+      - name: make artifact folder
+        run: |
+          cd Builds/MacOSX && mkdir Artifacts && mv build/Debug/Arpligner.app Artifacts && mv build/Debug/Arpligner.vst3 Artifacts
+      - name: upload artifact
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: arpligner-build-osx
+          path: Builds/MacOSX/Artifacts

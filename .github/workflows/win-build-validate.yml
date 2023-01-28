@@ -1,10 +1,6 @@
-name: Windows Build & Validate
+name: Build & Pluginval (Windows)
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+on: workflow_dispatch
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -45,3 +41,17 @@ jobs:
         Expand-Archive pluginval.zip -DestinationPath .
         ./pluginval.exe --validate-in-process "./Builds/VisualStudio2022/x64/${{env.BUILD_CONFIGURATION}}/VST3/Arpligner.vst3"
         if ( !$? ) { echo "Plugival test suite failed"; exit 1 }
+    
+    - name: Make artifacts folder
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: |
+        cd Builds/VisualStudio2022
+        mkdir Artifacts
+        mv "./x64/${{env.BUILD_CONFIGURATION}}/VST3/Arpligner.vst3" Artifacts
+        mv "./x64/${{env.BUILD_CONFIGURATION}}/Standalone Plugin/Arpligner.exe" Artifacts
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: arpligner-build-win
+        path: Builds/VisualStudio2022/Artifacts

@@ -1,4 +1,6 @@
-<noscript><a href="https://liberapay.com/Ywen/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"/></a></noscript> <img src="https://img.shields.io/liberapay/patrons/Ywen.svg?logo=liberapay"> <a href="https://gitter.im/arpligner/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/arpligner/community.svg" align="right" alt="Join the chat at https://gitter.im/arpligner/community"/></a>
+[![Build (Windows)](https://github.com/YPares/arpligner/actions/workflows/win-build-validate.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/win-build-validate.yml) [![Build (Linux)](https://github.com/YPares/arpligner/actions/workflows/linux-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/linux-build.yml) [![Build (OSX)](https://github.com/YPares/arpligner/actions/workflows/osx-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/osx-build.yml) <a href="https://gitter.im/arpligner/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/arpligner/community.svg" align="right" alt="Join the chat at https://gitter.im/arpligner/community"/></a>
+
+<noscript><a href="https://liberapay.com/Ywen/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"/></a></noscript> <img src="https://img.shields.io/liberapay/patrons/Ywen.svg?logo=liberapay">
 
 # Arpligner
 
@@ -107,8 +109,13 @@ on the MIDI data you directly feed into them.
 ## Installation
 
 Please go to the [releases](https://github.com/YPares/arpligner/releases)
-(unfold the "Assets" section) to download the latest release. Alternatively,
-this repository comes with all the needed code to build the plugin and
+(unfold the "Assets" section) to download the latest release.
+
+Latest builds are available [through the github actions](https://github.com/YPares/arpligner/actions).
+Select the `Build` action corresponding to your OS (Linux, Windows os OSX),
+then select the latest run that succeeded for that action, and then go to the artifacts section.
+
+Alternatively, this repository comes with all the needed code to build the plugin and
 standalone application.
 
 Then install the VST3 plugin in your regular VST3 folder, depending on your system
@@ -128,8 +135,8 @@ section](#tips-for-multi-channel-mode) for tips.
 ## Implementation & supported plugin formats
 
 Arpligner is implemented in C++ with [JUCE 7](https://juce.com/), and therefore
-should support a variety of systems and plugin formats. For now, I'm providing
-VST3 builds for Linux and Windows x64, but you can have a look under the
+should support a variety of systems and plugin formats. I'm providing
+VST3 and standalone app builds for Linux, Windows and OSX (x64), but you can have a look under the
 `Builds` folder for supported platforms. The [project file](Arpligner.jucer) for
 [Projucer](https://juce.com/discover/projucer) is also provided if you want to
 generate build files for other platforms or other plugin formats. Arpligner has

@@ -12,7 +12,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arpligner - VST3", "Arplign
 		{A09AD2B7-9E30-77F4-89BE-B3176531F123} = {A09AD2B7-9E30-77F4-89BE-B3176531F123}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arpligner - LV2 Plugin", "Arpligner_LV2Plugin.vcxproj", "{483E6907-658C-A15C-C473-418D4B1A3C94}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A09AD2B7-9E30-77F4-89BE-B3176531F123} = {A09AD2B7-9E30-77F4-89BE-B3176531F123}
+		{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0} = {9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arpligner - Shared Code", "Arpligner_SharedCode.vcxproj", "{A09AD2B7-9E30-77F4-89BE-B3176531F123}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arpligner - LV2 Manifest Helper", "Arpligner_LV2ManifestHelper.vcxproj", "{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +36,18 @@ Global
 		{098F7C37-C188-2F52-1B5E-F365EC440A84}.Debug|x64.Build.0 = Debug|x64
 		{098F7C37-C188-2F52-1B5E-F365EC440A84}.Release|x64.ActiveCfg = Release|x64
 		{098F7C37-C188-2F52-1B5E-F365EC440A84}.Release|x64.Build.0 = Release|x64
+		{483E6907-658C-A15C-C473-418D4B1A3C94}.Debug|x64.ActiveCfg = Debug|x64
+		{483E6907-658C-A15C-C473-418D4B1A3C94}.Debug|x64.Build.0 = Debug|x64
+		{483E6907-658C-A15C-C473-418D4B1A3C94}.Release|x64.ActiveCfg = Release|x64
+		{483E6907-658C-A15C-C473-418D4B1A3C94}.Release|x64.Build.0 = Release|x64
 		{A09AD2B7-9E30-77F4-89BE-B3176531F123}.Debug|x64.ActiveCfg = Debug|x64
 		{A09AD2B7-9E30-77F4-89BE-B3176531F123}.Debug|x64.Build.0 = Debug|x64
 		{A09AD2B7-9E30-77F4-89BE-B3176531F123}.Release|x64.ActiveCfg = Release|x64
 		{A09AD2B7-9E30-77F4-89BE-B3176531F123}.Release|x64.Build.0 = Release|x64
+		{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}.Debug|x64.ActiveCfg = Debug|x64
+		{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}.Debug|x64.Build.0 = Debug|x64
+		{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}.Release|x64.ActiveCfg = Release|x64
+		{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

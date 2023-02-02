@@ -1,4 +1,6 @@
-[![Build (Windows)](https://github.com/YPares/arpligner/actions/workflows/win-build-validate.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/win-build-validate.yml) [![Build (Linux)](https://github.com/YPares/arpligner/actions/workflows/linux-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/linux-build.yml) [![Build (OSX)](https://github.com/YPares/arpligner/actions/workflows/osx-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/osx-build.yml) <a href="https://gitter.im/arpligner/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/arpligner/community.svg" align="right" alt="Join the chat at https://gitter.im/arpligner/community"/></a>
+[![Build (Windows)](https://github.com/YPares/arpligner/actions/workflows/win-build-validate.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/win-build-validate.yml) [![Build (OSX)](https://github.com/YPares/arpligner/actions/workflows/osx-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/osx-build.yml) <a href="https://gitter.im/arpligner/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/arpligner/community.svg" align="right" alt="Join the chat at https://gitter.im/arpligner/community"/></a>
+
+[![Build (Linux x64)](https://github.com/YPares/arpligner/actions/workflows/linux-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/linux-build.yml) [![Build (RaspberryPi arm64)](https://github.com/YPares/arpligner/actions/workflows/raspberry-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/raspberry-build.yml) 
 
 <noscript><a href="https://liberapay.com/Ywen/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"/></a></noscript> <img src="https://img.shields.io/liberapay/patrons/Ywen.svg?logo=liberapay">
 
@@ -12,7 +14,7 @@ Cthulhu](https://xferrecords.com/products/cthulhu), [Reason PolyStep
 Sequencer](https://www.reasonstudios.com/shop/rack-extension/polystep-sequencer/),
 or [FL's VFX
 Sequencer](https://www.image-line.com/fl-studio-learning/fl-studio-beta-online-manual/html/plugins/VFX%20Sequencer.htm)). It
-is packaged as a VST3 MIDI plugin and as a standalone application.
+is packaged as VST3 & LV2 MIDI plugins and as a standalone application.
 
 - **Multi-track**: Multiple arpeggiation patterns can play at the same time for
   a given chord, each one in its own track of your DAW, or on its own MIDI
@@ -113,8 +115,8 @@ Select in the left panel the `Build` action corresponding to your OS (Linux, Win
 then select the latest run that succeeded for that action, then go to the
 Artifacts section at the bottom of the page.
 
-The downloaded archive will contain the VST3 and the standalone app for your OS.
-Just copy the VST3 plugin in your usual VST3 folder (depending on your OS and DAW settings).
+The downloaded archive will contain the VST3, the LV2 and the standalone app for your OS.
+Just copy the plugin in your usual VST3/LV2 folder (depending on your OS and DAW settings).
 
 **Important:** Due to [a VST3
 limitation](https://forum.juce.com/t/arpeggiatorplugin-vst3-recognized-as-aufio-fx-instead-of-midi-fx/43563),
@@ -139,8 +141,7 @@ To build Arpligner on Linux, you will though need to install first
 
 Arpligner is implemented in C++ with [JUCE 7](https://juce.com/), and therefore
 should support a variety of systems and plugin formats. I'm providing
-VST3 and standalone app builds for Linux, Windows and OSX (x64), but you can have a look under the
-`Builds` folder for supported platforms. The [project file](Arpligner.jucer) for
+VST3, LV2 and standalone app builds for Linux, Windows and OSX (x64). The [project file](Arpligner.jucer) for
 [Projucer](https://juce.com/discover/projucer) is also provided if you want to
 generate build files for other platforms or other plugin formats. Arpligner has
 no plugin-format-specific or OS-specific code so it should be pretty

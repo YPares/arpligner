@@ -1,0 +1,36 @@
+name: Build (RaspberryPi) 
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: pguyot/arm-runner-action@v2.5.2
+      id: build_image
+      with:
+        base_image: raspios_lite:latest
+        cpu: cortex-a7
+        commands: |
+          sudo apt-get update &&
+          sudo apt-get install -y \
+            libasound2-dev libjack-jackd2-dev ladspa-sdk libcurl4-openssl-dev libfreetype-dev libfreetype6 libfreetype6-dev \
+            libx11-dev libxcomposite-dev libxcursor-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev \
+            libwebkit2gtk-4.0-dev libglu1-mesa-dev mesa-common-dev &&
+          cd Builds/LinuxMakefile && make CONFIG=Release &&
+          mkdir Artifacts && mv build/Arpligner Artifacts && mv build/Arpligner.vst3 Artifacts && mv build/Arpligner.lv2 Artifacts
+        copy_artifact_path:
+          Builds/LinuxMakefile/Artifacts
+    - name: upload artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: arpligner-build-raspberry-arm64
+        path: ./Artifacts
+
+    - name: release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        files: Builds/LinuxMakefile/Artifacts/*
+        generate_release_notes: true

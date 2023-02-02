@@ -27,12 +27,13 @@ jobs:
           xcodebuild clean build analyze -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -configuration Release | xcpretty && exit ${PIPESTATUS[0]}
       - name: make artifact folder
         run: |
-          cd Builds/MacOSX && mkdir Artifacts && mv build/Release/Arpligner.app Artifacts && mv build/Release/Arpligner.vst3 Artifacts
+          cd Builds/MacOSX && mkdir Artifacts && mv build/Release/Arpligner.app Artifacts && mv build/Release/Arpligner.vst3 Artifacts && mv build/Release/Arpligner.lv2 Artifacts
       - name: upload artifact
         uses: actions/upload-artifact@v3.1.2
         with:
           name: arpligner-build-osx
           path: Builds/MacOSX/Artifacts
+
       - name: release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/v')

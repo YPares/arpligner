@@ -15,7 +15,9 @@
 			dependencies = (
 				54B8F18354F01E2CA6B48496,
 				21DB5268EB869045A0E5603A,
+				1FF01F59FFD06704CB365924,
 				8E8450DE87AE205D8042FD43,
+				08CC1F679299D91E35C111D1,
 			);
 			name = "Arpligner - All";
 			productName = Arpligner;
@@ -30,8 +32,10 @@
 		0C612E69594C74ACCBB924B8 /* AudioToolbox.framework */ = {isa = PBXBuildFile; fileRef = 58776CE1BCD73440CD8E3DC1; };
 		1665839F92FFC33F5922DF9C /* include_juce_gui_basics.mm */ = {isa = PBXBuildFile; fileRef = 801FD73C0601DFEF27B9EE96; };
 		1CFA87871B4121436A788060 /* include_juce_audio_plugin_client_VST_utils.mm */ = {isa = PBXBuildFile; fileRef = 63C8827431B3090C6617D5B5; };
+		1D99E694E2435F119D6AE128 /* juce_LV2TurtleDumpProgram.cpp */ = {isa = PBXBuildFile; fileRef = 239BD1BC1A9ECAE71FA498EB; settings = { COMPILER_FLAGS = "-std=c++11 -w -DJUCE_SKIP_PRECOMPILED_HEADER"; }; };
 		26D9CF0626CF1E608B6185D7 /* include_juce_audio_processors_lv2_libs.cpp */ = {isa = PBXBuildFile; fileRef = 82F1F27BDC9BF1D807E63411; };
 		28C84AA34C9B987203FE05CA /* include_juce_audio_plugin_client_Standalone.cpp */ = {isa = PBXBuildFile; fileRef = BCFF2DC469A5E23DB94F4624; };
+		42581295E6F20D72B98E8983 /* include_juce_audio_plugin_client_LV2.mm */ = {isa = PBXBuildFile; fileRef = 64516170C6857F8878FDBA35; };
 		44A5B2575172C34198B8ED0D /* Shared Code */ = {isa = PBXBuildFile; fileRef = AE1661AAB0EC4ED0AE5BEEE6; };
 		4A9D8F504130822D06D6913E /* include_juce_audio_processors.mm */ = {isa = PBXBuildFile; fileRef = BAEF6F05063980815350508D; };
 		4B50CD96D55EB4DF0C030E7A /* Standalone Plugin */ = {isa = PBXBuildFile; fileRef = 802D4984183E4F53F215D994; };
@@ -40,6 +44,7 @@
 		6CC55B16A26F771B79A47C70 /* include_juce_graphics.mm */ = {isa = PBXBuildFile; fileRef = F3BD35D9BE386BD3612B7490; };
 		791D85090CB6AE9C19C6573C /* include_juce_audio_utils.mm */ = {isa = PBXBuildFile; fileRef = 3F3F84E40E1CCF841A7F578F; };
 		8901EE5F66D6B7CC0C16ED91 /* DiscRecording.framework */ = {isa = PBXBuildFile; fileRef = 2779A996C0A19AF31E35B231; };
+		9194007311BB6D70D60F7B47 /* LV2 Plugin */ = {isa = PBXBuildFile; fileRef = 73146A3C65C32A964B1E4E80; };
 		A46994ED655FFAA0AD2733F8 /* Cocoa.framework */ = {isa = PBXBuildFile; fileRef = 307E86CCEAC765E23AC69DF1; };
 		AB9779F687E7E643B2AA2F54 /* CoreAudio.framework */ = {isa = PBXBuildFile; fileRef = E8CC0A76ECB2331DB34FE2C8; };
 		AC3BF9647A1B9D4DD7723801 /* VST3 */ = {isa = PBXBuildFile; fileRef = AD8D1E762DBF18ECE7557158; };
@@ -47,6 +52,7 @@
 		B965889A2EEA3C67B9EC4140 /* include_juce_audio_basics.mm */ = {isa = PBXBuildFile; fileRef = DBABCB9F6314534679241DD4; };
 		BB8CA42F9699CD9BEFB5E902 /* include_juce_audio_plugin_client_utils.cpp */ = {isa = PBXBuildFile; fileRef = 4E0FEB65CEAFA9E581668377; };
 		BC87764553F555AF900270ED /* include_juce_audio_devices.mm */ = {isa = PBXBuildFile; fileRef = 1A2ACAE3CACCF1ACE10F440E; };
+		C5C14347D9830AC97C91D7CA /* LV2 Manifest Helper */ = {isa = PBXBuildFile; fileRef = 648278403DD97498CC3DD742; };
 		C5FCEF7A75693B7707916AAA /* RecentFilesMenuTemplate.nib */ = {isa = PBXBuildFile; fileRef = 8E6027EBE532F2D378BBE602; };
 		C92640C8B20D290B640F897D /* include_juce_audio_formats.mm */ = {isa = PBXBuildFile; fileRef = 8DE719B5F11FDEAD420D5272; };
 		CA1548C6B6997A2CD0874B13 /* include_juce_gui_extra.mm */ = {isa = PBXBuildFile; fileRef = 7B83C8FA05CD7B1EE5D1CE04; };
@@ -71,6 +77,7 @@
 		19BAEE0BE3A5B6DB32907DF1 /* juce_audio_processors */ /* juce_audio_processors */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_audio_processors; path = ../../JuceLibraryCode/modules/juce_audio_processors; sourceTree = SOURCE_ROOT; };
 		19C850193899AED03418A10E /* JuceHeader.h */ /* JuceHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JuceHeader.h; path = ../../JuceLibraryCode/JuceHeader.h; sourceTree = SOURCE_ROOT; };
 		1A2ACAE3CACCF1ACE10F440E /* include_juce_audio_devices.mm */ /* include_juce_audio_devices.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_devices.mm; path = ../../JuceLibraryCode/include_juce_audio_devices.mm; sourceTree = SOURCE_ROOT; };
+		239BD1BC1A9ECAE71FA498EB /* juce_LV2TurtleDumpProgram.cpp */ /* juce_LV2TurtleDumpProgram.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = juce_LV2TurtleDumpProgram.cpp; path = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/LV2/juce_LV2TurtleDumpProgram.cpp"; sourceTree = "<absolute>"; };
 		2779A996C0A19AF31E35B231 /* DiscRecording.framework */ /* DiscRecording.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiscRecording.framework; path = System/Library/Frameworks/DiscRecording.framework; sourceTree = SDKROOT; };
 		29FD8764B8F7E24E5D9B475C /* include_juce_audio_plugin_client_ARA.cpp */ /* include_juce_audio_plugin_client_ARA.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_audio_plugin_client_ARA.cpp; path = ../../JuceLibraryCode/include_juce_audio_plugin_client_ARA.cpp; sourceTree = SOURCE_ROOT; };
 		307E86CCEAC765E23AC69DF1 /* Cocoa.framework */ /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -82,8 +89,12 @@
 		58932B0E2146C8D0C365FCF2 /* Arp.h */ /* Arp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Arp.h; path = ../../Source/Arp.h; sourceTree = SOURCE_ROOT; };
 		620F81AFC3169599FFAFC642 /* juce_gui_basics */ /* juce_gui_basics */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_gui_basics; path = ../../JuceLibraryCode/modules/juce_gui_basics; sourceTree = SOURCE_ROOT; };
 		63C8827431B3090C6617D5B5 /* include_juce_audio_plugin_client_VST_utils.mm */ /* include_juce_audio_plugin_client_VST_utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_plugin_client_VST_utils.mm; path = ../../JuceLibraryCode/include_juce_audio_plugin_client_VST_utils.mm; sourceTree = SOURCE_ROOT; };
+		64516170C6857F8878FDBA35 /* include_juce_audio_plugin_client_LV2.mm */ /* include_juce_audio_plugin_client_LV2.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_plugin_client_LV2.mm; path = ../../JuceLibraryCode/include_juce_audio_plugin_client_LV2.mm; sourceTree = SOURCE_ROOT; };
+		648278403DD97498CC3DD742 /* LV2 Manifest Helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = juce_lv2_helper; sourceTree = BUILT_PRODUCTS_DIR; };
 		66D9AD8C82A58BAC2EC6234F /* juce_audio_devices */ /* juce_audio_devices */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_audio_devices; path = ../../JuceLibraryCode/modules/juce_audio_devices; sourceTree = SOURCE_ROOT; };
+		6E84F18356C4D9C82100A0CB /* JuceLV2Defines.h */ /* JuceLV2Defines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JuceLV2Defines.h; path = ../../JuceLibraryCode/JuceLV2Defines.h; sourceTree = SOURCE_ROOT; };
 		6F1FB5E2C006AF7525423605 /* ChordStore.h */ /* ChordStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ChordStore.h; path = ../../Source/ChordStore.h; sourceTree = SOURCE_ROOT; };
+		73146A3C65C32A964B1E4E80 /* LV2 Plugin */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Arpligner.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B83C8FA05CD7B1EE5D1CE04 /* include_juce_gui_extra.mm */ /* include_juce_gui_extra.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_gui_extra.mm; path = ../../JuceLibraryCode/include_juce_gui_extra.mm; sourceTree = SOURCE_ROOT; };
 		801FD73C0601DFEF27B9EE96 /* include_juce_gui_basics.mm */ /* include_juce_gui_basics.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_gui_basics.mm; path = ../../JuceLibraryCode/include_juce_gui_basics.mm; sourceTree = SOURCE_ROOT; };
 		802D4984183E4F53F215D994 /* Standalone Plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Arpligner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -106,9 +117,11 @@
 		BFF752C03C8A75B22C3B7C93 /* ChordStore.cpp */ /* ChordStore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ChordStore.cpp; path = ../../Source/ChordStore.cpp; sourceTree = SOURCE_ROOT; };
 		C4A32214B0691435B32AD063 /* juce_audio_formats */ /* juce_audio_formats */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_audio_formats; path = ../../JuceLibraryCode/modules/juce_audio_formats; sourceTree = SOURCE_ROOT; };
 		CD9B62CD7DA9F58DF04FC153 /* Foundation.framework */ /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D871416B94D2C652359FFC5B /* Info-LV2_Manifest_Helper.plist */ /* Info-LV2_Manifest_Helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-LV2_Manifest_Helper.plist"; path = "Info-LV2_Manifest_Helper.plist"; sourceTree = SOURCE_ROOT; };
 		DBABCB9F6314534679241DD4 /* include_juce_audio_basics.mm */ /* include_juce_audio_basics.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_basics.mm; path = ../../JuceLibraryCode/include_juce_audio_basics.mm; sourceTree = SOURCE_ROOT; };
 		E8CC0A76ECB2331DB34FE2C8 /* CoreAudio.framework */ /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		E9DA424282D386629EE4723A /* include_juce_core.mm */ /* include_juce_core.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_core.mm; path = ../../JuceLibraryCode/include_juce_core.mm; sourceTree = SOURCE_ROOT; };
+		EB762F2D39AF19B94C4F9D29 /* Info-LV2_Plugin.plist */ /* Info-LV2_Plugin.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-LV2_Plugin.plist"; path = "Info-LV2_Plugin.plist"; sourceTree = SOURCE_ROOT; };
 		ECBB38953FFA7A0AC3B9D9D4 /* juce_graphics */ /* juce_graphics */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_graphics; path = ../../JuceLibraryCode/modules/juce_graphics; sourceTree = SOURCE_ROOT; };
 		ECD35E9F9E00E9DEB08421A4 /* juce_gui_extra */ /* juce_gui_extra */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_gui_extra; path = ../../JuceLibraryCode/modules/juce_gui_extra; sourceTree = SOURCE_ROOT; };
 		EDDF86E43A5788321064C2DA /* include_juce_data_structures.mm */ /* include_juce_data_structures.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_data_structures.mm; path = ../../JuceLibraryCode/include_juce_data_structures.mm; sourceTree = SOURCE_ROOT; };
@@ -120,6 +133,24 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C5459F7C75734F70FF6EAB42 = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F98D922C1404BE950D980DA1,
+				0C612E69594C74ACCBB924B8,
+				A46994ED655FFAA0AD2733F8,
+				AB9779F687E7E643B2AA2F54,
+				F66D824C1E12F72EBE314183,
+				0B6C4BCFE7AA86C7F3C5B724,
+				8901EE5F66D6B7CC0C16ED91,
+				FEBA00928B3296F01F02CE71,
+				CBCEA5211E6D5CBD4A26CA53,
+				D1BE08B9FA627DF2E7782316,
+				0B0970EB5D8C64ADF529B743,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C85446939CD1FCD71BF4EBF4 = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -164,7 +195,9 @@
 			children = (
 				AD8D1E762DBF18ECE7557158,
 				802D4984183E4F53F215D994,
+				73146A3C65C32A964B1E4E80,
 				AE1661AAB0EC4ED0AE5BEEE6,
+				648278403DD97498CC3DD742,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -206,6 +239,8 @@
 			children = (
 				A00D9C6A583FFE5C5C2AF30B,
 				F54BFDDCD27894187482B2FB,
+				EB762F2D39AF19B94C4F9D29,
+				D871416B94D2C652359FFC5B,
 				8E6027EBE532F2D378BBE602,
 			);
 			name = Resources;
@@ -239,6 +274,7 @@
 				1A2ACAE3CACCF1ACE10F440E,
 				8DE719B5F11FDEAD420D5272,
 				29FD8764B8F7E24E5D9B475C,
+				64516170C6857F8878FDBA35,
 				BCFF2DC469A5E23DB94F4624,
 				4E0FEB65CEAFA9E581668377,
 				63C8827431B3090C6617D5B5,
@@ -254,6 +290,7 @@
 				801FD73C0601DFEF27B9EE96,
 				7B83C8FA05CD7B1EE5D1CE04,
 				19C850193899AED03418A10E,
+				6E84F18356C4D9C82100A0CB,
 				BEC4800545C366E0F721C2F1,
 			);
 			name = "JUCE Library Code";
@@ -280,6 +317,21 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		02528E9AD9542FBC78AEF833 /* Arpligner - LV2 Manifest Helper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B5DEE94A7DB000D82C6AE1B;
+			buildPhases = (
+				586BAF660C42EFA07A8779D7,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Arpligner - LV2 Manifest Helper";
+			productName = Arpligner;
+			productReference = 648278403DD97498CC3DD742;
+			productType = "com.apple.product-type.tool";
+		};
 		1FAFCD5AEF224F462C6B0907 /* Arpligner - Standalone Plugin */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1A8921F38243AAEB28B5797E;
@@ -331,6 +383,26 @@
 			productReference = AE1661AAB0EC4ED0AE5BEEE6;
 			productType = "com.apple.product-type.library.static";
 		};
+		D62386E97338945F4A6326E3 /* Arpligner - LV2 Plugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7F1EF7E98206702DB6776A8B;
+			buildPhases = (
+				97AD3A716042CEECFA91E6D1,
+				E5170B67190C2D836B0C6F36,
+				C5459F7C75734F70FF6EAB42,
+				1B760DC8A7D668B1D53938CC,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				30F06FA4DBA85E0655586C48,
+				F617912211CFAA48B6BEFD01,
+			);
+			name = "Arpligner - LV2 Plugin";
+			productName = Arpligner;
+			productReference = 73146A3C65C32A964B1E4E80;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -340,6 +412,28 @@
 				LastUpgradeCheck = 1340;
 				ORGANIZATIONNAME = "Ywen";
 				TargetAttributes = {
+					02528E9AD9542FBC78AEF833 = {
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 0;
+							};
+							com.apple.HardenedRuntime = {
+								enabled = 0;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 0;
+							};
+							com.apple.InterAppAudio = {
+								enabled = 0;
+							};
+							com.apple.Push = {
+								enabled = 0;
+							};
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
+					};
 					1FAFCD5AEF224F462C6B0907 = {
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -428,6 +522,28 @@
 							};
 						};
 					};
+					D62386E97338945F4A6326E3 = {
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 0;
+							};
+							com.apple.HardenedRuntime = {
+								enabled = 0;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 0;
+							};
+							com.apple.InterAppAudio = {
+								enabled = 0;
+							};
+							com.apple.Push = {
+								enabled = 0;
+							};
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
+					};
 				};
 			};
 			buildConfigurationList = 4C151062B24DD767F76A70B6;
@@ -444,12 +560,22 @@
 				237672D711A7169D93B57BFA,
 				449F5F6056AF731E2309B410,
 				1FAFCD5AEF224F462C6B0907,
+				D62386E97338945F4A6326E3,
 				C4E6413674CFE0CFF64A0DAD,
+				02528E9AD9542FBC78AEF833,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		97AD3A716042CEECFA91E6D1 = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C5FCEF7A75693B7707916AAA,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B47C7F93352CB3D8BC33FDA0 = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -468,12 +594,34 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		1B760DC8A7D668B1D53938CC /* Generate manifest */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Generate manifest";
+			alwaysOutOfDate = 1;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nxcrun codesign --verify \"$CONFIGURATION_BUILD_DIR/$PRODUCT_NAME\" || xcrun codesign -s - \"$CONFIGURATION_BUILD_DIR/$PRODUCT_NAME\"\n\"$CONFIGURATION_BUILD_DIR/../juce_lv2_helper\" \"$CONFIGURATION_BUILD_DIR/$PRODUCT_NAME\"\nif [ \"$CONFIGURATION\" = \"Debug\" ]; then\nmkdir -p \"$HOME/Library/Audio/Plug-Ins/LV2/\"\n/bin/ln -sfh \"$CONFIGURATION_BUILD_DIR\" \"$HOME/Library/Audio/Plug-Ins/LV2/\"\nfi\nif [ \"$CONFIGURATION\" = \"Release\" ]; then\nmkdir -p \"$HOME/Library/Audio/Plug-Ins/LV2/\"\n/bin/ln -sfh \"$CONFIGURATION_BUILD_DIR\" \"$HOME/Library/Audio/Plug-Ins/LV2/\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		36F6FA7C1D384916E51A2630 = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				28C84AA34C9B987203FE05CA,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		586BAF660C42EFA07A8779D7 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D99E694E2435F119D6AE128,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -511,12 +659,32 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E5170B67190C2D836B0C6F36 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42581295E6F20D72B98E8983,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		08CC1F679299D91E35C111D1 = {
+			isa = PBXTargetDependency;
+			target = 02528E9AD9542FBC78AEF833;
+		};
+		1FF01F59FFD06704CB365924 = {
+			isa = PBXTargetDependency;
+			target = D62386E97338945F4A6326E3;
+		};
 		21DB5268EB869045A0E5603A = {
 			isa = PBXTargetDependency;
 			target = 1FAFCD5AEF224F462C6B0907;
+		};
+		30F06FA4DBA85E0655586C48 = {
+			isa = PBXTargetDependency;
+			target = 02528E9AD9542FBC78AEF833;
 		};
 		54B8F18354F01E2CA6B48496 = {
 			isa = PBXTargetDependency;
@@ -531,6 +699,10 @@
 			target = C4E6413674CFE0CFF64A0DAD;
 		};
 		D31F1CEA34C5EF36F0CF3611 = {
+			isa = PBXTargetDependency;
+			target = C4E6413674CFE0CFF64A0DAD;
+		};
+		F617912211CFAA48B6BEFD01 = {
 			isa = PBXTargetDependency;
 			target = C4E6413674CFE0CFF64A0DAD;
 		};
@@ -627,6 +799,14 @@
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(SRCROOT)/../../JuceLibraryCode/modules",
@@ -636,7 +816,7 @@
 				INFOPLIST_FILE = Info-Standalone_Plugin.plist;
 				INFOPLIST_PREPROCESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
 				OTHER_LDFLAGS = "-lArpligner -weak_framework Metal -weak_framework MetalKit";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
 				PRODUCT_NAME = "Arpligner";
@@ -738,6 +918,14 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(SRCROOT)/../../JuceLibraryCode/modules",
@@ -750,13 +938,130 @@
 				LIBRARY_STYLE = Bundle;
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
 				OTHER_LDFLAGS = "-bundle -lArpligner -weak_framework Metal -weak_framework MetalKit";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
 				PRODUCT_NAME = "Arpligner";
 				USE_HEADERMAP = NO;
 				VALID_ARCHS = "i386 x86_64 arm64 arm64e";
 				WRAPPER_EXTENSION = vst3;
+			};
+			name = Release;
+		};
+		440B97F063A516CD48AC5E5B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_LINK_OBJC_RUNTIME = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
+				DEAD_CODE_STRIPPING = YES;
+				EXCLUDED_ARCHS = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_NDEBUG=1",
+					"NDEBUG=1",
+					"JUCE_DISPLAY_SPLASH_SCREEN=1",
+					"JUCE_USE_DARK_SPLASH_SCREEN=1",
+					"JUCE_PROJUCER_VERSION=0x70005",
+					"JUCE_MODULE_AVAILABLE_juce_audio_basics=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_devices=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_formats=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_processors=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_utils=1",
+					"JUCE_MODULE_AVAILABLE_juce_core=1",
+					"JUCE_MODULE_AVAILABLE_juce_data_structures=1",
+					"JUCE_MODULE_AVAILABLE_juce_events=1",
+					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
+					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
+					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
+					"JUCE_VST3_CAN_REPLACE_VST2=0",
+					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
+					"JucePlugin_Build_VST=0",
+					"JucePlugin_Build_VST3=0",
+					"JucePlugin_Build_AU=0",
+					"JucePlugin_Build_AUv3=0",
+					"JucePlugin_Build_AAX=0",
+					"JucePlugin_Build_Standalone=0",
+					"JucePlugin_Build_Unity=0",
+					"JucePlugin_Build_LV2=0",
+					"JucePlugin_Enable_IAA=0",
+					"JucePlugin_Enable_ARA=0",
+					"JucePlugin_Name=\\\"Arpligner\\\"",
+					"JucePlugin_Desc=\\\"Arpligner\\\"",
+					"JucePlugin_Manufacturer=\\\"Ywen\\\"",
+					"JucePlugin_ManufacturerWebsite=\\\"https://github.com/YPares\\\"",
+					"JucePlugin_ManufacturerEmail=\\\"yves.pares@gmail.com\\\"",
+					"JucePlugin_ManufacturerCode=0x5977656e",
+					"JucePlugin_PluginCode=0x446b3237",
+					"JucePlugin_IsSynth=0",
+					"JucePlugin_WantsMidiInput=1",
+					"JucePlugin_ProducesMidiOutput=1",
+					"JucePlugin_IsMidiEffect=1",
+					"JucePlugin_EditorRequiresKeyboardFocus=0",
+					"JucePlugin_Version=0.1",
+					"JucePlugin_VersionCode=0x100",
+					"JucePlugin_VersionString=\\\"0.1\\\"",
+					"JucePlugin_VSTUniqueID=JucePlugin_PluginCode",
+					"JucePlugin_VSTCategory=kPlugCategEffect",
+					"JucePlugin_Vst3Category=\\\"Fx\\\"",
+					"JucePlugin_AUMainType=\\'aumi\\'",
+					"JucePlugin_AUSubType=JucePlugin_PluginCode",
+					"JucePlugin_AUExportPrefix=ArplignerAU",
+					"JucePlugin_AUExportPrefixQuoted=\\\"ArplignerAU\\\"",
+					"JucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode",
+					"JucePlugin_CFBundleIdentifier=com.Ywen.Arpligner",
+					"JucePlugin_AAXIdentifier=com.Ywen.Arpligner",
+					"JucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode",
+					"JucePlugin_AAXProductId=JucePlugin_PluginCode",
+					"JucePlugin_AAXCategory=0",
+					"JucePlugin_AAXDisableBypass=0",
+					"JucePlugin_AAXDisableMultiMono=0",
+					"JucePlugin_IAAType=0x6175726d",
+					"JucePlugin_IAASubType=JucePlugin_PluginCode",
+					"JucePlugin_IAAName=\\\"Ywen:\\ Arpligner\\\"",
+					"JucePlugin_VSTNumMidiInputs=16",
+					"JucePlugin_VSTNumMidiOutputs=16",
+					"JucePlugin_ARAContentTypes=0",
+					"JucePlugin_ARATransformationFlags=0",
+					"JucePlugin_ARAFactoryID=\\\"com.Ywen.Arpligner.factory\\\"",
+					"JucePlugin_ARADocumentArchiveID=\\\"com.Ywen.Arpligner.aradocumentarchive.0.1\\\"",
+					"JucePlugin_ARACompatibleArchiveIDs=\\\"\\\"",
+					"JUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone",
+					"JUCER_XCODE_MAC_F6D2F4CF=1",
+					"JUCE_APP_VERSION=0.1",
+					"JUCE_APP_VERSION_HEX=0x100",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode",
+					"$(SRCROOT)/../../JuceLibraryCode/modules",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Info-LV2_Manifest_Helper.plist;
+				INFOPLIST_PREPROCESS = NO;
+				LLVM_LTO = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				OTHER_LDFLAGS = "-weak_framework Metal -weak_framework MetalKit";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
+				PRODUCT_NAME = "juce_lv2_helper";
+				USE_HEADERMAP = NO;
+				VALID_ARCHS = "i386 x86_64 arm64 arm64e";
 			};
 			name = Release;
 		};
@@ -898,6 +1203,14 @@
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(SRCROOT)/../../JuceLibraryCode/modules",
@@ -908,7 +1221,7 @@
 				INFOPLIST_PREPROCESS = NO;
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
 				OTHER_LDFLAGS = "-lArpligner -weak_framework Metal -weak_framework MetalKit";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
 				PRODUCT_NAME = "Arpligner";
@@ -1010,6 +1323,14 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(SRCROOT)/../../JuceLibraryCode/modules",
@@ -1021,7 +1342,7 @@
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/VST3/";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
 				OTHER_LDFLAGS = "-bundle -lArpligner -weak_framework Metal -weak_framework MetalKit";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
 				PRODUCT_NAME = "Arpligner";
@@ -1118,7 +1439,7 @@
 					"JucePlugin_Build_AAX=0",
 					"JucePlugin_Build_Standalone=1",
 					"JucePlugin_Build_Unity=0",
-					"JucePlugin_Build_LV2=0",
+					"JucePlugin_Build_LV2=1",
 					"JucePlugin_Enable_IAA=0",
 					"JucePlugin_Enable_ARA=0",
 					"JucePlugin_Name=\\\"Arpligner\\\"",
@@ -1169,6 +1490,14 @@
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(SRCROOT)/../../JuceLibraryCode/modules",
@@ -1178,13 +1507,384 @@
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
 				OTHER_LDFLAGS = "-weak_framework Metal -weak_framework MetalKit";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
 				PRODUCT_NAME = "Arpligner";
 				SKIP_INSTALL = YES;
 				USE_HEADERMAP = NO;
 				VALID_ARCHS = "i386 x86_64 arm64 arm64e";
+			};
+			name = Release;
+		};
+		852708E70D7FC384D85AAE32 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_LINK_OBJC_RUNTIME = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				EXCLUDED_ARCHS = "";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_DEBUG=1",
+					"DEBUG=1",
+					"JUCE_DISPLAY_SPLASH_SCREEN=1",
+					"JUCE_USE_DARK_SPLASH_SCREEN=1",
+					"JUCE_PROJUCER_VERSION=0x70005",
+					"JUCE_MODULE_AVAILABLE_juce_audio_basics=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_devices=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_formats=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_processors=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_utils=1",
+					"JUCE_MODULE_AVAILABLE_juce_core=1",
+					"JUCE_MODULE_AVAILABLE_juce_data_structures=1",
+					"JUCE_MODULE_AVAILABLE_juce_events=1",
+					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
+					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
+					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
+					"JUCE_VST3_CAN_REPLACE_VST2=0",
+					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
+					"JucePlugin_Build_VST=0",
+					"JucePlugin_Build_VST3=0",
+					"JucePlugin_Build_AU=0",
+					"JucePlugin_Build_AUv3=0",
+					"JucePlugin_Build_AAX=0",
+					"JucePlugin_Build_Standalone=0",
+					"JucePlugin_Build_Unity=0",
+					"JucePlugin_Build_LV2=0",
+					"JucePlugin_Enable_IAA=0",
+					"JucePlugin_Enable_ARA=0",
+					"JucePlugin_Name=\\\"Arpligner\\\"",
+					"JucePlugin_Desc=\\\"Arpligner\\\"",
+					"JucePlugin_Manufacturer=\\\"Ywen\\\"",
+					"JucePlugin_ManufacturerWebsite=\\\"https://github.com/YPares\\\"",
+					"JucePlugin_ManufacturerEmail=\\\"yves.pares@gmail.com\\\"",
+					"JucePlugin_ManufacturerCode=0x5977656e",
+					"JucePlugin_PluginCode=0x446b3237",
+					"JucePlugin_IsSynth=0",
+					"JucePlugin_WantsMidiInput=1",
+					"JucePlugin_ProducesMidiOutput=1",
+					"JucePlugin_IsMidiEffect=1",
+					"JucePlugin_EditorRequiresKeyboardFocus=0",
+					"JucePlugin_Version=0.1",
+					"JucePlugin_VersionCode=0x100",
+					"JucePlugin_VersionString=\\\"0.1\\\"",
+					"JucePlugin_VSTUniqueID=JucePlugin_PluginCode",
+					"JucePlugin_VSTCategory=kPlugCategEffect",
+					"JucePlugin_Vst3Category=\\\"Fx\\\"",
+					"JucePlugin_AUMainType=\\'aumi\\'",
+					"JucePlugin_AUSubType=JucePlugin_PluginCode",
+					"JucePlugin_AUExportPrefix=ArplignerAU",
+					"JucePlugin_AUExportPrefixQuoted=\\\"ArplignerAU\\\"",
+					"JucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode",
+					"JucePlugin_CFBundleIdentifier=com.Ywen.Arpligner",
+					"JucePlugin_AAXIdentifier=com.Ywen.Arpligner",
+					"JucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode",
+					"JucePlugin_AAXProductId=JucePlugin_PluginCode",
+					"JucePlugin_AAXCategory=0",
+					"JucePlugin_AAXDisableBypass=0",
+					"JucePlugin_AAXDisableMultiMono=0",
+					"JucePlugin_IAAType=0x6175726d",
+					"JucePlugin_IAASubType=JucePlugin_PluginCode",
+					"JucePlugin_IAAName=\\\"Ywen:\\ Arpligner\\\"",
+					"JucePlugin_VSTNumMidiInputs=16",
+					"JucePlugin_VSTNumMidiOutputs=16",
+					"JucePlugin_ARAContentTypes=0",
+					"JucePlugin_ARATransformationFlags=0",
+					"JucePlugin_ARAFactoryID=\\\"com.Ywen.Arpligner.factory\\\"",
+					"JucePlugin_ARADocumentArchiveID=\\\"com.Ywen.Arpligner.aradocumentarchive.0.1\\\"",
+					"JucePlugin_ARACompatibleArchiveIDs=\\\"\\\"",
+					"JUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone",
+					"JUCER_XCODE_MAC_F6D2F4CF=1",
+					"JUCE_APP_VERSION=0.1",
+					"JUCE_APP_VERSION_HEX=0x100",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode",
+					"$(SRCROOT)/../../JuceLibraryCode/modules",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Info-LV2_Manifest_Helper.plist;
+				INFOPLIST_PREPROCESS = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				OTHER_LDFLAGS = "-weak_framework Metal -weak_framework MetalKit";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
+				PRODUCT_NAME = "juce_lv2_helper";
+				USE_HEADERMAP = NO;
+				VALID_ARCHS = "i386 x86_64 arm64 arm64e";
+			};
+			name = Debug;
+		};
+		993684D64A71E94F36AB92BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_LINK_OBJC_RUNTIME = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)/Arpligner.lv2";
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = /;
+				EXCLUDED_ARCHS = "";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_DEBUG=1",
+					"DEBUG=1",
+					"JUCE_DISPLAY_SPLASH_SCREEN=1",
+					"JUCE_USE_DARK_SPLASH_SCREEN=1",
+					"JUCE_PROJUCER_VERSION=0x70005",
+					"JUCE_MODULE_AVAILABLE_juce_audio_basics=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_devices=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_formats=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_processors=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_utils=1",
+					"JUCE_MODULE_AVAILABLE_juce_core=1",
+					"JUCE_MODULE_AVAILABLE_juce_data_structures=1",
+					"JUCE_MODULE_AVAILABLE_juce_events=1",
+					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
+					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
+					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
+					"JUCE_VST3_CAN_REPLACE_VST2=0",
+					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
+					"JucePlugin_Build_VST=0",
+					"JucePlugin_Build_VST3=0",
+					"JucePlugin_Build_AU=0",
+					"JucePlugin_Build_AUv3=0",
+					"JucePlugin_Build_AAX=0",
+					"JucePlugin_Build_Standalone=0",
+					"JucePlugin_Build_Unity=0",
+					"JucePlugin_Build_LV2=1",
+					"JucePlugin_Enable_IAA=0",
+					"JucePlugin_Enable_ARA=0",
+					"JucePlugin_Name=\\\"Arpligner\\\"",
+					"JucePlugin_Desc=\\\"Arpligner\\\"",
+					"JucePlugin_Manufacturer=\\\"Ywen\\\"",
+					"JucePlugin_ManufacturerWebsite=\\\"https://github.com/YPares\\\"",
+					"JucePlugin_ManufacturerEmail=\\\"yves.pares@gmail.com\\\"",
+					"JucePlugin_ManufacturerCode=0x5977656e",
+					"JucePlugin_PluginCode=0x446b3237",
+					"JucePlugin_IsSynth=0",
+					"JucePlugin_WantsMidiInput=1",
+					"JucePlugin_ProducesMidiOutput=1",
+					"JucePlugin_IsMidiEffect=1",
+					"JucePlugin_EditorRequiresKeyboardFocus=0",
+					"JucePlugin_Version=0.1",
+					"JucePlugin_VersionCode=0x100",
+					"JucePlugin_VersionString=\\\"0.1\\\"",
+					"JucePlugin_VSTUniqueID=JucePlugin_PluginCode",
+					"JucePlugin_VSTCategory=kPlugCategEffect",
+					"JucePlugin_Vst3Category=\\\"Fx\\\"",
+					"JucePlugin_AUMainType=\\'aumi\\'",
+					"JucePlugin_AUSubType=JucePlugin_PluginCode",
+					"JucePlugin_AUExportPrefix=ArplignerAU",
+					"JucePlugin_AUExportPrefixQuoted=\\\"ArplignerAU\\\"",
+					"JucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode",
+					"JucePlugin_CFBundleIdentifier=com.Ywen.Arpligner",
+					"JucePlugin_AAXIdentifier=com.Ywen.Arpligner",
+					"JucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode",
+					"JucePlugin_AAXProductId=JucePlugin_PluginCode",
+					"JucePlugin_AAXCategory=0",
+					"JucePlugin_AAXDisableBypass=0",
+					"JucePlugin_AAXDisableMultiMono=0",
+					"JucePlugin_IAAType=0x6175726d",
+					"JucePlugin_IAASubType=JucePlugin_PluginCode",
+					"JucePlugin_IAAName=\\\"Ywen:\\ Arpligner\\\"",
+					"JucePlugin_VSTNumMidiInputs=16",
+					"JucePlugin_VSTNumMidiOutputs=16",
+					"JucePlugin_ARAContentTypes=0",
+					"JucePlugin_ARATransformationFlags=0",
+					"JucePlugin_ARAFactoryID=\\\"com.Ywen.Arpligner.factory\\\"",
+					"JucePlugin_ARADocumentArchiveID=\\\"com.Ywen.Arpligner.aradocumentarchive.0.1\\\"",
+					"JucePlugin_ARACompatibleArchiveIDs=\\\"\\\"",
+					"JUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone",
+					"JUCER_XCODE_MAC_F6D2F4CF=1",
+					"JUCE_APP_VERSION=0.1",
+					"JUCE_APP_VERSION_HEX=0x100",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode",
+					"$(SRCROOT)/../../JuceLibraryCode/modules",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Info-LV2_Plugin.plist;
+				INFOPLIST_PREPROCESS = NO;
+				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/LV2/";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(PROJECT_DIR)/build/$(CONFIGURATION)\"",
+				);
+				LIBRARY_STYLE = Bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				OTHER_LDFLAGS = "-bundle -lArpligner -weak_framework Metal -weak_framework MetalKit";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
+				PRODUCT_NAME = "Arpligner";
+				SKIP_INSTALL = YES;
+				USE_HEADERMAP = NO;
+				VALID_ARCHS = "i386 x86_64 arm64 arm64e";
+				WRAPPER_EXTENSION = so;
+			};
+			name = Debug;
+		};
+		9D6B518FA7FCA82F71C21076 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_LINK_OBJC_RUNTIME = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)/Arpligner.lv2";
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = /;
+				EXCLUDED_ARCHS = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_NDEBUG=1",
+					"NDEBUG=1",
+					"JUCE_DISPLAY_SPLASH_SCREEN=1",
+					"JUCE_USE_DARK_SPLASH_SCREEN=1",
+					"JUCE_PROJUCER_VERSION=0x70005",
+					"JUCE_MODULE_AVAILABLE_juce_audio_basics=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_devices=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_formats=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_plugin_client=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_processors=1",
+					"JUCE_MODULE_AVAILABLE_juce_audio_utils=1",
+					"JUCE_MODULE_AVAILABLE_juce_core=1",
+					"JUCE_MODULE_AVAILABLE_juce_data_structures=1",
+					"JUCE_MODULE_AVAILABLE_juce_events=1",
+					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
+					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
+					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
+					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
+					"JUCE_VST3_CAN_REPLACE_VST2=0",
+					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
+					"JucePlugin_Build_VST=0",
+					"JucePlugin_Build_VST3=0",
+					"JucePlugin_Build_AU=0",
+					"JucePlugin_Build_AUv3=0",
+					"JucePlugin_Build_AAX=0",
+					"JucePlugin_Build_Standalone=0",
+					"JucePlugin_Build_Unity=0",
+					"JucePlugin_Build_LV2=1",
+					"JucePlugin_Enable_IAA=0",
+					"JucePlugin_Enable_ARA=0",
+					"JucePlugin_Name=\\\"Arpligner\\\"",
+					"JucePlugin_Desc=\\\"Arpligner\\\"",
+					"JucePlugin_Manufacturer=\\\"Ywen\\\"",
+					"JucePlugin_ManufacturerWebsite=\\\"https://github.com/YPares\\\"",
+					"JucePlugin_ManufacturerEmail=\\\"yves.pares@gmail.com\\\"",
+					"JucePlugin_ManufacturerCode=0x5977656e",
+					"JucePlugin_PluginCode=0x446b3237",
+					"JucePlugin_IsSynth=0",
+					"JucePlugin_WantsMidiInput=1",
+					"JucePlugin_ProducesMidiOutput=1",
+					"JucePlugin_IsMidiEffect=1",
+					"JucePlugin_EditorRequiresKeyboardFocus=0",
+					"JucePlugin_Version=0.1",
+					"JucePlugin_VersionCode=0x100",
+					"JucePlugin_VersionString=\\\"0.1\\\"",
+					"JucePlugin_VSTUniqueID=JucePlugin_PluginCode",
+					"JucePlugin_VSTCategory=kPlugCategEffect",
+					"JucePlugin_Vst3Category=\\\"Fx\\\"",
+					"JucePlugin_AUMainType=\\'aumi\\'",
+					"JucePlugin_AUSubType=JucePlugin_PluginCode",
+					"JucePlugin_AUExportPrefix=ArplignerAU",
+					"JucePlugin_AUExportPrefixQuoted=\\\"ArplignerAU\\\"",
+					"JucePlugin_AUManufacturerCode=JucePlugin_ManufacturerCode",
+					"JucePlugin_CFBundleIdentifier=com.Ywen.Arpligner",
+					"JucePlugin_AAXIdentifier=com.Ywen.Arpligner",
+					"JucePlugin_AAXManufacturerCode=JucePlugin_ManufacturerCode",
+					"JucePlugin_AAXProductId=JucePlugin_PluginCode",
+					"JucePlugin_AAXCategory=0",
+					"JucePlugin_AAXDisableBypass=0",
+					"JucePlugin_AAXDisableMultiMono=0",
+					"JucePlugin_IAAType=0x6175726d",
+					"JucePlugin_IAASubType=JucePlugin_PluginCode",
+					"JucePlugin_IAAName=\\\"Ywen:\\ Arpligner\\\"",
+					"JucePlugin_VSTNumMidiInputs=16",
+					"JucePlugin_VSTNumMidiOutputs=16",
+					"JucePlugin_ARAContentTypes=0",
+					"JucePlugin_ARATransformationFlags=0",
+					"JucePlugin_ARAFactoryID=\\\"com.Ywen.Arpligner.factory\\\"",
+					"JucePlugin_ARADocumentArchiveID=\\\"com.Ywen.Arpligner.aradocumentarchive.0.1\\\"",
+					"JucePlugin_ARACompatibleArchiveIDs=\\\"\\\"",
+					"JUCE_STANDALONE_APPLICATION=JucePlugin_Build_Standalone",
+					"JUCER_XCODE_MAC_F6D2F4CF=1",
+					"JUCE_APP_VERSION=0.1",
+					"JUCE_APP_VERSION_HEX=0x100",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode",
+					"$(SRCROOT)/../../JuceLibraryCode/modules",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Info-LV2_Plugin.plist;
+				INFOPLIST_PREPROCESS = NO;
+				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/LV2/";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(PROJECT_DIR)/build/$(CONFIGURATION)\"",
+				);
+				LIBRARY_STYLE = Bundle;
+				LLVM_LTO = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				OTHER_LDFLAGS = "-bundle -lArpligner -weak_framework Metal -weak_framework MetalKit";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
+				PRODUCT_NAME = "Arpligner";
+				SKIP_INSTALL = YES;
+				USE_HEADERMAP = NO;
+				VALID_ARCHS = "i386 x86_64 arm64 arm64e";
+				WRAPPER_EXTENSION = so;
 			};
 			name = Release;
 		};
@@ -1244,7 +1944,7 @@
 					"JucePlugin_Build_AAX=0",
 					"JucePlugin_Build_Standalone=1",
 					"JucePlugin_Build_Unity=0",
-					"JucePlugin_Build_LV2=0",
+					"JucePlugin_Build_LV2=1",
 					"JucePlugin_Enable_IAA=0",
 					"JucePlugin_Enable_ARA=0",
 					"JucePlugin_Name=\\\"Arpligner\\\"",
@@ -1295,6 +1995,14 @@
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(SRCROOT)/../../JuceLibraryCode/modules",
@@ -1303,7 +2011,7 @@
 				);
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JuceLibraryCode/modules $(SRCROOT)/../../JuceLibraryCode/modules/juce_audio_plugin_client/AU";
 				OTHER_LDFLAGS = "-weak_framework Metal -weak_framework MetalKit";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Ywen.Arpligner;
 				PRODUCT_NAME = "Arpligner";
@@ -1325,6 +2033,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		3B5DEE94A7DB000D82C6AE1B = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				852708E70D7FC384D85AAE32,
+				440B97F063A516CD48AC5E5B,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		4C151062B24DD767F76A70B6 = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1339,6 +2056,15 @@
 			buildConfigurations = (
 				EECC2854CC3CDC27B624F4E0,
 				7C167AC9A819B1016F6C884E,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7F1EF7E98206702DB6776A8B = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				993684D64A71E94F36AB92BC,
+				9D6B518FA7FCA82F71C21076,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

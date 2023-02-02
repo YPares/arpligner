@@ -1,4 +1,4 @@
-name: Build (Linux)
+name: Build (Linux x64) 
 
 on: workflow_dispatch
 
@@ -17,12 +17,13 @@ jobs:
     - name: build
       run: >
         cd Builds/LinuxMakefile && make CONFIG=Release &&
-        mkdir Artifacts && mv build/Arpligner Artifacts && mv build/Arpligner.vst3 Artifacts
+        mkdir Artifacts && mv build/Arpligner Artifacts && mv build/Arpligner.vst3 Artifacts && mv build/Arpligner.lv2 Artifacts
     - name: upload artifact
       uses: actions/upload-artifact@v3.1.2
       with:
         name: arpligner-build-linux
         path: Builds/LinuxMakefile/Artifacts
+
     - name: release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/v')

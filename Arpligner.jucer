@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="dK277f" name="Arpligner" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginFormats="buildStandalone,buildVST3"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginFormats="buildLV2,buildStandalone,buildVST3"
               pluginManufacturer="Ywen" pluginManufacturerCode="Ywen" cppLanguageStandard="latest"
               pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginProducesMidiOut,pluginWantsMidiIn"
               displaySplashScreen="1" companyWebsite="https://github.com/YPares"

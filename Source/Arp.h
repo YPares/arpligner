@@ -69,7 +69,7 @@ public:
 
   void prepareToPlay (double sampleRate, int samplesPerBlock) override;
   
-  void runArp(MidiBuffer& midibuf) {
+  void runArp(MidiBuffer& midibuf) override {
     auto behaviour = (InstanceBehaviour::Enum)instanceBehaviour->getIndex();
     switch (behaviour) {
     case InstanceBehaviour::BYPASS:

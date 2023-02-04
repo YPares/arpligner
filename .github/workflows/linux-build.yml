@@ -1,4 +1,4 @@
-name: Build (Linux x64) 
+name: Plugin build (Linux x64) 
 
 on: workflow_dispatch
 

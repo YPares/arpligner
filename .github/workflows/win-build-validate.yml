@@ -1,4 +1,4 @@
-name: Build & Pluginval (Windows)
+name: Plugin build (Windows)
 
 on: workflow_dispatch
 

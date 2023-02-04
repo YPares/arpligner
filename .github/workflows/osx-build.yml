@@ -1,4 +1,4 @@
-name: Build (OSX)
+name: Plugin build (OSX)
 
 on: workflow_dispatch
 

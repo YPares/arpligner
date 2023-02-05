@@ -16,9 +16,8 @@ jobs:
         commands: |
           sudo apt-get update &&
           sudo apt-get install -y clang \
-            libasound2-dev libjack-jackd2-dev ladspa-sdk libcurl4-openssl-dev libfreetype-dev libfreetype6 libfreetype6-dev \
-            libx11-dev libxcomposite-dev libxcursor-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev \
-            libwebkit2gtk-4.0-dev libglu1-mesa-dev mesa-common-dev &&
+            libasound2-dev libjack-jackd2-dev ladspa-sdk libcurl4-openssl-dev \
+            libfreetype-dev libfreetype6 libfreetype6-dev &&
           cd Builds/LinuxMakefile && make CXX=clang++ CONFIG=Release &&
           mkdir Artifacts && mv build/Arpligner Artifacts && mv build/Arpligner.vst3 Artifacts && mv build/Arpligner.lv2 Artifacts
         copy_artifact_path:

@@ -61,12 +61,7 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   addParameter
   (patternNotesMapping = new AudioParameterChoice
   ("patternNotesMapping", "Pattern notes mapping",
-    StringArray{
-"Map nothing",
-"Semitone to degree",
-"White note to degree",
-"Transpose from 1st degree"
-    },
+    StringArray{ "Always leave unmapped", "Semitone to degree", "White key to degree"},
     PatternNotesMapping::SEMITONE_TO_DEGREE
   ));
 
@@ -78,6 +73,13 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   (patternNotesWraparound = new AudioParameterChoice
   ("patternNotesWraparound", "Pattern octave wraparound", waModes,
     PatternNotesWraparound::AFTER_ALL_CHORD_DEGREES));
+
+  StringArray unmappedBehs = StringArray
+  { "Silence", "Play all degrees up to note", "Transpose from 1st degree", "Use as is" };
+  addParameter
+  (unmappedNotesBehaviour = new AudioParameterChoice
+  ("unmappedNotesBehaviour", "Unmapped notes behaviour", unmappedBehs,
+    UnmappedNotesBehaviour::SILENCE));
 }
 
 ArplignerAudioProcessor::~ArplignerAudioProcessor()
@@ -218,6 +220,7 @@ void ArplignerAudioProcessor::getStateInformation(MemoryBlock& destData)
   s.writeInt(*patternNotesMapping);
   s.writeInt(*numMillisecsOfLatency);
   s.writeInt(*patternNotesWraparound);
+  s.writeInt(*unmappedNotesBehaviour);
 }
 
 // Reload state info
@@ -231,4 +234,5 @@ void ArplignerAudioProcessor::setStateInformation(const void* data, int sizeInBy
   *patternNotesMapping = s.readInt();
   *numMillisecsOfLatency = s.readInt();
   *patternNotesWraparound = s.readInt();
+  *unmappedNotesBehaviour = s.readInt();
 }

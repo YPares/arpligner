@@ -68,6 +68,7 @@ protected:
   AudioParameterChoice* patternNotesMapping;
   AudioParameterInt* numMillisecsOfLatency;
   AudioParameterChoice* patternNotesWraparound;
+  AudioParameterChoice* unmappedNotesBehaviour;
 
 private:
   //==============================================================================
@@ -106,10 +107,9 @@ namespace WhenSingleChordNote {
 
 namespace PatternNotesMapping {
   enum Enum {
-    MAP_NOTHING = 0,
+    ALWAYS_LEAVE_UNMAPPED = 0,
     SEMITONE_TO_DEGREE,
-    WHITE_NOTE_TO_DEGREE,
-    TRANSPOSE_FROM_FIRST_DEGREE
+    WHITE_NOTE_TO_DEGREE
   };
 }
 
@@ -121,5 +121,14 @@ namespace PatternNotesWraparound {
     // wrap around (effectively discarding all the chords degrees above that
     // number, and leaving unmapped pattern notes that are above the last degree
     // of the chord but before the wraparound value)
+  };
+}
+
+namespace UnmappedNotesBehaviour {
+  enum Enum {
+    SILENCE = 0,
+    PLAY_FULL_CHORD_UP_TO_NOTE,
+    TRANSPOSE_FROM_FIRST_DEGREE,
+    USE_AS_IS
   };
 }

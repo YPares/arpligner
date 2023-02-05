@@ -51,16 +51,14 @@ namespace Mapping {
   void mapPatternNote(NoteNumber referenceNote,
     PatternNotesMapping::Enum mappingMode,
     PatternNotesWraparound::Enum wrapMode,
+    UnmappedNotesBehaviour::Enum unmappedBeh,
     const Chord& curChord,
     NoteNumber noteCodeIn,
     Array<NoteNumber>& thisNoteMappings) {
     int offsetFromRef = noteCodeIn - referenceNote;
 
     switch (mappingMode) {
-    case PatternNotesMapping::MAP_NOTHING:
-      break;
-    case PatternNotesMapping::TRANSPOSE_FROM_FIRST_DEGREE:
-      thisNoteMappings.add(curChord[0] + offsetFromRef);
+    case PatternNotesMapping::ALWAYS_LEAVE_UNMAPPED:
       break;
     case PatternNotesMapping::WHITE_NOTE_TO_DEGREE:
       if (!MidiMessage::isMidiNoteBlack(noteCodeIn)) {
@@ -77,6 +75,25 @@ namespace Mapping {
     default:
       mapToChordDegree(wrapMode, curChord, offsetFromRef, thisNoteMappings);
       break;
+    }
+
+    if (thisNoteMappings.size() == 0) { // If the note has not been mapped yet:
+      switch (unmappedBeh) {
+      case UnmappedNotesBehaviour::SILENCE:
+        break;
+      case UnmappedNotesBehaviour::PLAY_FULL_CHORD_UP_TO_NOTE:
+        for (NoteNumber chdNote : curChord) {
+          if (chdNote <= noteCodeIn)
+            thisNoteMappings.add(chdNote);
+        }
+        break;
+      case UnmappedNotesBehaviour::TRANSPOSE_FROM_FIRST_DEGREE:
+        thisNoteMappings.add(curChord[0] + offsetFromRef);
+        break;
+      case UnmappedNotesBehaviour::USE_AS_IS:
+        thisNoteMappings.add(noteCodeIn);
+        break;
+      }
     }
   }
 
@@ -150,6 +167,7 @@ void Arp::runArp(MidiBuffer& midibuf) {
 void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Array<MidiMessage>& noteOffs, MidiBuffer& midibuf) {
   auto mappingMode = (PatternNotesMapping::Enum)patternNotesMapping->getIndex();
   auto wrapMode = (PatternNotesWraparound::Enum)patternNotesWraparound->getIndex();
+  auto unmappedBeh = (UnmappedNotesBehaviour::Enum)unmappedNotesBehaviour->getIndex();
   auto referenceNote = firstDegreeCode->getIndex();
 
   Chord curChord;
@@ -187,6 +205,7 @@ void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Arra
       Mapping::mapPatternNote(referenceNote,
         mappingMode,
         wrapMode,
+        unmappedBeh,
         curChord,
         noteCodeIn,
         thisNoteMappings);

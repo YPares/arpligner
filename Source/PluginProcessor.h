@@ -16,49 +16,49 @@ using namespace juce;
 //==============================================================================
 /**
 */
-class ArplignerAudioProcessor  : public AudioProcessor
-                            #if JucePlugin_Enable_ARA
-                             , public AudioProcessorARAExtension
-                            #endif
+class ArplignerAudioProcessor : public AudioProcessor
+#if JucePlugin_Enable_ARA
+  , public AudioProcessorARAExtension
+#endif
 {
 public:
-    //==============================================================================
-    ArplignerAudioProcessor();
-    ~ArplignerAudioProcessor() override;
+  //==============================================================================
+  ArplignerAudioProcessor();
+  ~ArplignerAudioProcessor() override;
 
-    //==============================================================================
-    void releaseResources() override;
+  //==============================================================================
+  void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+#ifndef JucePlugin_PreferredChannelConfigurations
+  bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+#endif
 
-    void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
+  void processBlock(AudioBuffer<float>&, MidiBuffer&) override;
 
-    virtual void runArp(MidiBuffer&) = 0;
-    
-    //==============================================================================
-    AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+  virtual void runArp(MidiBuffer&) = 0;
 
-    //==============================================================================
-    const String getName() const override;
+  //==============================================================================
+  AudioProcessorEditor* createEditor() override;
+  bool hasEditor() const override;
 
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool isMidiEffect() const override;
-    double getTailLengthSeconds() const override;
+  //==============================================================================
+  const String getName() const override;
 
-    //==============================================================================
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void changeProgramName (int index, const String& newName) override;
+  bool acceptsMidi() const override;
+  bool producesMidi() const override;
+  bool isMidiEffect() const override;
+  double getTailLengthSeconds() const override;
 
-    //==============================================================================
-    void getStateInformation (MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+  //==============================================================================
+  int getNumPrograms() override;
+  int getCurrentProgram() override;
+  void setCurrentProgram(int index) override;
+  const String getProgramName(int index) override;
+  void changeProgramName(int index, const String& newName) override;
+
+  //==============================================================================
+  void getStateInformation(MemoryBlock& destData) override;
+  void setStateInformation(const void* data, int sizeInBytes) override;
 
 protected:
   AudioParameterChoice* instanceBehaviour;
@@ -68,58 +68,67 @@ protected:
   AudioParameterChoice* patternNotesMapping;
   AudioParameterInt* numMillisecsOfLatency;
   AudioParameterChoice* patternNotesWraparound;
-  
+  AudioParameterChoice* unmappedNotesBehaviour;
+
 private:
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArplignerAudioProcessor)
+  //==============================================================================
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ArplignerAudioProcessor)
 };
 
 
 namespace InstanceBehaviour {
-enum Enum {
-  // Values between 1 & 16 are for Multi-channel behaviour, where the value
-  // indicates the midi channel corresponding to the chord track. Values of 17+
-  // are for Multi-instance behaviour
-  BYPASS = 0,
-  IS_CHORD = 17,
-  IS_PATTERN
-};
+  enum Enum {
+    // Values between 1 & 16 are for Multi-channel behaviour, where the value
+    // indicates the midi channel corresponding to the chord track. Values of 17+
+    // are for Multi-instance behaviour
+    BYPASS = 0,
+    IS_CHORD = 17,
+    IS_PATTERN
+  };
 }
 
 namespace WhenNoChordNote {
-enum Enum {
-  LATCH_LAST_CHORD = 0,
-  SILENCE,
-  USE_PATTERN_AS_NOTES
-};
+  enum Enum {
+    LATCH_LAST_CHORD = 0,
+    SILENCE,
+    USE_PATTERN_AS_NOTES
+  };
 }
 
 namespace WhenSingleChordNote {
-enum Enum {
-  TRANSPOSE_LAST_CHORD = 0,
-  POWERCHORD,
-  USE_AS_IS,
-  SILENCE,
-  USE_PATTERN_AS_NOTES
-};
+  enum Enum {
+    TRANSPOSE_LAST_CHORD = 0,
+    POWERCHORD,
+    USE_AS_IS,
+    SILENCE,
+    USE_PATTERN_AS_NOTES
+  };
 }
 
 namespace PatternNotesMapping {
-enum Enum {
-  MAP_NOTHING = 0,
-  SEMITONE_TO_DEGREE,
-  WHITE_NOTE_TO_DEGREE,
-  TRANSPOSE_FROM_FIRST_DEGREE
-};
+  enum Enum {
+    ALWAYS_LEAVE_UNMAPPED = 0,
+    SEMITONE_TO_DEGREE,
+    WHITE_NOTE_TO_DEGREE
+  };
 }
 
 namespace PatternNotesWraparound {
-enum Enum {
-  NO_WRAPAROUND = 0,
-  AFTER_ALL_CHORD_DEGREES = 1,
-  // Values of 2 and above indicate a specific number of notes after which to
-  // wrap around (effectively discarding all the chords degrees above that
-  // number, and leaving unmapped pattern notes that are above the last degree
-  // of the chord but before the wraparound value)
-};
+  enum Enum {
+    NO_WRAPAROUND = 0,
+    AFTER_ALL_CHORD_DEGREES = 1,
+    // Values of 2 and above indicate a specific number of notes after which to
+    // wrap around (effectively discarding all the chords degrees above that
+    // number, and leaving unmapped pattern notes that are above the last degree
+    // of the chord but before the wraparound value)
+  };
+}
+
+namespace UnmappedNotesBehaviour {
+  enum Enum {
+    SILENCE = 0,
+    PLAY_FULL_CHORD_UP_TO_NOTE,
+    TRANSPOSE_FROM_FIRST_DEGREE,
+    USE_AS_IS
+  };
 }

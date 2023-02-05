@@ -20,80 +20,91 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 // Functions that compute the mappings of input pattern notes:
 namespace Mapping {
 
-void mapToChordDegree(PatternNotesWraparound::Enum wrapMode,
-		              const Chord& curChord,
-		              int degreeNum,
-		              NoteNumber& noteCodeOut,
-		              bool& isMapped) {
-  int numChordDegrees = curChord.size();
+  void mapToChordDegree(PatternNotesWraparound::Enum wrapMode,
+    const Chord& curChord,
+    int degreeNum,
+    Array<NoteNumber>& thisNoteMappings) {
+    int numChordDegrees = curChord.size();
 
-  if ((degreeNum < 0 || degreeNum >= numChordDegrees) &&
+    if ((degreeNum < 0 || degreeNum >= numChordDegrees) &&
       wrapMode == PatternNotesWraparound::NO_WRAPAROUND ||
-      numChordDegrees == 0) {
-    isMapped = false;
-    return;
-  }
+      numChordDegrees == 0)
+      return;
 
-  int numValidDegrees =
-    (wrapMode <= PatternNotesWraparound::AFTER_ALL_CHORD_DEGREES)
-    ? numChordDegrees
-    : wrapMode;
-  int wantedDegree;
-  if (degreeNum >= 0)
-    wantedDegree = degreeNum % numValidDegrees;
-  else {
-    int absRem = (-degreeNum) % numValidDegrees;
-    wantedDegree = (absRem == 0) ? 0 : numValidDegrees - absRem;
-  }
-  int wantedOctaveShift = floor((float)degreeNum / (float)numValidDegrees);
-  
-  if (wantedDegree >= numChordDegrees)
-    isMapped = false;
-  else
-    noteCodeOut = curChord[wantedDegree] + 12*wantedOctaveShift;
-}
-
-void mapPatternNote(NoteNumber referenceNote,
-		    PatternNotesMapping::Enum mappingMode,
-		    PatternNotesWraparound::Enum wrapMode,
-		    const Chord& curChord,
-		    NoteNumber noteCodeIn,
-		    NoteNumber& noteCodeOut,
-		    bool& isMapped) {
-  isMapped = true;
-  int offsetFromRef = noteCodeIn - referenceNote;
-  
-  switch (mappingMode) {
-  case PatternNotesMapping::MAP_NOTHING:
-    isMapped = false;
-    break;
-  case PatternNotesMapping::TRANSPOSE_FROM_FIRST_DEGREE:
-    noteCodeOut = curChord[0] + offsetFromRef;
-    break;
-  case PatternNotesMapping::WHITE_NOTE_TO_DEGREE:
-    isMapped = !MidiMessage::isMidiNoteBlack(noteCodeIn);
-    if (isMapped) {
-      // We need to correct the [referenceNote,noteCodeIn] interval for the amount
-      // of black keys it contains:
-      int sign = (offsetFromRef < 0) ? -1 : 1;
-      int absOffset = sign * offsetFromRef;
-      for (int i=referenceNote; i!=noteCodeIn; i+=sign)
-	if (MidiMessage::isMidiNoteBlack(i))
-	  absOffset--;
-      mapToChordDegree(wrapMode, curChord, sign * absOffset, noteCodeOut, isMapped);
+    int numValidDegrees =
+      (wrapMode <= PatternNotesWraparound::AFTER_ALL_CHORD_DEGREES)
+      ? numChordDegrees
+      : wrapMode;
+    int wantedDegree;
+    if (degreeNum >= 0)
+      wantedDegree = degreeNum % numValidDegrees;
+    else {
+      int absRem = (-degreeNum) % numValidDegrees;
+      wantedDegree = (absRem == 0) ? 0 : numValidDegrees - absRem;
     }
-    break;
-  default:
-    mapToChordDegree(wrapMode, curChord, offsetFromRef, noteCodeOut, isMapped);
-    break;
+    int wantedOctaveShift = floor((float)degreeNum / (float)numValidDegrees);
+
+    if (wantedDegree < numChordDegrees)
+      thisNoteMappings.add(curChord[wantedDegree] + 12 * wantedOctaveShift);
   }
-}
+
+  void mapPatternNote(NoteNumber referenceNote,
+    PatternNotesMapping::Enum mappingMode,
+    PatternNotesWraparound::Enum wrapMode,
+    UnmappedNotesBehaviour::Enum unmappedBeh,
+    const Chord& curChord,
+    NoteNumber noteCodeIn,
+    Array<NoteNumber>& thisNoteMappings) {
+    int offsetFromRef = noteCodeIn - referenceNote;
+
+    switch (mappingMode) {
+    case PatternNotesMapping::ALWAYS_LEAVE_UNMAPPED:
+      break;
+    case PatternNotesMapping::WHITE_NOTE_TO_DEGREE:
+      if (!MidiMessage::isMidiNoteBlack(noteCodeIn)) {
+        // We need to correct the [referenceNote,noteCodeIn] interval for the amount
+        // of black keys it contains:
+        int sign = (offsetFromRef < 0) ? -1 : 1;
+        int absOffset = sign * offsetFromRef;
+        for (int i = referenceNote; i != noteCodeIn; i += sign)
+          if (MidiMessage::isMidiNoteBlack(i))
+            absOffset--;
+        mapToChordDegree(wrapMode, curChord, sign * absOffset, thisNoteMappings);
+      }
+      break;
+    default:
+      mapToChordDegree(wrapMode, curChord, offsetFromRef, thisNoteMappings);
+      break;
+    }
+
+    if (thisNoteMappings.size() == 0) { // If the note has not been mapped yet:
+      switch (unmappedBeh) {
+      case UnmappedNotesBehaviour::SILENCE:
+        break;
+      case UnmappedNotesBehaviour::PLAY_FULL_CHORD_UP_TO_NOTE:
+        for (NoteNumber chdNote : curChord) {
+          if (chdNote <= noteCodeIn)
+            thisNoteMappings.add(chdNote);
+        }
+        break;
+      case UnmappedNotesBehaviour::TRANSPOSE_FROM_FIRST_DEGREE:
+        thisNoteMappings.add(curChord[0] + offsetFromRef);
+        break;
+      case UnmappedNotesBehaviour::USE_AS_IS:
+        thisNoteMappings.add(noteCodeIn);
+        break;
+      }
+    }
+  }
+
+  NoteOnChan getNoteOnChan(const MidiMessage& msg) {
+    return msg.getNoteNumber() | ((msg.getChannel() - 1) << 8);
+  }
 
 } // end namespace Mapping
 
-//==============================================================================
-void Arp::prepareToPlay (double sampleRate, int samplesPerBlock)
-{  
+
+void Arp::prepareToPlay(double sampleRate, int samplesPerBlock) {
   auto behaviour = (InstanceBehaviour::Enum)instanceBehaviour->getIndex();
 
   int latency = 0;
@@ -107,77 +118,106 @@ void Arp::prepareToPlay (double sampleRate, int samplesPerBlock)
     getChordStore(behaviour)->flushCurrentChord();
 }
 
-// If this is called, we are either in Multi-channel mode, or a Pattern instance
-// in Multi-instance mode:
-void Arp::patternOrSingleInstanceWork(MidiBuffer& midibuf, InstanceBehaviour::Enum behaviour) {
-  Array<MidiMessage> noteOnsToProcess, noteOffsToProcess, messagesToPassthrough;
-  ChordStore* chordStore = getChordStore(behaviour);
-  
-  // We get some parameter values here to make sure they will remain coherent
-  // throughout the processing of the whole buffer:
-  auto mappingMode = (PatternNotesMapping::Enum)patternNotesMapping->getIndex();
-  auto wrapMode = (PatternNotesWraparound::Enum)patternNotesWraparound->getIndex();
-  auto referenceNote = firstDegreeCode->getIndex();
+void Arp::runArp(MidiBuffer& midibuf) {
+  auto behaviour = (InstanceBehaviour::Enum)instanceBehaviour->getIndex();
+
+  if (behaviour == InstanceBehaviour::BYPASS)
+    return;
+
+  Array<NoteNumber> chordNoteOns, chordNoteOffs;
+  Array<MidiMessage> ptrnNoteOns, ptrnNoteOffs, otherMsgs;
 
   for (auto msgMD : midibuf) {
     auto msg = msgMD.getMessage();
-    if (behaviour < InstanceBehaviour::IS_PATTERN &&
-        msg.getChannel() == behaviour) {
-      // We are a Multi-channel instance. We should process chords landing on
-      // our chord channel:
-      toChordStore(chordStore, msg);
-      messagesToPassthrough.add(msg);
+    if (msg.isNoteOn()) {
+      if (behaviour == InstanceBehaviour::IS_CHORD ||
+        behaviour == msg.getChannel())
+        chordNoteOns.add(msg.getNoteNumber());
+      else
+        ptrnNoteOns.add(msg);
     }
-    else if (msg.isNoteOn())
-      noteOnsToProcess.add(msg);
-    else if (msg.isNoteOff())
-      noteOffsToProcess.add(msg);
+    else if (msg.isNoteOff()) {
+      if (behaviour == InstanceBehaviour::IS_CHORD ||
+        behaviour == msg.getChannel())
+        chordNoteOffs.add(msg.getNoteNumber());
+      else
+        ptrnNoteOffs.add(msg);
+    }
     else
-      messagesToPassthrough.add(msg);
+      otherMsgs.add(msg);
   }
 
   midibuf.clear();
-  
-  if (behaviour < InstanceBehaviour::IS_PATTERN)
-    // We are a Multi-channel instance, we update our chord store:
-    updateChordStore(chordStore);
 
-  // Pass non-processable messages through:
-  for (auto msg : messagesToPassthrough)
+  for (auto& msg : otherMsgs)
     midibuf.addEvent(msg, 0);
+
+  ChordStore* chd = getChordStore(behaviour);
+
+  for (int n : chordNoteOns)
+    chd->addChordNote(n);
+  for (int n : chordNoteOffs)
+    chd->rmChordNote(n);
+  if (behaviour != InstanceBehaviour::IS_PATTERN)
+    updateChordStore(chd);
+
+  processPatternNotes(chd, ptrnNoteOns, ptrnNoteOffs, midibuf);
+}
+
+void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Array<MidiMessage>& noteOffs, MidiBuffer& midibuf) {
+  auto mappingMode = (PatternNotesMapping::Enum)patternNotesMapping->getIndex();
+  auto wrapMode = (PatternNotesWraparound::Enum)patternNotesWraparound->getIndex();
+  auto unmappedBeh = (UnmappedNotesBehaviour::Enum)unmappedNotesBehaviour->getIndex();
+  auto referenceNote = firstDegreeCode->getIndex();
 
   Chord curChord;
   bool shouldProcess, shouldSilence;
-  chordStore->getCurrentChord(curChord, shouldProcess, shouldSilence);
-  
+  chd->getCurrentChord(curChord, shouldProcess, shouldSilence);
+
   if (shouldSilence)
-    noteOnsToProcess.clear();
-  
+    noteOns.clear();
+
   // Process and add processable messages:
-  for (auto msg : noteOffsToProcess) { // Note OFFs first
-    int chan = msg.getChannel() - 1;
-    NoteNumber noteCodeIn = msg.getNoteNumber();
-    NoteNumber noteCodeOut = mCurMappings[chan][noteCodeIn];
-    if (noteCodeOut != ~0)
-      msg.setNoteNumber(noteCodeOut);
-    midibuf.addEvent(msg, 0);
+
+  for (auto& msg : noteOffs) { // Note OFFs first
+    Array<NoteNumber>& thisNoteMappings = mCurMappings.getReference(Mapping::getNoteOnChan(msg));
+    if (thisNoteMappings.size() > 0) {
+      for (NoteNumber nn : thisNoteMappings) {
+        MidiMessage newMsg(msg);
+        newMsg.setNoteNumber(nn);
+        midibuf.addEvent(newMsg, 0);
+      }
+      thisNoteMappings.clear();
+    }
+    else // No mappings means we add the NOTE OFF as it is:
+      midibuf.addEvent(msg, 0);
   }
-  for (auto msg : noteOnsToProcess) { // Then note ONs
-    bool isMapped = true;
-    int chan = msg.getChannel() - 1;
+
+  for (auto& msg : noteOns) { // Then note ONs
     NoteNumber noteCodeIn = msg.getNoteNumber();
-    NoteNumber noteCodeOut = noteCodeIn;
-    if (shouldProcess)
+    Array<NoteNumber>& thisNoteMappings = mCurMappings.getReference(Mapping::getNoteOnChan(msg));
+    // If we already have mappings for this note, it means we received 2+ NOTE ONs
+    // in a row for it and no NOTE OFF, so first we off those mappings:
+    for (NoteNumber nn : thisNoteMappings)
+      midibuf.addEvent(MidiMessage::noteOff(msg.getChannel(), nn), 0);
+    thisNoteMappings.clear();
+    if (shouldProcess) {
       Mapping::mapPatternNote(referenceNote,
-			      mappingMode,
-			      wrapMode,
-			      curChord,
-			      noteCodeIn,
-			      noteCodeOut,
-			      isMapped);
-    mCurMappings[chan][noteCodeIn] = noteCodeOut;
-    if (isMapped) {
-      msg.setNoteNumber(noteCodeOut);
+        mappingMode,
+        wrapMode,
+        unmappedBeh,
+        curChord,
+        noteCodeIn,
+        thisNoteMappings);
+      // We send NOTE ONs for all newly mapped notes:
+      for (NoteNumber nn : thisNoteMappings) {
+        MidiMessage newMsg(msg);
+        newMsg.setNoteNumber(nn);
+        midibuf.addEvent(newMsg, 0);
+      }
+    }
+    else { // We map the note to itself
+      thisNoteMappings.add(noteCodeIn);
       midibuf.addEvent(msg, 0);
     }
   }

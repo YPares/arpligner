@@ -67,8 +67,8 @@ the chord, but transposing the notes up or down as many octaves as needed, so it
 always has a sensible chord note to play.
 
 You can also select different mapping and wraparound methods. For instance, you
-can choose that only the white keys will be used here, which can be more
-convenient when playing patterns live on a MIDI keyboard. See the [pattern
+can choose that only the white keys will be used to select chord degrees, and leave the black keys
+to play the entire chord up to the black key you play. See the [pattern
 settings section](#pattern-parameters) for more info.
 
 ### Multi-channel mode
@@ -289,17 +289,18 @@ different live players have different preferences.
 |--------------------------------|---------------|-----------------|---------------|
 |**Reference pattern note**|`60 (C3)`|A MIDI note|On pattern tracks, the note that will always be mapped to the first (lowest) degree of the currently playing chord|
 |**Pattern notes mapping**|`Semitone to degree`|Choose from:|How to map midi note codes on pattern tracks to actual notes|
-| | |`Map nothing`|No pattern note is mapped|
+| | |`Always leave unmapped`|No pattern note is mapped, and therefore always use the **Unmapped notes behaviour**|
 | | |`Semitone to degree`|Going up/down one _semitone_ in the pattern track means going up/down one degree in the chord|
 | | |`White note to degree`|Going up/down one _white key_ in the pattern track means going up/down one degree in the chord. Black keys are not mapped|
-| | |`Transpose from 1st degree`|Use Arpligner as a "dynamic" transposer: ignore all chord degrees besides the first (lowest) one. Pattern notes are just transposed accordingly. This allows you to play notes that are outside the current chord, but keeping your patterns centered around the reference note|
 |**Pattern octave wraparound**|`[Dynamic] After all chord degrees`|Choose from:|When should your pattern wrap around the chord, ie. play it at a higher/lower octave. _(Used depending on the mapping setting above)_|
-| | |`No wraparound`|Never. Once we are past the last chord degree, pattern notes are silenced, and notes below the Reference note too|
-| | |`[Dynamic] After all chord degrees`|Repeatedly go up one octave (and back to the first chord degree) as soon as we're past the last chord degree, or down one octave (and to the _last_ chord degree) in the other direction. No pattern note is therefore ever silenced.|
-| | |`[Fixed] Every XXth pattern note`|Use a fixed wraparound setting. You will go up one octave (and back to the first chord degree) every time your pattern goes up `XX` notes, and down one octave (and to the _last_ chord degree) every time your pattern goes _down_ `XX` notes. Intermediary pattern notes that do not correspond to chord degrees are just silenced.|
-
-Depending on the above settings, some input pattern MIDI notes may be left
-unmapped. In such case, those notes will simply be silenced.
+| | |`No wraparound`|Never. Pattern notes past the last chord degree are unmapped, as well as notes below the Reference note|
+| | |`[Dynamic] After all chord degrees`|Repeatedly go up one octave (and back to the first chord degree) as soon as we're past the last chord degree, or down one octave (and to the _last_ chord degree) in the other direction. No pattern note is therefore ever left unmapped.|
+| | |`[Fixed] Every XXth pattern note`|Use a fixed wraparound setting. You will go up one octave (and back to the first chord degree) every time your pattern goes up `XX` notes, and down one octave (and to the _last_ chord degree) every time your pattern goes _down_ `XX` notes. Intermediary pattern notes that do not correspond to chord degrees are unmapped.|
+|**Unmapped notes behaviour**|`Silence`|Choose from:|What to do when the mapping or wraparound settings above have left some pattern notes unmapped|
+| | |`Silence`|Do not output any note|
+| | |`Play all degrees up to note`|Play the full chord, using the played note as a filter (all chord degrees above will be silenced)|
+| | |`Transpose from 1st degree`|Use Arpligner as a "dynamic" transposer: ignore all chord degrees besides the first (lowest) one. Pattern notes are just transposed accordingly. This allows you to play notes that are outside the current chord, but keeping your patterns centered around the reference note|
+| | |`Use as is`|Output the pattern note as it is|
 
 ## Current limitations
 

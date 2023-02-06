@@ -33,7 +33,7 @@ public:
   ChordStore() : mShouldProcess(true), mShouldSilence(false), mNeedsUpdate(false) {
   }
 
-  virtual void addChordNote(NoteNumber nn) {
+  void addChordNote(NoteNumber nn) {
     mNeedsUpdate = true;
     if (!mCounters.contains(nn))
       mCounters.set(nn, 1);
@@ -41,7 +41,7 @@ public:
       mCounters.set(nn, mCounters[nn] + 1);
   }
 
-  virtual void rmChordNote(NoteNumber nn) {
+  void rmChordNote(NoteNumber nn) {
     mNeedsUpdate = true;
     if (mCounters.contains(nn))
       mCounters.set(nn, mCounters[nn] - 1);
@@ -49,7 +49,7 @@ public:
       mCounters.remove(nn);
   }
 
-  virtual void updateCurrentChord(WhenNoChordNote::Enum, WhenSingleChordNote::Enum);
+  void updateCurrentChord(WhenNoChordNote::Enum, WhenSingleChordNote::Enum);
 
   virtual void flushCurrentChord() {
     mCounters.clear();
@@ -73,21 +73,6 @@ public:
 
   ~GlobalChordStore() {
     clearSingletonInstance();
-  }
-
-  void addChordNote(NoteNumber nn) override {
-    const ScopedWriteLock lock(globalStoreLock);
-    ChordStore::addChordNote(nn);
-  }
-
-  void rmChordNote(NoteNumber nn) override {
-    const ScopedWriteLock lock(globalStoreLock);
-    ChordStore::rmChordNote(nn);
-  }
-
-  void updateCurrentChord(WhenNoChordNote::Enum n, WhenSingleChordNote::Enum s) override {
-    const ScopedWriteLock lock(globalStoreLock);
-    ChordStore::updateCurrentChord(n, s);
   }
 
   void flushCurrentChord() override {

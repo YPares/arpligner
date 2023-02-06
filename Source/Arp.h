@@ -49,6 +49,7 @@ private:
 
 public:
   Arp() : ArplignerAudioProcessor() {
+    mCurMappings.clear();
   }
 
   void prepareToPlay(double, int) override;

@@ -123,6 +123,23 @@ void Arp::runArp(MidiBuffer& midibuf) {
 
   if (behaviour == InstanceBehaviour::BYPASS)
     return;
+  else if (behaviour == InstanceBehaviour::IS_CHORD) {
+    /* We special-case the global chord instance behaviour so
+       it can update the current chord as fast as possible
+       (without having to sort events in the buffer first),
+       and so we can lock just once for the whole midi buffer: */
+    auto* chd = GlobalChordStore::getInstance();
+    ScopedWriteLock l(chd->globalStoreLock);
+    for (auto msgMD : midibuf) {
+      auto msg = msgMD.getMessage();
+      if (msg.isNoteOn())
+        chd->addChordNote(msg.getNoteNumber());
+      if (msg.isNoteOff())
+        chd->rmChordNote(msg.getNoteNumber());
+    }
+    updateChordStore(chd);
+    return;
+  }
 
   Array<NoteNumber> chordNoteOns, chordNoteOffs;
   Array<MidiMessage> ptrnNoteOns, ptrnNoteOffs, otherMsgs;
@@ -130,15 +147,13 @@ void Arp::runArp(MidiBuffer& midibuf) {
   for (auto msgMD : midibuf) {
     auto msg = msgMD.getMessage();
     if (msg.isNoteOn()) {
-      if (behaviour == InstanceBehaviour::IS_CHORD ||
-        behaviour == msg.getChannel())
+      if (behaviour == msg.getChannel())
         chordNoteOns.add(msg.getNoteNumber());
       else
         ptrnNoteOns.add(msg);
     }
     else if (msg.isNoteOff()) {
-      if (behaviour == InstanceBehaviour::IS_CHORD ||
-        behaviour == msg.getChannel())
+      if (behaviour == msg.getChannel())
         chordNoteOffs.add(msg.getNoteNumber());
       else
         ptrnNoteOffs.add(msg);
@@ -154,12 +169,13 @@ void Arp::runArp(MidiBuffer& midibuf) {
 
   ChordStore* chd = getChordStore(behaviour);
 
-  for (int n : chordNoteOns)
-    chd->addChordNote(n);
-  for (int n : chordNoteOffs)
-    chd->rmChordNote(n);
-  if (behaviour != InstanceBehaviour::IS_PATTERN)
+  if (behaviour != InstanceBehaviour::IS_PATTERN) {
+    for (int n : chordNoteOns)
+      chd->addChordNote(n);
+    for (int n : chordNoteOffs)
+      chd->rmChordNote(n);
     updateChordStore(chd);
+  }
 
   processPatternNotes(chd, ptrnNoteOns, ptrnNoteOffs, midibuf);
 }
@@ -180,28 +196,29 @@ void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Arra
   // Process and add processable messages:
 
   for (auto& msg : noteOffs) { // Note OFFs first
-    Array<NoteNumber>& thisNoteMappings = mCurMappings.getReference(Mapping::getNoteOnChan(msg));
-    if (thisNoteMappings.size() > 0) {
-      for (NoteNumber nn : thisNoteMappings) {
-        MidiMessage newMsg(msg);
-        newMsg.setNoteNumber(nn);
-        midibuf.addEvent(newMsg, 0);
-      }
-      thisNoteMappings.clear();
+    Array<NoteNumber>& thisNoteMappings =
+      mCurMappings.getReference(Mapping::getNoteOnChan(msg));
+    for (NoteNumber nn : thisNoteMappings) {
+      MidiMessage newMsg(msg);
+      newMsg.setNoteNumber(nn);
+      midibuf.addEvent(newMsg, 0);
     }
-    else // No mappings means we add the NOTE OFF as it is:
-      midibuf.addEvent(msg, 0);
+    thisNoteMappings.clear();
   }
 
   for (auto& msg : noteOns) { // Then note ONs
     NoteNumber noteCodeIn = msg.getNoteNumber();
-    Array<NoteNumber>& thisNoteMappings = mCurMappings.getReference(Mapping::getNoteOnChan(msg));
+    // This should create a default (empty) array if the note has not
+    // been mapped yet:
+    Array<NoteNumber>& thisNoteMappings =
+      mCurMappings.getReference(Mapping::getNoteOnChan(msg));
     // If we already have mappings for this note, it means we received 2+ NOTE ONs
     // in a row for it and no NOTE OFF, so first we off those mappings:
     for (NoteNumber nn : thisNoteMappings)
       midibuf.addEvent(MidiMessage::noteOff(msg.getChannel(), nn), 0);
     thisNoteMappings.clear();
-    if (shouldProcess) {
+
+    if (shouldProcess) // The ChordStore tells us to process
       Mapping::mapPatternNote(referenceNote,
         mappingMode,
         wrapMode,
@@ -209,16 +226,14 @@ void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Arra
         curChord,
         noteCodeIn,
         thisNoteMappings);
-      // We send NOTE ONs for all newly mapped notes:
-      for (NoteNumber nn : thisNoteMappings) {
-        MidiMessage newMsg(msg);
-        newMsg.setNoteNumber(nn);
-        midibuf.addEvent(newMsg, 0);
-      }
-    }
-    else { // We map the note to itself
+    else // We map the note to itself
       thisNoteMappings.add(noteCodeIn);
-      midibuf.addEvent(msg, 0);
+
+    // We send NOTE ONs for all newly mapped notes:
+    for (NoteNumber nn : thisNoteMappings) {
+      MidiMessage newMsg(msg);
+      newMsg.setNoteNumber(nn);
+      midibuf.addEvent(newMsg, 0);
     }
   }
 }

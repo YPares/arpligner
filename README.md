@@ -266,15 +266,15 @@ These parameters are used *only* in Multi-chan mode or by *Chord* instances.
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
 |**When no chord note**|`Latch last chord`|Choose from:|What to do when **no** note is playing on the chord track|
-| | |`Latch last chord`|Keep using the previous chord that played (`Silence` if no previous chord is known)|
 | | |`Silence`| Ignore the pattern notes|
 | | |`Use pattern notes as final notes`|Consider the pattern "notes" as real notes, and pass them through without any change|
+| | |`Latch last chord`|Keep using the previous chord that played (`Silence` if no previous chord is known)|
 |**When single chord note**|`Transpose last chord`|Choose from:|What to do when a **single** note _n_ is playing on the chord track|
-| | |`Transpose last chord`|Transpose last chord so that its lowest note becomes _n_ (`Silence` if no previous chord is known)|
-| | |`Powerchord`|Turn _n_ into a "2-note chord": _n_ and the note a fifth above|
-| | |`Use as is`|Use _n_ as just a "one-note chord". Tread carefully, the end result may go up in octaves pretty fast|
 | | |`Silence`|Same as for "no chord note"|
 | | |`Use pattern notes as final notes`|Same as for "no chord note"|
+| | |`Use as one-note chord`|Use _n_ as just a "one-note chord". Tread carefully, the end result may go up in octaves pretty fast|
+| | |`Powerchord`|Turn _n_ into a "2-note chord": _n_ and the note a fifth above|
+| | |`Transpose last chord`|Transpose last chord so that its lowest note becomes _n_ (`Silence` if no previous chord is known)|
 |**Global chord track lookahead**|`10ms`|A delay between 0 and 50ms|Only used by a Global chord instance. Triggers your DAW Plugin Delay Compensation (if above zero) to deal with perfectly synchronized chord and pattern events. See [this section](#tips-for-multi-instance-mode) for when to use this|
 
 ### Pattern parameters
@@ -298,9 +298,9 @@ different live players have different preferences.
 | | |`[Fixed] Every XXth pattern note`|Use a fixed wraparound setting. You will go up one octave (and back to the first chord degree) every time your pattern goes up `XX` notes, and down one octave (and to the _last_ chord degree) every time your pattern goes _down_ `XX` notes. Intermediary pattern notes that do not correspond to chord degrees are unmapped.|
 |**Unmapped notes behaviour**|`Silence`|Choose from:|What to do when the mapping or wraparound settings above have left some pattern notes unmapped|
 | | |`Silence`|Do not output any note|
-| | |`Play all degrees up to note`|Play the full chord, using the played note as a filter (all chord degrees above will be silenced)|
-| | |`Transpose from 1st degree`|Use Arpligner as a "dynamic" transposer: ignore all chord degrees besides the first (lowest) one. Pattern notes are just transposed accordingly. This allows you to play notes that are outside the current chord, but keeping your patterns centered around the reference note|
 | | |`Use as is`|Output the pattern note as it is|
+| | |`Transpose from 1st degree`|Use Arpligner as a "dynamic" transposer: ignore all chord degrees besides the first (lowest) one. Pattern notes are just transposed accordingly. This allows you to play notes that are outside the current chord, but keeping your patterns centered around the reference note|
+| | |`Play all degrees up to note`|Play the full chord, using the played note as a filter (all chord degrees above will be silenced)|
 
 ## Current limitations
 

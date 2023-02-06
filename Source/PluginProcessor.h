@@ -89,19 +89,19 @@ namespace InstanceBehaviour {
 
 namespace WhenNoChordNote {
   enum Enum {
-    LATCH_LAST_CHORD = 0,
-    SILENCE,
-    USE_PATTERN_AS_NOTES
+    SILENCE = 0,
+    USE_PATTERN_AS_NOTES,
+    LATCH_LAST_CHORD
   };
 }
 
 namespace WhenSingleChordNote {
   enum Enum {
-    TRANSPOSE_LAST_CHORD = 0,
-    POWERCHORD,
+    SILENCE = 0,
+    USE_PATTERN_AS_NOTES,
     USE_AS_IS,
-    SILENCE,
-    USE_PATTERN_AS_NOTES
+    POWERCHORD,
+    TRANSPOSE_LAST_CHORD
   };
 }
 
@@ -127,8 +127,8 @@ namespace PatternNotesWraparound {
 namespace UnmappedNotesBehaviour {
   enum Enum {
     SILENCE = 0,
-    PLAY_FULL_CHORD_UP_TO_NOTE,
+    USE_AS_IS,
     TRANSPOSE_FROM_FIRST_DEGREE,
-    USE_AS_IS
+    PLAY_FULL_CHORD_UP_TO_NOTE
   };
 }

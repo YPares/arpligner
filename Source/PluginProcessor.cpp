@@ -37,14 +37,14 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   addParameter
   (whenNoChordNote = new AudioParameterChoice
   ("whenNoChordNote", "When no chord note",
-    StringArray{ "Latch last chord", "Silence", "Use pattern notes as final notes" },
+    StringArray{ "Silence", "Use pattern notes as final notes", "Latch last chord" },
     WhenNoChordNote::LATCH_LAST_CHORD
   ));
 
   addParameter
   (whenSingleChordNote = new AudioParameterChoice
   ("whenSingleChordNote", "When single chord note",
-    StringArray{ "Transpose last chord", "Powerchord", "Use as is", "Silence", "Use pattern notes as final notes" },
+    StringArray{ "Silence", "Use pattern notes as final notes", "Use as one-note chord", "Powerchord", "Transpose last chord" },
     WhenSingleChordNote::TRANSPOSE_LAST_CHORD
   ));
 
@@ -75,7 +75,7 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
     PatternNotesWraparound::AFTER_ALL_CHORD_DEGREES));
 
   StringArray unmappedBehs = StringArray
-  { "Silence", "Play all degrees up to note", "Transpose from 1st degree", "Use as is" };
+  { "Silence", "Use as is", "Transpose from 1st degree", "Play all degrees up to note" };
   addParameter
   (unmappedNotesBehaviour = new AudioParameterChoice
   ("unmappedNotesBehaviour", "Unmapped notes behaviour", unmappedBehs,

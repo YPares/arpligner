@@ -20,6 +20,15 @@ using NoteOnChan = int;
 
 using Mappings = HashMap< NoteOnChan, Array<NoteNumber> >;
 
+template<typename T>
+struct WithSP {
+  int samplePosition;
+  T item;
+};
+
+template<typename T>
+using ArraySP = Array< WithSP<T> >;
+
 class Arp : public ArplignerAudioProcessor {
 private:
   ChordStore mLocalChordStore;
@@ -41,8 +50,10 @@ private:
       return &mLocalChordStore;
   }
 
-  void processPatternNotes(ChordStore* chd, Array<MidiMessage>&, Array<MidiMessage>&, MidiBuffer&);
-
+  Array<NoteNumber>& remapEvent(const WithSP<MidiMessage>&, MidiBuffer&);
+  
+  void processPatternNotes(ChordStore*, ArraySP<MidiMessage>&, ArraySP<MidiMessage>&, ArraySP<MidiMessage>&, MidiBuffer&);
+  
   //void finalizeMappings(MidiBuffer&);
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Arp);

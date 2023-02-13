@@ -121,7 +121,7 @@ void Arp::prepareToPlay(double sampleRate, int samplesPerBlock) {
 void Arp::runArp(MidiBuffer& midibuf) {
   auto behaviour = (InstanceBehaviour::Enum)instanceBehaviour->getIndex();
 
-  if (behaviour == InstanceBehaviour::BYPASS)
+  if (behaviour == InstanceBehaviour::BYPASS || midibuf.isEmpty())
     return;
   else if (behaviour == InstanceBehaviour::IS_CHORD) {
     /* We special-case the global chord instance behaviour so
@@ -141,46 +141,61 @@ void Arp::runArp(MidiBuffer& midibuf) {
     return;
   }
 
-  Array<NoteNumber> chordNoteOns, chordNoteOffs;
-  Array<MidiMessage> ptrnNoteOns, ptrnNoteOffs, otherMsgs;
+  ArraySP<NoteNumber> chordNoteOns, chordNoteOffs;
+  ArraySP<MidiMessage> ptrnNoteOns, ptrnNoteOffs, ptrnEventsToRemap, otherMsgs;
 
   for (auto msgMD : midibuf) {
     auto msg = msgMD.getMessage();
     if (msg.isNoteOn()) {
       if (behaviour == msg.getChannel())
-        chordNoteOns.add(msg.getNoteNumber());
+        chordNoteOns.add({ msgMD.samplePosition, msg.getNoteNumber() });
       else
-        ptrnNoteOns.add(msg);
+        ptrnNoteOns.add({ msgMD.samplePosition, msg });
     }
     else if (msg.isNoteOff()) {
       if (behaviour == msg.getChannel())
-        chordNoteOffs.add(msg.getNoteNumber());
+        chordNoteOffs.add({ msgMD.samplePosition, msg.getNoteNumber() });
       else
-        ptrnNoteOffs.add(msg);
+        ptrnNoteOffs.add({ msgMD.samplePosition, msg });
+    }
+    else if (behaviour != msg.getChannel() &&
+      msg.isAftertouch()) {
+      ptrnEventsToRemap.add({ msgMD.samplePosition, msg });
     }
     else
-      otherMsgs.add(msg);
+      otherMsgs.add({ msgMD.samplePosition, msg });
   }
 
   midibuf.clear();
 
   for (auto& msg : otherMsgs)
-    midibuf.addEvent(msg, 0);
+    midibuf.addEvent(msg.item, msg.samplePosition);
 
   ChordStore* chd = getChordStore(behaviour);
 
   if (behaviour != InstanceBehaviour::IS_PATTERN) {
-    for (int n : chordNoteOns)
-      chd->addChordNote(n);
-    for (int n : chordNoteOffs)
-      chd->rmChordNote(n);
+    for (auto& n : chordNoteOns)
+      chd->addChordNote(n.item);
+    for (auto& n : chordNoteOffs)
+      chd->rmChordNote(n.item);
     updateChordStore(chd);
   }
 
-  processPatternNotes(chd, ptrnNoteOns, ptrnNoteOffs, midibuf);
+  processPatternNotes(chd, ptrnNoteOns, ptrnNoteOffs, ptrnEventsToRemap, midibuf);
 }
 
-void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Array<MidiMessage>& noteOffs, MidiBuffer& midibuf) {
+Array<NoteNumber>& Arp::remapEvent(const WithSP<MidiMessage>& msg, MidiBuffer& midibuf) {
+  Array<NoteNumber>& thisNoteMappings =
+    mCurMappings.getReference(Mapping::getNoteOnChan(msg.item));
+  for (NoteNumber nn : thisNoteMappings) {
+    MidiMessage newMsg(msg.item);
+    newMsg.setNoteNumber(nn);
+    midibuf.addEvent(newMsg, msg.samplePosition);
+  }
+  return thisNoteMappings;
+}
+
+void Arp::processPatternNotes(ChordStore* chd, ArraySP<MidiMessage>& noteOns, ArraySP<MidiMessage>& noteOffs, ArraySP<MidiMessage>& eventsToRemap, MidiBuffer& midibuf) {
   auto mappingMode = (PatternNotesMapping::Enum)patternNotesMapping->getIndex();
   auto wrapMode = (PatternNotesWraparound::Enum)patternNotesWraparound->getIndex();
   auto unmappedBeh = (UnmappedNotesBehaviour::Enum)unmappedNotesBehaviour->getIndex();
@@ -197,25 +212,25 @@ void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Arra
 
   for (auto& msg : noteOffs) { // Note OFFs first
     Array<NoteNumber>& thisNoteMappings =
-      mCurMappings.getReference(Mapping::getNoteOnChan(msg));
+      mCurMappings.getReference(Mapping::getNoteOnChan(msg.item));
     for (NoteNumber nn : thisNoteMappings) {
-      MidiMessage newMsg(msg);
+      MidiMessage newMsg(msg.item);
       newMsg.setNoteNumber(nn);
-      midibuf.addEvent(newMsg, 0);
+      midibuf.addEvent(newMsg, msg.samplePosition);
     }
     thisNoteMappings.clear();
   }
 
   for (auto& msg : noteOns) { // Then note ONs
-    NoteNumber noteCodeIn = msg.getNoteNumber();
+    NoteNumber noteCodeIn = msg.item.getNoteNumber();
     // This should create a default (empty) array if the note has not
     // been mapped yet:
     Array<NoteNumber>& thisNoteMappings =
-      mCurMappings.getReference(Mapping::getNoteOnChan(msg));
+      mCurMappings.getReference(Mapping::getNoteOnChan(msg.item));
     // If we already have mappings for this note, it means we received 2+ NOTE ONs
     // in a row for it and no NOTE OFF, so first we off those mappings:
     for (NoteNumber nn : thisNoteMappings)
-      midibuf.addEvent(MidiMessage::noteOff(msg.getChannel(), nn), 0);
+      midibuf.addEvent(MidiMessage::noteOff(msg.item.getChannel(), nn), msg.samplePosition);
     thisNoteMappings.clear();
 
     if (shouldProcess) // The ChordStore tells us to process
@@ -231,9 +246,23 @@ void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Arra
 
     // We send NOTE ONs for all newly mapped notes:
     for (NoteNumber nn : thisNoteMappings) {
-      MidiMessage newMsg(msg);
+      MidiMessage newMsg(msg.item);
       newMsg.setNoteNumber(nn);
-      midibuf.addEvent(newMsg, 0);
+      midibuf.addEvent(newMsg, msg.samplePosition);
+    }
+  }
+
+  // Then other events concerning a specific note (poly aftertouch notably):
+  for (auto& msg : eventsToRemap) {
+    int note = msg.item.getNoteNumber();
+    int chan = msg.item.getChannel();
+    Array<NoteNumber>& thisNoteMappings =
+      mCurMappings.getReference(Mapping::getNoteOnChan(msg.item));
+    int size = thisNoteMappings.size();
+    for (NoteNumber nn : thisNoteMappings) {
+      MidiMessage newMsg(msg.item);
+      newMsg.setNoteNumber(nn);
+      midibuf.addEvent(newMsg, msg.samplePosition);
     }
   }
 }

@@ -105,6 +105,13 @@ namespace WhenSingleChordNote {
   };
 }
 
+namespace ChordRevoicing {
+  enum Enum {
+    NO_REVOICING = 0,
+    CLOSED_VOICING
+  };
+}
+
 namespace PatternNotesMapping {
   enum Enum {
     ALWAYS_LEAVE_UNMAPPED = 0,

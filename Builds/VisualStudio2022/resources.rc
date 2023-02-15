@@ -16,6 +16,7 @@ BEGIN
     BLOCK "040904E4"
     BEGIN
       VALUE "CompanyName",  "Ywen\0"
+      VALUE "LegalCopyright",  "Yves Parès - 2023\0"
       VALUE "FileDescription",  "Arpligner\0"
       VALUE "FileVersion",  "0.1\0"
       VALUE "ProductName",  "Arpligner\0"
@@ -30,3 +31,6 @@ BEGIN
 END
 
 #endif
+
+IDI_ICON1 ICON DISCARDABLE "icon.ico"
+IDI_ICON2 ICON DISCARDABLE "icon.ico"

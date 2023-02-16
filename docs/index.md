@@ -1,7 +1,3 @@
-<noscript><a href="https://liberapay.com/Ywen/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>
-
-<p align="center"><img src="logo_no_text.svg" alt="Arpligner logo"/></p>
-
 Arpligner is a **multi-track** & **polyphonic** arpeggiator which will use your
 own arpeggiation patterns. It comes as VST3 & LV2 MIDI plugins and as a standalone application.
 
@@ -27,3 +23,4 @@ having two keyboard players: one in charge of the chords and the other one in
 charge of how to layout those chords.
 
 For more information about usage and how to download the latest builds, please see [the documentation here](https://github.com/YPares/arpligner/blob/master/README.md) :)
+

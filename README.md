@@ -4,7 +4,7 @@
 <a href="https://liberapay.com/Ywen/donate"><img src="https://img.shields.io/liberapay/patrons/Ywen.svg?logo=liberapay" align="right"/><img alt="Donate using Liberapay" align="right" src="https://liberapay.com/assets/widgets/donate.svg"/></a>
 
 <hr/>
-<p align="center"><img src="docs/logo.svg" alt="Arpligner logo"/></p>
+<p align="center"><img src="docs/logo_dark.svg" alt="Arpligner logo"/></p>
 <hr/>
 
 Arpligner is a **multi-track** & **polyphonic** arpeggiator which will use your

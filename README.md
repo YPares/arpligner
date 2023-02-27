@@ -285,6 +285,10 @@ different live players have different preferences.
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
 |**Reference pattern note**|`60 (C3)`|A MIDI note|On pattern tracks, the note that will always be mapped to the first (lowest) degree of the currently playing chord|
+|**Turn chord into scale**|`None`|Choose from:|Instead of mapping pattern notes only to degrees of the current chord, you can map them to a scale that makes sense over the current chord. It will _always_ consider that the root is the lowest degree of your chord|
+| | |`None`|Do not derive a scale, map pattern notes only to chord degrees|
+| | |`Add whole steps (nat7 by default)`|Between each chordal tone, unless the chord has an extension tone that fits, adds a tone following the "whole-step technique"[^4]. If your chord does not have a 7th, give the scale a ♮7|
+| | |`Add whole steps (b7 by default)`|Same as above, but if your chord does not have a 7th, give the scale a ♭7|
 |**Pattern notes mapping**|`Semitone to degree`|Choose from:|How to map midi note codes on pattern tracks to actual notes|
 | | |`Always leave unmapped`|No pattern note is mapped, and therefore always use the **Unmapped notes behaviour**|
 | | |`Semitone to degree`|Going up/down one _semitone_ in the pattern track means going up/down one degree in the chord|
@@ -326,3 +330,7 @@ different live players have different preferences.
       Arpligner is processing notes may cause stuck notes, please report an
       issue here if this happens to you, preferably with a set of MIDI files
       that will help me reproduce the problem
+
+[^4]: This is an adaptation of the method described by Julian Bradley in
+      https://www.youtube.com/watch?v=Ro2dVvwzKNs. See notably this video
+      for the definition of "chordal tone" vs. "extension"

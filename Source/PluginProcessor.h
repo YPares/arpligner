@@ -69,6 +69,7 @@ protected:
   AudioParameterInt* numMillisecsOfLatency;
   AudioParameterChoice* patternNotesWraparound;
   AudioParameterChoice* unmappedNotesBehaviour;
+  AudioParameterChoice* chordToScale;
 
 private:
   //==============================================================================
@@ -102,6 +103,14 @@ namespace WhenSingleChordNote {
     USE_AS_IS,
     POWERCHORD,
     TRANSPOSE_LAST_CHORD
+  };
+}
+
+namespace ChordToScale {
+  enum Enum {
+    NONE = 0,
+    ADD_WHOLE_STEPS_DEF_NAT7,
+    ADD_WHOLE_STEPS_DEF_FLAT7
   };
 }
 

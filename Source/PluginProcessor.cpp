@@ -59,6 +59,12 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   ("firstDegreeCode", "Reference pattern note", notes, 60));
 
   addParameter
+  (chordToScale = new AudioParameterChoice
+   ("chordToScale", "Turn chord into scale",
+    StringArray{"None", "Add whole steps (nat7 by default)", "Add whole steps (b7 by default)"},
+    ChordToScale::NONE));
+  
+  addParameter
   (patternNotesMapping = new AudioParameterChoice
   ("patternNotesMapping", "Pattern notes mapping",
     StringArray{ "Always leave unmapped", "Semitone to degree", "White key to degree"},
@@ -66,7 +72,7 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   ));
 
   StringArray waModes = StringArray
-  { "No wraparound", "[Dynamic] After all chord degrees", "[Fixed] Every 3rd pattern note" };
+  { "No wraparound", "[Dynamic] After all degrees", "[Fixed] Every 3rd pattern note" };
   for (int i = 3; i <= 12; i++)
     waModes.add(String("[Fixed] Every ") + String(i + 1) + "th pattern note");
   addParameter
@@ -221,6 +227,7 @@ void ArplignerAudioProcessor::getStateInformation(MemoryBlock& destData)
   s.writeInt(*numMillisecsOfLatency);
   s.writeInt(*patternNotesWraparound);
   s.writeInt(*unmappedNotesBehaviour);
+  s.writeInt(*chordToScale);
 }
 
 // Reload state info
@@ -235,4 +242,5 @@ void ArplignerAudioProcessor::setStateInformation(const void* data, int sizeInBy
   *numMillisecsOfLatency = s.readInt();
   *patternNotesWraparound = s.readInt();
   *unmappedNotesBehaviour = s.readInt();
+  *chordToScale = s.readInt();
 }

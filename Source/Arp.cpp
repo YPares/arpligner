@@ -20,20 +20,20 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 // Functions that compute the mappings of input pattern notes:
 namespace Mapping {
 
-  void mapToChordDegree(PatternNotesWraparound::Enum wrapMode,
-    const Chord& curChord,
+  void mapToNoteSet(PatternNotesWraparound::Enum wrapMode,
+    const NoteSet& curNoteSet,
     int degreeNum,
     Array<NoteNumber>& thisNoteMappings) {
-    int numChordDegrees = curChord.size();
+    int curNoteSetSize = curNoteSet.size();
 
-    if ((degreeNum < 0 || degreeNum >= numChordDegrees) &&
+    if ((degreeNum < 0 || degreeNum >= curNoteSetSize) &&
       wrapMode == PatternNotesWraparound::NO_WRAPAROUND ||
-      numChordDegrees == 0)
+      curNoteSetSize == 0)
       return;
 
     int numValidDegrees =
-      (wrapMode <= PatternNotesWraparound::AFTER_ALL_CHORD_DEGREES)
-      ? numChordDegrees
+      (wrapMode <= PatternNotesWraparound::AFTER_ALL_DEGREES)
+      ? curNoteSetSize
       : wrapMode;
     int wantedDegree;
     if (degreeNum >= 0)
@@ -44,15 +44,15 @@ namespace Mapping {
     }
     int wantedOctaveShift = floor((float)degreeNum / (float)numValidDegrees);
 
-    if (wantedDegree < numChordDegrees)
-      thisNoteMappings.add(curChord[wantedDegree] + 12 * wantedOctaveShift);
+    if (wantedDegree < curNoteSetSize)
+      thisNoteMappings.add(curNoteSet[wantedDegree] + 12 * wantedOctaveShift);
   }
 
   void mapPatternNote(NoteNumber referenceNote,
     PatternNotesMapping::Enum mappingMode,
     PatternNotesWraparound::Enum wrapMode,
     UnmappedNotesBehaviour::Enum unmappedBeh,
-    const Chord& curChord,
+    const NoteSet& curNoteSet,
     NoteNumber noteCodeIn,
     Array<NoteNumber>& thisNoteMappings) {
     int offsetFromRef = noteCodeIn - referenceNote;
@@ -69,11 +69,11 @@ namespace Mapping {
         for (int i = referenceNote; i != noteCodeIn; i += sign)
           if (MidiMessage::isMidiNoteBlack(i))
             absOffset--;
-        mapToChordDegree(wrapMode, curChord, sign * absOffset, thisNoteMappings);
+        mapToNoteSet(wrapMode, curNoteSet, sign * absOffset, thisNoteMappings);
       }
       break;
     default:
-      mapToChordDegree(wrapMode, curChord, offsetFromRef, thisNoteMappings);
+      mapToNoteSet(wrapMode, curNoteSet, offsetFromRef, thisNoteMappings);
       break;
     }
 
@@ -81,14 +81,14 @@ namespace Mapping {
       switch (unmappedBeh) {
       case UnmappedNotesBehaviour::SILENCE:
         break;
-      case UnmappedNotesBehaviour::PLAY_FULL_CHORD_UP_TO_NOTE:
-        for (NoteNumber chdNote : curChord) {
+      case UnmappedNotesBehaviour::PLAY_ALL_DEGREES_UP_TO_NOTE:
+        for (NoteNumber chdNote : curNoteSet) {
           if (chdNote <= noteCodeIn)
             thisNoteMappings.add(chdNote);
         }
         break;
       case UnmappedNotesBehaviour::TRANSPOSE_FROM_FIRST_DEGREE:
-        thisNoteMappings.add(curChord[0] + offsetFromRef);
+        thisNoteMappings.add(curNoteSet[0] + offsetFromRef);
         break;
       case UnmappedNotesBehaviour::USE_AS_IS:
         thisNoteMappings.add(noteCodeIn);
@@ -180,8 +180,59 @@ void Arp::runArp(MidiBuffer& midibuf) {
   processPatternNotes(chd, ptrnNoteOns, ptrnNoteOffs, midibuf);
 }
 
+void Arp::turnNoteSetToUseIntoScale(PreMappingChordProcessing::Enum chordProc) {
+  int numChordNotes = mNoteSetToUse.size();
+  NoteNumber chordRoot = mNoteSetToUse[0];
+  
+  // We first compute the octave shift to apply, by computing the distance
+  // between the lowest note and the average of the rest of the notes
+  float avgNote = 0;
+  for (int i = 1; i<numChordNotes; i++)
+    avgNote += mNoteSetToUse[i];
+  avgNote = avgNote / (numChordNotes - 1);
+  NoteNumber scaleRoot = chordRoot + 12*round((avgNote - chordRoot)/12.0f);
+  
+  NoteSet compactChord;
+  // Then we "regroup" all the chord notes so they fit into one octave,
+  // starting from the lowest chord note transposed to the average wanted
+  // octave:
+  for (auto note : mNoteSetToUse)
+    compactChord.add(scaleRoot + (note - chordRoot)%12);
+
+  NoteSet scale(compactChord);
+  // Then we fill in the gaps by adding 1 whole step to each degree just
+  // before a gap (a "gap" being any interval strictly larger than a whole
+  // step)...
+  for (int i=0; i<scale.size()-1; i++)
+    if (scale[i+1] - scale[i] > 2)
+      scale.add(scale[i] + 2);
+  // ...and to the last degree, until we have a full scale up to a 7th:
+  while (scale.getLast() < scaleRoot + 10)
+    scale.add(scale.getLast() + 2);
+
+  // Then if needed, we correct the 4th, 5th and 7th:
+  if (scale.size() == 7 &&
+      chordProc == PreMappingChordProcessing::ADD_WHOLE_STEPS_DEF_P4_P5_MAJ7) {
+    if (!compactChord.contains(scale[3])) {
+      scale.remove(3);
+      scale.add(scaleRoot + 5); // Perfect 4th
+    }
+    if (!compactChord.contains(scale[4])) {
+      scale.remove(4);
+      scale.add(scaleRoot + 7); // Perfect 5th
+    }
+    if (!compactChord.contains(scale[6])) {
+      scale.remove(6);
+      scale.add(scaleRoot + 11); // Major 7th
+    }
+  }
+  
+  // Finally, we override mNoteSetToUse:
+  mNoteSetToUse.swapWith(scale); 
+}
+
 void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Array<MidiMessage>& noteOffs, MidiBuffer& midibuf) {
-  auto chordToScaleMode = (ChordToScale::Enum)chordToScale->getIndex();
+  auto chordProc = (PreMappingChordProcessing::Enum)preMappingChordProcessing->getIndex();
   auto mappingMode = (PatternNotesMapping::Enum)patternNotesMapping->getIndex();
   auto wrapMode = (PatternNotesWraparound::Enum)patternNotesWraparound->getIndex();
   auto unmappedBeh = (UnmappedNotesBehaviour::Enum)unmappedNotesBehaviour->getIndex();
@@ -189,31 +240,15 @@ void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Arra
   auto updateState = !holdCurState->get();
   
   if (updateState) {
-    chd->getCurrentChord(mChordToUse, mShouldProcess, mShouldSilence);
-  
-    // If wanted, pre-process the current chord to turn it into a scale:
-  
-    if (chordToScaleMode != ChordToScale::NONE) {
-      Chord scale;
-      // We first "regroup" all the chord notes so they fit into one octave,
-      // starting from lowest chord note:
-      NoteNumber root = mChordToUse[0];
-      for (auto note : mChordToUse)
-	scale.add(root + (note - root)%12);
-      // If we don't have a 7th, we add it:
-      if (scale.getLast() < root + 10) {
-	if (chordToScaleMode == ChordToScale::ADD_WHOLE_STEPS_DEF_NAT7)
-	  scale.add(root + 11);
-	else
-	  scale.add(root + 10);
-      }
-      // Then we fill in the gaps by adding 1 whole step to each degree below a
-      // gap (a gap being any interval strictly larger than a whole step):
-      for (int i=0; i<scale.size()-1; i++)
-	if (scale[i+1] - scale[i] > 2)
-	  scale.add(scale[i]+2);
-      // Then, we override curChord:
-      mChordToUse.swapWith(scale);
+    chd->getCurrentChord(mNoteSetToUse, mShouldProcess, mShouldSilence);
+    
+    if (mShouldProcess && !mShouldSilence) {
+      // If wanted, pre-process the current chord:
+      if (chordProc == PreMappingChordProcessing::NONE) {}
+      else if (chordProc == PreMappingChordProcessing::IGNORE_BASS_NOTE)
+	mNoteSetToUse.remove(0);
+      else if (mNoteSetToUse.size() >= 2)
+	turnNoteSetToUseIntoScale(chordProc);
     }
   }
 
@@ -250,7 +285,7 @@ void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Arra
         mappingMode,
         wrapMode,
         unmappedBeh,
-        mChordToUse,
+        mNoteSetToUse,
         noteCodeIn,
         thisNoteMappings);
     else // We map the note to itself

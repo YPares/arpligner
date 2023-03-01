@@ -52,6 +52,8 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   (numMillisecsOfLatency = new AudioParameterInt
   ("numMillisecsOfLatency", "Global chord track lookahead (ms)", 0, 50, 15));
 
+  addParameter(holdCurState = new AudioParameterBool("holdCurState", "Hold current chord/scale", false));
+  
   StringArray notes;
   for (int i = 0; i <= 127; i++)
     notes.add(String(i) + " (" + MidiMessage::getMidiNoteName(i, true, true, 3) + ")");
@@ -59,10 +61,12 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   ("firstDegreeCode", "Reference pattern note", notes, 60));
 
   addParameter
-  (chordToScale = new AudioParameterChoice
-   ("chordToScale", "Turn chord into scale",
-    StringArray{"None", "Add whole steps (nat7 by default)", "Add whole steps (b7 by default)"},
-    ChordToScale::NONE));
+  (preMappingChordProcessing = new AudioParameterChoice
+   ("preMappingChordProcessing", "Pre-mapping chord processing",
+    StringArray{ "None", "Ignore bass note",
+      "Turn into scale - Add whole steps",
+      "Turn into scale - P4,P5,Maj7 by default "},
+    PreMappingChordProcessing::NONE));
   
   addParameter
   (patternNotesMapping = new AudioParameterChoice
@@ -78,7 +82,7 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   addParameter
   (patternNotesWraparound = new AudioParameterChoice
   ("patternNotesWraparound", "Pattern octave wraparound", waModes,
-    PatternNotesWraparound::AFTER_ALL_CHORD_DEGREES));
+    PatternNotesWraparound::AFTER_ALL_DEGREES));
 
   StringArray unmappedBehs = StringArray
   { "Silence", "Use as is", "Transpose from 1st degree", "Play all degrees up to note" };
@@ -86,8 +90,6 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   (unmappedNotesBehaviour = new AudioParameterChoice
   ("unmappedNotesBehaviour", "Unmapped notes behaviour", unmappedBehs,
     UnmappedNotesBehaviour::SILENCE));
-
-  addParameter(holdCurState = new AudioParameterBool("holdCurState", "Hold current chord", false));
 }
 
 ArplignerAudioProcessor::~ArplignerAudioProcessor()
@@ -229,7 +231,7 @@ void ArplignerAudioProcessor::getStateInformation(MemoryBlock& destData)
   s.writeInt(*numMillisecsOfLatency);
   s.writeInt(*patternNotesWraparound);
   s.writeInt(*unmappedNotesBehaviour);
-  s.writeInt(*chordToScale);
+  s.writeInt(*preMappingChordProcessing);
 }
 
 // Reload state info
@@ -244,5 +246,5 @@ void ArplignerAudioProcessor::setStateInformation(const void* data, int sizeInBy
   *numMillisecsOfLatency = s.readInt();
   *patternNotesWraparound = s.readInt();
   *unmappedNotesBehaviour = s.readInt();
-  *chordToScale = s.readInt();
+  *preMappingChordProcessing = s.readInt();
 }

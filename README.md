@@ -1,7 +1,6 @@
 [![Build (Windows)](https://github.com/YPares/arpligner/actions/workflows/win-build-validate.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/win-build-validate.yml) [![Build (OSX)](https://github.com/YPares/arpligner/actions/workflows/osx-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/osx-build.yml) <a href="https://matrix.to/#/#arpligner:gitter.im"><img src="https://badges.gitter.im/arpligner/community.svg" align="right" alt="Join the chat at https://gitter.im/arpligner/community"/></a>
 
 [![Build (Linux x64)](https://github.com/YPares/arpligner/actions/workflows/linux-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/linux-build.yml) [![Build (RaspberryPi arm64)](https://github.com/YPares/arpligner/actions/workflows/raspberry-build.yml/badge.svg)](https://github.com/YPares/arpligner/actions/workflows/raspberry-build.yml) 
-<a href="https://liberapay.com/Ywen/donate"><img src="https://img.shields.io/liberapay/patrons/Ywen.svg?logo=liberapay" align="right"/><img alt="Donate using Liberapay" align="right" src="https://liberapay.com/assets/widgets/donate.svg"/></a>
 
 <hr/>
 <p align="center"><img src="docs/logo_dark.svg" alt="Arpligner logo"/></p>

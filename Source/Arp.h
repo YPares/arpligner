@@ -23,6 +23,9 @@ using Mappings = HashMap< NoteOnChan, Array<NoteNumber> >;
 class Arp : public ArplignerAudioProcessor {
 private:
   ChordStore mLocalChordStore;
+  Chord mChordToUse;
+  bool mShouldProcess;
+  bool mShouldSilence;
 
   // On each pattern chan, to which note has been mapped each incoming
   // NoteNumber, so we can send the correct NOTE OFFs afterwards

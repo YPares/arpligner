@@ -302,6 +302,7 @@ different live players have different preferences.
 | | |`Use as is`|Output the pattern note as it is|
 | | |`Transpose from 1st degree`|Use Arpligner as a "dynamic" transposer: ignore all chord degrees besides the first (lowest) one. Pattern notes are just transposed accordingly. This allows you to play notes that are outside the current chord, but keeping your patterns centered around the reference note|
 | | |`Play all degrees up to note`|Play the full chord, using the played note as a filter (all chord degrees above will be silenced)|
+|**Hold current chord**|`Off`|`On` or `Off`|Latch onto the current chord/scale until deactivated. This parameter is never saved, and is meant to be mapped to some MIDI control, like a sustain pedal or a switch.|
 
 ## Current limitations
 

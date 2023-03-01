@@ -86,6 +86,8 @@ ArplignerAudioProcessor::ArplignerAudioProcessor()
   (unmappedNotesBehaviour = new AudioParameterChoice
   ("unmappedNotesBehaviour", "Unmapped notes behaviour", unmappedBehs,
     UnmappedNotesBehaviour::SILENCE));
+
+  addParameter(holdCurState = new AudioParameterBool("holdCurState", "Hold current chord", false));
 }
 
 ArplignerAudioProcessor::~ArplignerAudioProcessor()

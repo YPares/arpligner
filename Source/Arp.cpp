@@ -186,39 +186,40 @@ void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Arra
   auto wrapMode = (PatternNotesWraparound::Enum)patternNotesWraparound->getIndex();
   auto unmappedBeh = (UnmappedNotesBehaviour::Enum)unmappedNotesBehaviour->getIndex();
   auto referenceNote = firstDegreeCode->getIndex();
-
-  Chord curChord;
-  bool shouldProcess, shouldSilence;
-  chd->getCurrentChord(curChord, shouldProcess, shouldSilence);
+  auto updateState = !holdCurState->get();
   
-  if (shouldSilence)
-    noteOns.clear();
-
-  // If wanted, pre-process the current chord to turn it into a scale:
+  if (updateState) {
+    chd->getCurrentChord(mChordToUse, mShouldProcess, mShouldSilence);
   
-  if (chordToScaleMode != ChordToScale::NONE) {
-    Chord scale;
-    // We first "regroup" all the chord notes so they fit into one octave,
-    // starting from lowest chord note:
-    NoteNumber root = curChord[0];
-    for (auto note : curChord)
-      scale.add(root + (note - root)%12);
-    // If we don't have a 7th, we add it:
-    if (scale.getLast() < root + 10) {
-      if (chordToScaleMode == ChordToScale::ADD_WHOLE_STEPS_DEF_NAT7)
-	scale.add(root + 11);
-      else
-	scale.add(root + 10);
+    // If wanted, pre-process the current chord to turn it into a scale:
+  
+    if (chordToScaleMode != ChordToScale::NONE) {
+      Chord scale;
+      // We first "regroup" all the chord notes so they fit into one octave,
+      // starting from lowest chord note:
+      NoteNumber root = mChordToUse[0];
+      for (auto note : mChordToUse)
+	scale.add(root + (note - root)%12);
+      // If we don't have a 7th, we add it:
+      if (scale.getLast() < root + 10) {
+	if (chordToScaleMode == ChordToScale::ADD_WHOLE_STEPS_DEF_NAT7)
+	  scale.add(root + 11);
+	else
+	  scale.add(root + 10);
+      }
+      // Then we fill in the gaps by adding 1 whole step to each degree below a
+      // gap (a gap being any interval strictly larger than a whole step):
+      for (int i=0; i<scale.size()-1; i++)
+	if (scale[i+1] - scale[i] > 2)
+	  scale.add(scale[i]+2);
+      // Then, we override curChord:
+      mChordToUse.swapWith(scale);
     }
-    // Then we fill in the gaps by adding 1 whole step to each degree below a
-    // gap (a gap being any interval strictly larger than a whole step):
-    for (int i=0; i<scale.size()-1; i++)
-      if (scale[i+1] - scale[i] > 2)
-	scale.add(scale[i]+2);
-    // Then, we override curChord:
-    curChord.swapWith(scale);
   }
 
+  if (mShouldSilence)
+    noteOns.clear();
+  
   // Process and add processable messages:
 
   for (auto& msg : noteOffs) { // Note OFFs first
@@ -244,12 +245,12 @@ void Arp::processPatternNotes(ChordStore* chd, Array<MidiMessage>& noteOns, Arra
       midibuf.addEvent(MidiMessage::noteOff(msg.getChannel(), nn), 0);
     thisNoteMappings.clear();
 
-    if (shouldProcess) // The ChordStore tells us to process
+    if (mShouldProcess) // The ChordStore tells us to process
       Mapping::mapPatternNote(referenceNote,
         mappingMode,
         wrapMode,
         unmappedBeh,
-        curChord,
+        mChordToUse,
         noteCodeIn,
         thisNoteMappings);
     else // We map the note to itself

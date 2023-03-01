@@ -66,10 +66,11 @@ protected:
   AudioParameterChoice* whenSingleChordNote;
   AudioParameterChoice* firstDegreeCode;
   AudioParameterChoice* patternNotesMapping;
-  AudioParameterInt* numMillisecsOfLatency;
+  AudioParameterInt*    numMillisecsOfLatency;
   AudioParameterChoice* patternNotesWraparound;
   AudioParameterChoice* unmappedNotesBehaviour;
   AudioParameterChoice* chordToScale;
+  AudioParameterBool*   holdCurState;
 
 private:
   //==============================================================================

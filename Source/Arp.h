@@ -23,6 +23,9 @@ using Mappings = HashMap< NoteOnChan, Array<NoteNumber> >;
 class Arp : public ArplignerAudioProcessor {
 private:
   ChordStore mLocalChordStore;
+  NoteSet mNoteSetToUse;
+  bool mShouldProcess;
+  bool mShouldSilence;
 
   // On each pattern chan, to which note has been mapped each incoming
   // NoteNumber, so we can send the correct NOTE OFFs afterwards
@@ -43,6 +46,8 @@ private:
 
   void processPatternNotes(ChordStore* chd, Array<MidiMessage>&, Array<MidiMessage>&, MidiBuffer&);
 
+  void turnNoteSetToUseIntoScale(PreMappingChordProcessing::Enum);
+  
   //void finalizeMappings(MidiBuffer&);
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Arp);

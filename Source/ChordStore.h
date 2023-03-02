@@ -16,7 +16,7 @@
 using namespace juce;
 
 using NoteNumber = int;
-using Chord = SortedSet<NoteNumber>;
+using NoteSet = SortedSet<NoteNumber>;
 using Counters = HashMap<NoteNumber, int>;
 
 
@@ -24,7 +24,7 @@ using Counters = HashMap<NoteNumber, int>;
 class ChordStore {
 private:
   Counters mCounters;
-  Chord mCurrentChord;
+  NoteSet mCurrentChord;
   bool mShouldProcess;
   bool mShouldSilence;
   bool mNeedsUpdate;
@@ -59,7 +59,7 @@ public:
     mNeedsUpdate = false;
   }
 
-  virtual void getCurrentChord(Chord& chord, bool& shouldProcess, bool& shouldSilence) {
+  virtual void getCurrentChord(NoteSet& chord, bool& shouldProcess, bool& shouldSilence) {
     chord = mCurrentChord;
     shouldProcess = mShouldProcess;
     shouldSilence = mShouldSilence;
@@ -80,7 +80,7 @@ public:
     ChordStore::flushCurrentChord();
   }
 
-  void getCurrentChord(Chord& chord, bool& shouldProcess, bool& shouldSilence) override {
+  void getCurrentChord(NoteSet& chord, bool& shouldProcess, bool& shouldSilence) override {
     // This will prevent a Pattern instance to access the current chord if the
     // Global chord instance is still updating it
     const ScopedReadLock lock(globalStoreLock);

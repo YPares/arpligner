@@ -110,7 +110,9 @@ on the MIDI data you directly feed into them.
 
 ## Installation
 
-[Latest builds are available here](https://github.com/YPares/arpligner/actions), from most recent to most ancient.
+Arpligner is downloadable via the project's itch.io page: [ywen.itch.io/arpligner](https://ywen.itch.io/arpligner).
+
+Besides, latest builds [are available here](https://github.com/YPares/arpligner/actions), from most recent to most ancient (though github only keeps them for a few months).
 Select in the left panel the `Plugin build` action corresponding to your OS (Linux, Windows or OSX),
 then select the latest run that succeeded (green tick) for that action, then go to the
 Artifacts section at the bottom of the page.

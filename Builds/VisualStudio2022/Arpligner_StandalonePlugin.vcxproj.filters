@@ -16,9 +16,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\Standalone\juce_StandaloneFilterApp.cpp">
-      <Filter>JUCE Modules\juce_audio_plugin_client\Standalone</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\juce_audio_plugin_client_Standalone.cpp">
       <Filter>JUCE Modules\juce_audio_plugin_client</Filter>
     </ClCompile>

@@ -10,6 +10,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arpligner - VST3", "Arpligner_VST3.vcxproj", "{E824BD2D-A412-C5C3-7E71-8CD7ED772DC6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A09AD2B7-9E30-77F4-89BE-B3176531F123} = {A09AD2B7-9E30-77F4-89BE-B3176531F123}
+		{9FB219C9-D81F-A6EA-BE02-081C36BAE4B5} = {9FB219C9-D81F-A6EA-BE02-081C36BAE4B5}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arpligner - LV2 Plugin", "Arpligner_LV2Plugin.vcxproj", "{483E6907-658C-A15C-C473-418D4B1A3C94}"
@@ -21,6 +22,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arpligner - Shared Code", "Arpligner_SharedCode.vcxproj", "{A09AD2B7-9E30-77F4-89BE-B3176531F123}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arpligner - LV2 Manifest Helper", "Arpligner_LV2ManifestHelper.vcxproj", "{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Arpligner - VST3 Manifest Helper", "Arpligner_VST3ManifestHelper.vcxproj", "{9FB219C9-D81F-A6EA-BE02-081C36BAE4B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +51,10 @@ Global
 		{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}.Debug|x64.Build.0 = Debug|x64
 		{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}.Release|x64.ActiveCfg = Release|x64
 		{9EE57CB5-CAF5-16F9-B6BD-745868A53BA0}.Release|x64.Build.0 = Release|x64
+		{9FB219C9-D81F-A6EA-BE02-081C36BAE4B5}.Debug|x64.ActiveCfg = Debug|x64
+		{9FB219C9-D81F-A6EA-BE02-081C36BAE4B5}.Debug|x64.Build.0 = Debug|x64
+		{9FB219C9-D81F-A6EA-BE02-081C36BAE4B5}.Release|x64.ActiveCfg = Release|x64
+		{9FB219C9-D81F-A6EA-BE02-081C36BAE4B5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,10 +16,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\LV2\juce_LV2_Client.cpp">
-      <Filter>JUCE Modules\juce_audio_plugin_client\LV2</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\LV2\juce_LV2TurtleDumpProgram.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\LV2\juce_LV2ManifestHelper.cpp">
       <Filter>JUCE Modules\juce_audio_plugin_client\LV2</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\juce_audio_plugin_client_LV2.cpp">

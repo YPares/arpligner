@@ -66,9 +66,11 @@ protected:
   AudioParameterChoice* whenSingleChordNote;
   AudioParameterChoice* firstDegreeCode;
   AudioParameterChoice* patternNotesMapping;
-  AudioParameterInt* numMillisecsOfLatency;
+  AudioParameterInt*    numMillisecsOfLatency;
   AudioParameterChoice* patternNotesWraparound;
   AudioParameterChoice* unmappedNotesBehaviour;
+  AudioParameterChoice* preMappingChordProcessing;
+  AudioParameterBool*   holdCurState;
 
 private:
   //==============================================================================
@@ -105,6 +107,15 @@ namespace WhenSingleChordNote {
   };
 }
 
+namespace PreMappingChordProcessing {
+  enum Enum {
+    NONE = 0,
+    IGNORE_BASS_NOTE,
+    ADD_WHOLE_STEPS,
+    ADD_WHOLE_STEPS_DEF_P4_P5_MAJ7
+  };
+}
+
 namespace PatternNotesMapping {
   enum Enum {
     ALWAYS_LEAVE_UNMAPPED = 0,
@@ -116,11 +127,11 @@ namespace PatternNotesMapping {
 namespace PatternNotesWraparound {
   enum Enum {
     NO_WRAPAROUND = 0,
-    AFTER_ALL_CHORD_DEGREES = 1,
+    AFTER_ALL_DEGREES = 1,
     // Values of 2 and above indicate a specific number of notes after which to
-    // wrap around (effectively discarding all the chords degrees above that
-    // number, and leaving unmapped pattern notes that are above the last degree
-    // of the chord but before the wraparound value)
+    // wrap around. This effectively discards all the chord/scale degrees above
+    // that number, and leaving unmapped pattern notes that are above the last
+    // degree of the chord/scale but before the wraparound value.
   };
 }
 
@@ -129,6 +140,6 @@ namespace UnmappedNotesBehaviour {
     SILENCE = 0,
     USE_AS_IS,
     TRANSPOSE_FROM_FIRST_DEGREE,
-    PLAY_FULL_CHORD_UP_TO_NOTE
+    PLAY_ALL_DEGREES_UP_TO_NOTE
   };
 }

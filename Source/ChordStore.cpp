@@ -8,7 +8,7 @@ void ChordStore::updateCurrentChord(WhenNoChordNote::Enum whenNoChordNoteVal,
   mShouldSilence = false;
   mShouldProcess = true;
 
-  Chord newChord;
+  NoteSet newChord;
   for (Counters::Iterator i(mCounters); i.next();) {
     newChord.add(i.getKey());
   }

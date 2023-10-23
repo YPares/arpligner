@@ -286,20 +286,26 @@ different live players have different preferences.
 
 | Parameter name | Default value | Possible values | Documentation |
 |--------------------------------|---------------|-----------------|---------------|
+|**Hold current chord/scale**|`Off`|`On` or `Off`|Latch onto the current chord/scale until deactivated. This parameter is never saved, and is meant to be mapped to some MIDI control, like a sustain pedal or a switch. **Pre-mapping chord processing** changes are not applied while in this state.|
 |**Reference pattern note**|`60 (C3)`|A MIDI note|On pattern tracks, the note that will always be mapped to the first (lowest) degree of the currently playing chord|
+|**Pre-mapping chord processing**|`None`|Choose from:|Instead of mapping pattern notes directly to notes of the current chord, apply first some transformation to the current chord. For instance, Arpligner can derive from the chord a scale that makes sense over it. Note that it will _always_ consider that the root is the lowest degree of your input chord. However, if your input chords are inverted, you can double the root at the bass (any octave would do) to make sure Arpligner sees the correct root|
+| | |`None`|Usual mode: map pattern notes directly to chord notes|
+| | |`Ignore bass note`|Mapping process always ignores the lowest chord note. Can be useful if your chord track always features a note doubled at the bass|
+| | |`Turn into scale - Add whole steps`|Between each chordal tone and after the last chordal tone, unless the chord has an extension tone that allows Arpligner to guess the degree that should go there, adds a tone following the "Whole-step technique"[^4]. Prefer this if all your input chords are at least seventh chords.|
+| | |`Turn into scale - P4,P5,Maj7 by default`|Same as above, but defaults to "less jazzy" scales when your input chord lacks an 11th, a 5th or a 7th, ie. when Arpligner has to guess what the 4th, 5th or 7th degree of the scale should be. Prefer this if your input chords are just triads, or even just simple two-note intervals|
 |**Pattern notes mapping**|`Semitone to degree`|Choose from:|How to map midi note codes on pattern tracks to actual notes|
 | | |`Always leave unmapped`|No pattern note is mapped, and therefore always use the **Unmapped notes behaviour**|
-| | |`Semitone to degree`|Going up/down one _semitone_ in the pattern track means going up/down one degree in the chord|
-| | |`White note to degree`|Going up/down one _white key_ in the pattern track means going up/down one degree in the chord. Black keys are not mapped|
-|**Pattern octave wraparound**|`[Dynamic] After all chord degrees`|Choose from:|When should your pattern wrap around the chord, ie. play it at a higher/lower octave. _(Used depending on the mapping setting above)_|
-| | |`No wraparound`|Never. Pattern notes past the last chord degree are unmapped, as well as notes below the Reference note|
-| | |`[Dynamic] After all chord degrees`|Repeatedly go up one octave (and back to the first chord degree) as soon as we're past the last chord degree, or down one octave (and to the _last_ chord degree) in the other direction. No pattern note is therefore ever left unmapped.|
-| | |`[Fixed] Every XXth pattern note`|Use a fixed wraparound setting. You will go up one octave (and back to the first chord degree) every time your pattern goes up `XX` notes, and down one octave (and to the _last_ chord degree) every time your pattern goes _down_ `XX` notes. Intermediary pattern notes that do not correspond to chord degrees are unmapped.|
+| | |`Semitone to degree`|Going up/down one _semitone_ in the pattern track means going up/down one degree in the chord/scale|
+| | |`White note to degree`|Going up/down one _white key_ in the pattern track means going up/down one degree in the chord/scale. Black keys are not mapped|
+|**Pattern octave wraparound**|`[Dynamic] After all degrees`|Choose from:|When should your pattern wrap around the chord/scale, ie. play it at a higher/lower octave. _(Used depending on the mapping setting above)_|
+| | |`No wraparound`|Never. Pattern notes past the last chord/scale degree are unmapped, as well as notes below the Reference note|
+| | |`[Dynamic] After all degrees`|Repeatedly go up one octave (and back to the first chord/scale degree) as soon as we're past the last degree, or down one octave (and to the _last_ degree) in the other direction. No pattern note is therefore ever left unmapped.|
+| | |`[Fixed] Every XXth pattern note`|Use a fixed wraparound setting. You will go up one octave (and back to the first chord/scale degree) every time your pattern goes up `XX` notes, and down one octave (and to the _last_ degree) every time your pattern goes _down_ `XX` notes. Intermediary pattern notes that do not correspond to degrees are unmapped.|
 |**Unmapped notes behaviour**|`Silence`|Choose from:|What to do when the mapping or wraparound settings above have left some pattern notes unmapped|
 | | |`Silence`|Do not output any note|
 | | |`Use as is`|Output the pattern note as it is|
-| | |`Transpose from 1st degree`|Use Arpligner as a "dynamic" transposer: ignore all chord degrees besides the first (lowest) one. Pattern notes are just transposed accordingly. This allows you to play notes that are outside the current chord, but keeping your patterns centered around the reference note|
-| | |`Play all degrees up to note`|Play the full chord, using the played note as a filter (all chord degrees above will be silenced)|
+| | |`Transpose from 1st degree`|Use Arpligner as a "dynamic" transposer: ignore all chord/scale degrees besides the first (lowest) one. Pattern notes are just transposed accordingly. This allows you to play notes that are outside the current chord/scale, but keeping your patterns centered around the reference note|
+| | |`Play all degrees up to note`|Play the full chord/scale, using the played note as a filter (all degrees above will be silenced)|
 
 ## Current limitations
 
@@ -328,3 +334,7 @@ different live players have different preferences.
       Arpligner is processing notes may cause stuck notes, please report an
       issue here if this happens to you, preferably with a set of MIDI files
       that will help me reproduce the problem
+
+[^4]: This is an adaptation of the method described by Julian Bradley in
+      https://www.youtube.com/watch?v=Ro2dVvwzKNs. See notably this video
+      for the definition of "chordal tone" vs. "extension"
